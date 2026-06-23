@@ -52,7 +52,7 @@ export function CategoriesSection() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.2, duration: 0.5 }}
               whileHover={{ y: -10 }}
-              className="relative rounded-lg overflow-hidden border border-white/10 group bg-black cursor-pointer"
+              className="relative rounded-tl-[48px] rounded-br-[48px] rounded-tr-lg rounded-bl-lg overflow-hidden border border-white/10 group bg-black cursor-pointer"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
               <img

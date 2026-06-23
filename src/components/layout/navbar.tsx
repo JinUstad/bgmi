@@ -69,7 +69,7 @@ export function Navbar() {
             <AudioToggle />
             <Link
               href="/contact"
-              className="px-6 py-2 bg-pubg-yellow text-black font-bold uppercase tracking-wider text-sm rounded-sm hover:bg-orange-accent transition-colors box-glow"
+              className="px-6 py-2 bg-pubg-yellow text-black font-black uppercase tracking-widest text-sm rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all shadow-lg box-glow"
             >
               Register Now
             </Link>
@@ -112,7 +112,7 @@ export function Navbar() {
           <Link
             href="/contact"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="block w-full p-4 text-center bg-pubg-yellow text-black font-bold uppercase tracking-widest rounded-sm"
+            className="block w-full p-4 text-center bg-pubg-yellow text-black font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none shadow-lg box-glow"
           >
             Register Now
           </Link>

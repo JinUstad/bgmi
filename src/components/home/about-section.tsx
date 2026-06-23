@@ -17,7 +17,7 @@ const features = [
   },
   {
     icon: Lock,
-    title: "Secure Registration.",
+    title: "Secure Registration",
     description: "Your data is encrypted. We use industry-standard security for all transactions.",
   },
   {

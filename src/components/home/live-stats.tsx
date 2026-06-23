@@ -47,7 +47,7 @@ export function LiveStats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="relative p-6 rounded-md bg-gunmetal border border-white/10 group overflow-hidden"
+              className="relative p-6 rounded-tl-[48px] rounded-br-[48px] rounded-tr-lg rounded-bl-lg bg-gunmetal border-2 border-white/5 group overflow-hidden"
             >
               <div className="absolute inset-0 bg-pubg-yellow/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-0 right-0 p-4 opacity-10">

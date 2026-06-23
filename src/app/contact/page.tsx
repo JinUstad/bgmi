@@ -34,7 +34,7 @@ export default function ContactPage() {
       <section className="py-20 relative z-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            
+
             {/* Contact Information */}
             <div className="lg:col-span-1 space-y-8">
               <div>
@@ -93,32 +93,32 @@ export default function ContactPage() {
                 <h2 className="text-3xl font-black font-heading uppercase text-white mb-8 border-b border-white/10 pb-4">
                   Tournament <span className="text-pubg-yellow">Registration</span>
                 </h2>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Full Name *</label>
-                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow" placeholder="John Doe" />
+                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="John Doe" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">BGMI ID *</label>
-                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow" placeholder="5123456789" />
+                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="5123456789" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Team Name (Optional)</label>
-                      <input type="text" className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow" placeholder="Team Soul" />
+                      <input type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Team Soul" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Mobile Number *</label>
-                      <input required type="tel" className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow" placeholder="+91" />
+                      <input required type="tel" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="+91" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Email Address</label>
-                      <input type="email" className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
+                      <input type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
-                      <select required className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow appearance-none">
+                      <select required className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none">
                         <option value="">Select Category</option>
                         <option value="solo">Solo Match</option>
                         <option value="duo">Duo Match</option>
@@ -130,12 +130,15 @@ export default function ContactPage() {
 
                   <div className="space-y-2">
                     <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Message / Query (Optional)</label>
-                    <textarea rows={4} className="w-full bg-black border border-white/10 rounded-md p-3 text-white focus:outline-none focus:border-pubg-yellow resize-none" placeholder="Any specific requests?" />
+                    <textarea rows={4} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow resize-none" placeholder="Any specific requests?" />
                   </div>
 
                   <div className="pt-4 border-t border-white/10">
-                    <Button type="submit" size="lg" glow className="w-full md:w-auto flex gap-2 items-center">
-                      <Send className="w-5 h-5" /> Submit Registration
+                    <Button type="submit" size="lg" glow className="w-full md:w-auto">
+                      <span className="flex  items-start gap-2">
+                        <Send className="w-6 h-6" />
+                        <span>Submit Registration</span>
+                      </span>
                     </Button>
                     <p className="text-white/40 text-xs mt-4">
                       By submitting this form, you agree to our Terms of Service and Privacy Policy. Your data is secure with us.
@@ -144,7 +147,7 @@ export default function ContactPage() {
                 </form>
               </Card>
             </div>
-            
+
           </div>
         </div>
       </section>

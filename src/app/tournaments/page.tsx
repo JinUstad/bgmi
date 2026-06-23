@@ -109,10 +109,10 @@ export default function TournamentsPage() {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "px-6 py-2 rounded-sm font-bold uppercase tracking-widest text-sm transition-all",
+                    "px-6 py-2 rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none font-bold uppercase tracking-widest text-sm transition-all",
                     activeTab === tab
-                      ? "bg-pubg-yellow text-black"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "bg-pubg-yellow text-black box-glow"
+                      : "text-white/60 hover:text-pubg-yellow hover:bg-white/5"
                   )}
                 >
                   {tab}

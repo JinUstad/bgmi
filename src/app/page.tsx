@@ -5,6 +5,8 @@ import { LiveStats } from "@/components/home/live-stats";
 import { AboutSection } from "@/components/home/about-section";
 import { CategoriesSection } from "@/components/home/categories";
 import { TimelineSection } from "@/components/home/timeline";
+import { GameExpoSection } from "@/components/home/game-expo-section";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -13,6 +15,7 @@ export default function Home() {
       <HeroSection />
       <LiveStats />
       <AboutSection />
+      <GameExpoSection />
       <CategoriesSection />
       <TimelineSection />
 
@@ -32,9 +35,9 @@ export default function Home() {
             <p className="text-xl text-black/80 font-bold mb-10">
               Join thousands of players already competing for massive prize pools.
             </p>
-            <button className="px-8 py-4 bg-black text-pubg-yellow font-black uppercase tracking-widest text-lg hover:bg-gunmetal transition-colors border-2 border-black">
+            <Button size="lg" className="px-8 py-4 text-lg border-2 border-black">
               Register For Next Tournament
-            </button>
+            </Button>
           </motion.div>
         </div>
       </section>
