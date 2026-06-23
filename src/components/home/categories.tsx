@@ -80,7 +80,7 @@ export function CategoriesSection() {
                   </div>
                 </div>
 
-                <Button className="w-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                <Button className="w-full opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-300">
                   Join {cat.title}
                 </Button>
               </div>

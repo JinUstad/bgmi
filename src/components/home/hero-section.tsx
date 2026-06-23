@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-military-gradient pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-military-gradient ">
       {/* Background Effects */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/60 z-10" />
@@ -59,20 +59,7 @@ export function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Floating Elements */}
-      <motion.div
-        animate={{ y: [0, -15, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
-      >
-        <div className="w-[30px] h-[50px] border-2 border-white/30 rounded-full flex justify-center pt-2">
-          <motion.div
-            animate={{ y: [0, 15, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-2 h-2 bg-pubg-yellow rounded-full box-glow"
-          />
-        </div>
-      </motion.div>
+
     </section>
   );
 }
