@@ -10,7 +10,7 @@ interface AudioContextType {
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -21,7 +21,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
     const startAudio = () => {
       if (audioRef.current && audioRef.current.paused) {
-        audioRef.current.play().catch(() => {});
+        audioRef.current.play().then(() => {
+          setIsMuted(false);
+        }).catch(() => {});
       }
       // Clean up listeners after first interaction
       document.removeEventListener("click", startAudio);
@@ -30,8 +32,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
 
     // Try to play immediately (might be blocked by browser)
-    audioRef.current.play().catch(() => {
+    audioRef.current.play().then(() => {
+      setIsMuted(false);
+    }).catch(() => {
       // If blocked, wait for any user interaction to start playing
+      setIsMuted(true);
       document.addEventListener("click", startAudio);
       document.addEventListener("keydown", startAudio);
       document.addEventListener("touchstart", startAudio);
