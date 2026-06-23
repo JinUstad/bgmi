@@ -36,14 +36,14 @@ export function HeroSection() {
           >
             <span className="text-pubg-yellow font-bold tracking-widest text-sm uppercase">Season 5 Registrations Open</span>
           </motion.div>
-          
+
           <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter mb-6">
             India's Biggest <br />
             <span className="text-pubg-yellow text-glow">
               BGMI Tournament
             </span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-white/80 mb-10 max-w-2xl mx-auto">
             Join the elite. Fight for glory. Win massive cash prizes in the ultimate battleground experience.
           </p>
