@@ -31,7 +31,7 @@ export function AboutSection() {
   return (
     <section className="py-24 bg-military-green/10 relative">
       {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5 bg-[linear-gradient(45deg,#fff_25%,transparent_25%,transparent_75%,#fff_75%,#fff_100%),linear-gradient(45deg,#fff_25%,transparent_25%,transparent_75%,#fff_75%,#fff_100%)] bg-[length:20px_20px] bg-[position:0_0,10px_10px]" />
+      <div className="absolute inset-0 bg-[#0A0A0A] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMWMxYzFjIi8+CjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMxYzFjMWMiLz4KPC9zdmc+')] opacity-50" />
 
       <div className="container relative z-10 mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">

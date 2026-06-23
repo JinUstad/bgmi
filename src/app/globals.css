@@ -42,11 +42,19 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #FF6B00;
   }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 10px rgba(242, 169, 0, 0.5), 0 0 20px rgba(242, 169, 0, 0.3);
+    text-shadow: 0 0 5px rgba(242, 169, 0, 0.4), 0 0 10px rgba(242, 169, 0, 0.2);
   }
   
   .box-glow {

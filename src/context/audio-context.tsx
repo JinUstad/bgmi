@@ -15,11 +15,32 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // We create the audio element only on the client side
-    audioRef.current = new Audio("/audio/battlefield-ambience.mp3");
+    audioRef.current = new Audio("/music/bgmi_india.mp3");
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
 
+    const startAudio = () => {
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+      // Clean up listeners after first interaction
+      document.removeEventListener("click", startAudio);
+      document.removeEventListener("keydown", startAudio);
+      document.removeEventListener("touchstart", startAudio);
+    };
+
+    // Try to play immediately (might be blocked by browser)
+    audioRef.current.play().catch(() => {
+      // If blocked, wait for any user interaction to start playing
+      document.addEventListener("click", startAudio);
+      document.addEventListener("keydown", startAudio);
+      document.addEventListener("touchstart", startAudio);
+    });
+
     return () => {
+      document.removeEventListener("click", startAudio);
+      document.removeEventListener("keydown", startAudio);
+      document.removeEventListener("touchstart", startAudio);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -33,14 +54,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (isMuted) {
       audioRef.current.pause();
     } else {
-      // Need to handle potential play() rejection due to lack of user interaction
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log("Audio play prevented:", error);
-          setIsMuted(true);
-        });
-      }
+      audioRef.current.play().catch(() => {
+        // Ignored, will be handled by global interaction listener if it's the first time
+      });
     }
   }, [isMuted]);
 

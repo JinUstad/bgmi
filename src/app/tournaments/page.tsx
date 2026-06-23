@@ -103,13 +103,13 @@ export default function TournamentsPage() {
       <section className="py-12 relative z-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-            <div className="flex space-x-2 bg-gunmetal p-1 rounded-md border border-white/10">
+            <div className="flex overflow-x-auto hide-scrollbar space-x-2 bg-gunmetal p-1 rounded-md border border-white/10 w-full md:w-auto">
               {TABS.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "px-6 py-2 rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none font-bold uppercase tracking-widest text-sm transition-all",
+                    "shrink-0 px-6 py-2 rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none font-bold uppercase tracking-widest text-sm transition-all",
                     activeTab === tab
                       ? "bg-pubg-yellow text-black box-glow"
                       : "text-white/60 hover:text-pubg-yellow hover:bg-white/5"
@@ -143,41 +143,48 @@ export default function TournamentsPage() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card glowOnHover className="flex flex-col h-full border-l-4 border-l-pubg-yellow group">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <span className="text-xs font-bold text-pubg-yellow uppercase tracking-widest bg-pubg-yellow/10 px-2 py-1 rounded-sm">
-                          {tournament.type}
-                        </span>
-                        <h3 className="text-2xl font-black font-heading uppercase text-white mt-2 group-hover:text-pubg-yellow transition-colors">
-                          {tournament.name}
-                        </h3>
-                      </div>
+                  <Card 
+                    glowOnHover 
+                    className="p-0 flex flex-col h-full group relative overflow-hidden cursor-pointer border-0"
+                    onClick={() => setSelectedTournament(tournament)}
+                  >
+                    {/* Background Image & Overlays */}
+                    <div className="absolute inset-0 z-0">
+                      <img 
+                        src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070" 
+                        alt="Background" 
+                        className="w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-500" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                      <div>
-                        <div className="text-white/50 uppercase tracking-wider text-xs font-bold mb-1">Date & Time</div>
-                        <div className="text-white font-medium">{tournament.date} <br/> {tournament.time}</div>
-                      </div>
-                      <div>
-                        <div className="text-white/50 uppercase tracking-wider text-xs font-bold mb-1">Prize Pool</div>
-                        <div className="text-pubg-yellow font-bold text-lg text-glow">{tournament.prizePool}</div>
-                      </div>
-                      <div>
-                        <div className="text-white/50 uppercase tracking-wider text-xs font-bold mb-1">Entry Fee</div>
-                        <div className="text-white font-medium">{tournament.entryFee}</div>
-                      </div>
-                      <div>
-                        <div className="text-white/50 uppercase tracking-wider text-xs font-bold mb-1">Slots</div>
-                        <div className="text-white font-medium">{tournament.remainingSlots} / {tournament.totalSlots} left</div>
-                      </div>
-                    </div>
+                    {/* Content */}
+                    <div className="relative z-10 p-6 flex flex-col h-full pt-16">
+                      <h3 className="text-4xl md:text-5xl font-black font-heading uppercase text-white mb-8 drop-shadow-lg">
+                        {tournament.type}
+                      </h3>
 
-                    <div className="mt-auto pt-4 border-t border-white/10 flex gap-3">
-                      <Button className="w-full" onClick={() => setSelectedTournament(tournament)}>
-                        View Details
-                      </Button>
+                      <div className="space-y-4 mb-8 flex-grow">
+                        <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                          <span className="text-white/60 font-bold uppercase tracking-widest text-sm">Entry Fee</span>
+                          <span className="text-white font-bold text-lg">{tournament.entryFee}</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                          <span className="text-white/60 font-bold uppercase tracking-widest text-sm">Prize Pool</span>
+                          <span className="text-pubg-yellow font-black text-xl text-glow">{tournament.prizePool}</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                          <span className="text-white/60 font-bold uppercase tracking-widest text-sm">Timing</span>
+                          <span className="text-white font-bold text-lg">{tournament.time}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto">
+                        <Button className="w-full group-hover:bg-orange-accent transition-colors">
+                          View Details
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 </motion.div>
