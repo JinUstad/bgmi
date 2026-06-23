@@ -33,11 +33,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} h-full antialiased dark bg-black`}
+      className={`${inter.variable} ${outfit.variable} h-full antialiased dark bg-black overflow-x-hidden`}
     >
-      <body className="min-h-full flex flex-col font-sans text-white selection:bg-pubg-yellow selection:text-black">
+      <body className="min-h-full flex flex-col font-sans text-white selection:bg-pubg-yellow selection:text-black overflow-x-hidden">
         <AudioProvider>
-          <div className="max-w-[1440px] mx-auto w-full flex-grow flex flex-col bg-tactical-black shadow-2xl relative min-h-screen">
+          <div className="max-w-[1440px] mx-auto w-full flex-grow flex flex-col bg-tactical-black shadow-2xl relative min-h-screen overflow-x-hidden">
             <Navbar />
             <main className="flex-grow pt-24">{children}</main>
             <Footer />
