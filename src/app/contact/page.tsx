@@ -13,11 +13,52 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-tactical-black">
+    <div className="flex flex-col w-full min-h-screen bg-black relative">
+      
+      {/* Global Animated Background for Contact Page */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-black/70 z-10" />
+        
+        {/* PUBG Theme Background */}
+        <motion.div 
+          animate={{ scale: [1, 1.05, 1], x: [0, 10, 0], y: [0, -10, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 bg-[url('/pubg_contact_bg.png')] bg-cover bg-center mix-blend-overlay opacity-50" 
+        />
+
+        {/* Sniper Laser Sights */}
+        <motion.div
+          animate={{
+            x: ["-20vw", "120vw", "-20vw"],
+            y: ["30vh", "70vh", "40vh"],
+            rotate: [10, -15, 20],
+          }}
+          transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[2px] w-[40vw] bg-red-500/60 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left"
+        />
+        <motion.div
+          animate={{
+            x: ["120vw", "-20vw", "120vw"],
+            y: ["60vh", "20vh", "50vh"],
+            rotate: [-20, 15, -10],
+          }}
+          transition={{ duration: 13, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[2px] w-[55vw] bg-red-500/50 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left"
+        />
+
+        {/* Screen Shake / Impact effect occasionally */}
+        <motion.div
+          animate={{
+            opacity: [0, 0, 0.15, 0, 0],
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 bg-red-600 z-10 mix-blend-overlay"
+        />
+      </div>
+
       {/* Hero Banner */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-military-gradient border-b border-white/10">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579548122080-c35fd6820ceb?q=80&w=2070')] bg-cover bg-center opacity-10 mix-blend-overlay grayscale" />
-        <div className="container relative z-10 mx-auto px-4 text-center">
+      <section className="relative pt-32 pb-20 border-b border-white/10 z-10">
+        <div className="container relative mx-auto px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

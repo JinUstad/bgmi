@@ -7,9 +7,16 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-military-gradient ">
       {/* Background Effects***************************** */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 bg-black/60 z-10" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070')] bg-cover bg-center" />
+        
+        {/* Animated War Background */}
+        <motion.div 
+          animate={{ scale: [1, 1.05, 1], x: [0, -10, 0], y: [0, 10, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 bg-[url('/war_game_bg.png')] bg-cover bg-center" 
+        />
+        
         {/* Animated Particles / Smoke */}
         <motion.div
           animate={{
@@ -17,7 +24,36 @@ export function HeroSection() {
             opacity: [0.3, 0.6, 0.3],
           }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-pubg-yellow/10 via-transparent to-transparent z-10"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-pubg-yellow/20 via-transparent to-transparent z-10"
+        />
+
+        {/* Sniper Laser Sights */}
+        <motion.div
+          animate={{
+            x: ["-20vw", "120vw", "-20vw"],
+            y: ["20vh", "80vh", "30vh"],
+            rotate: [15, -10, 25],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[2px] w-[50vw] bg-red-500/60 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            x: ["120vw", "-20vw", "120vw"],
+            y: ["70vh", "10vh", "60vh"],
+            rotate: [-15, 20, -5],
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[2px] w-[60vw] bg-red-500/50 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left pointer-events-none"
+        />
+
+        {/* Screen Shake / Impact effect occasionally */}
+        <motion.div
+          animate={{
+            opacity: [0, 0, 0.1, 0, 0],
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 bg-red-500 z-10 mix-blend-overlay pointer-events-none"
         />
       </div>
 

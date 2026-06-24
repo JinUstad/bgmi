@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import { ShieldCheck, Zap, Lock, Trophy } from "lucide-react";
 import { Card } from "../ui/card";
 
+import Lottie from "lottie-react";
+import animationData from "../../../public/war_lottie.json";
+
 const features = [
   {
     icon: ShieldCheck,
@@ -29,9 +32,35 @@ const features = [
 
 export function AboutSection() {
   return (
-    <section className="py-24 bg-military-green/10 relative">
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-[#0A0A0A] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMWMxYzFjIi8+CjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMxYzFjMWMiLz4KPC9zdmc+')] opacity-50" />
+    <section className="py-24 relative overflow-hidden bg-black">
+      {/* Animated War Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-black/70 z-10" />
+        
+        <motion.div 
+          animate={{ scale: [1, 1.05, 1], x: [0, -10, 0], y: [0, 5, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 bg-[url('/about_bg.png')] bg-cover bg-center mix-blend-overlay opacity-60" 
+        />
+
+        {/* Lottie Animation Overlay */}
+        <div className="absolute inset-0 z-10 flex items-center justify-center opacity-30 mix-blend-screen">
+          <Lottie 
+            animationData={animationData} 
+            loop={true} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          />
+        </div>
+
+        {/* Screen Shake / Impact effect occasionally */}
+        <motion.div
+          animate={{
+            opacity: [0, 0, 0.15, 0, 0],
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 bg-red-600 z-10 mix-blend-overlay"
+        />
+      </div>
 
       <div className="container relative z-10 mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">

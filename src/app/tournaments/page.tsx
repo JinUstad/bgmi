@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Map as MapIcon, Clock, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lottie from "lottie-react";
+import animationData from "../../../public/war_lottie.json";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 const TABS = ["All", "Solo", "Duo", "Squad"];
 
@@ -74,6 +83,31 @@ export default function TournamentsPage() {
   const [selectedTournament, setSelectedTournament] = useState<typeof TOURNAMENTS[0] | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  const faqRef = useRef(null);
+
+  useGSAP(() => {
+    gsap.from(".faq-title", {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      scrollTrigger: {
+        trigger: faqRef.current,
+        start: "top 80%",
+      }
+    });
+
+    gsap.from(".faq-item", {
+      x: -50,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      scrollTrigger: {
+        trigger: faqRef.current,
+        start: "top 70%",
+      }
+    });
+  }, { scope: faqRef });
+
   const filteredTournaments = TOURNAMENTS.filter((t) => {
     const matchesTab = activeTab === "All" || t.type === activeTab;
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -83,19 +117,84 @@ export default function TournamentsPage() {
   return (
     <div className="flex flex-col w-full min-h-screen bg-tactical-black">
       {/* Hero Banner */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-military-gradient border-b border-white/10">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070')] bg-cover bg-center opacity-10 mix-blend-overlay" />
-        <div className="container relative z-10 mx-auto px-4 text-center">
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden border-b border-white/10 bg-black pt-20">
+        
+        {/* Animated Battle Background */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 bg-black/60 z-10" />
+          
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1], x: [0, -5, 0], y: [0, 5, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 bg-[url('/tournaments_hero_bg.png')] bg-cover bg-center opacity-70 mix-blend-overlay" 
+          />
+
+          {/* Bullet Tracers (Left to Right) */}
+          <motion.div
+            animate={{
+              x: ["-20vw", "120vw"],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: "linear", repeatDelay: 1.5 }}
+            className="absolute h-[3px] w-32 bg-yellow-400 shadow-[0_0_20px_yellow] z-10 top-1/3 left-0 rounded-full"
+          />
+          <motion.div
+            animate={{
+              x: ["-20vw", "120vw"],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: "linear", repeatDelay: 2.2 }}
+            className="absolute h-[2px] w-40 bg-orange-500 shadow-[0_0_15px_orange] z-10 top-2/3 left-0 rounded-full"
+          />
+
+          {/* Muzzle Flash / Screen Shake */}
+          <motion.div
+            animate={{
+              opacity: [0, 0.2, 0, 0, 0],
+            }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear", repeatDelay: 1.5 }}
+            className="absolute inset-0 bg-yellow-600 mix-blend-overlay z-10"
+          />
+        </div>
+
+        <div className="container relative z-10 mx-auto px-4 text-center mt-10">
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-4 text-glow"
+            transition={{ duration: 0.6 }}
+            className="text-6xl md:text-8xl font-black font-heading uppercase tracking-tighter text-white mb-6 text-glow"
           >
             Upcoming <span className="text-pubg-yellow">Battles</span>
           </motion.h1>
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Find your next tournament, assemble your squad, and fight for the top spot.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-white/70 text-xl md:text-2xl max-w-3xl mx-auto mb-12"
+          >
+            Find your next tournament, assemble your elite squad, and fight for the top spot on the leaderboards.
+          </motion.p>
+
+          {/* Added Stats Content to fill the taller banner */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
+          >
+            <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
+              <div className="text-pubg-yellow text-4xl font-black mb-2">150K+</div>
+              <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Active Players</div>
+            </div>
+            <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
+              <div className="text-pubg-yellow text-4xl font-black mb-2">₹50L+</div>
+              <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Prizes Awarded</div>
+            </div>
+            <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
+              <div className="text-pubg-yellow text-4xl font-black mb-2">500+</div>
+              <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Daily Scrims</div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -201,14 +300,43 @@ export default function TournamentsPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-gunmetal relative">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-3xl font-black font-heading uppercase text-center text-white mb-12">
+      <section ref={faqRef} className="py-24 relative overflow-hidden bg-black">
+        {/* Animated War Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-black/70 z-10" />
+          
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1], x: [0, -10, 0], y: [0, 5, 0] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 bg-[url('/faq_bg.png')] bg-cover bg-center mix-blend-overlay opacity-60" 
+          />
+
+          {/* Lottie Animation Overlay */}
+          <div className="absolute inset-0 z-10 flex items-center justify-center opacity-30 mix-blend-screen">
+            <Lottie 
+              animationData={animationData} 
+              loop={true} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          </div>
+
+          {/* Screen Shake / Impact effect occasionally */}
+          <motion.div
+            animate={{
+              opacity: [0, 0, 0.15, 0, 0],
+            }}
+            transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 bg-red-600 z-10 mix-blend-overlay"
+          />
+        </div>
+
+        <div className="container relative z-10 mx-auto px-4 max-w-3xl">
+          <h2 className="faq-title text-3xl font-black font-heading uppercase text-center text-white mb-12">
             Frequently Asked <span className="text-pubg-yellow">Questions</span>
           </h2>
           <div className="space-y-4">
             {FAQS.map((faq, index) => (
-              <div key={index} className="border border-white/10 rounded-md bg-black/50 overflow-hidden">
+              <div key={index} className="faq-item border border-white/10 rounded-md bg-black/70 backdrop-blur-sm overflow-hidden">
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="w-full flex justify-between items-center p-6 text-left font-bold text-white hover:text-pubg-yellow transition-colors"

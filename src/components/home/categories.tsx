@@ -29,7 +29,48 @@ const categories = [
 
 export function CategoriesSection() {
   return (
-    <section className="py-24 bg-gunmetal relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden">
+      
+      {/* Animated War Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-black/80 z-10" />
+        
+        <motion.div 
+          animate={{ scale: [1, 1.05, 1], x: [0, -10, 0], y: [0, 5, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 bg-[url('/categories_bg.png')] bg-cover bg-center mix-blend-overlay opacity-60" 
+        />
+
+        {/* Sniper Laser Sights */}
+        <motion.div
+          animate={{
+            x: ["-20vw", "120vw", "-20vw"],
+            y: ["20%", "80%", "30%"],
+            rotate: [5, -10, 15],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[2px] w-[50vw] bg-red-500/60 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left"
+        />
+        <motion.div
+          animate={{
+            x: ["120vw", "-20vw", "120vw"],
+            y: ["70%", "10%", "50%"],
+            rotate: [-15, 10, -5],
+          }}
+          transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+          className="absolute h-[2px] w-[60vw] bg-red-500/50 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left"
+        />
+
+        {/* Screen Shake / Impact effect occasionally */}
+        <motion.div
+          animate={{
+            opacity: [0, 0, 0.1, 0, 0],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 bg-red-600 z-10 mix-blend-overlay"
+        />
+      </div>
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <motion.h2
