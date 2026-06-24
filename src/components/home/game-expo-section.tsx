@@ -10,17 +10,35 @@ export function GameExpoSection() {
       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-full bg-pubg-yellow/10 blur-[150px] z-0" />
       
       <div className="container relative z-10 mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-12">
-        {/* Left Side: Character Image */}
+        {/* Left Side: Character Image and Gun Animations */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="w-full md:w-1/2 flex justify-center lg:justify-start"
+          className="w-full md:w-1/2 flex justify-center lg:justify-start relative"
         >
+          {/* Animated Bullets (Gun Shots) */}
+          <motion.div
+            animate={{
+              x: [0, 600],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{ duration: 0.4, repeat: Infinity, ease: "linear", repeatDelay: 1.2 }}
+            className="absolute h-[3px] w-24 bg-yellow-400 shadow-[0_0_20px_yellow] z-20 top-1/2 left-1/2 rounded-full"
+          />
+          <motion.div
+            animate={{
+              x: [0, 800],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{ duration: 0.5, repeat: Infinity, ease: "linear", repeatDelay: 1.8 }}
+            className="absolute h-[2px] w-32 bg-orange-500 shadow-[0_0_15px_orange] z-20 top-[40%] left-[45%] rounded-full"
+          />
+          
           <img 
-            src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=1000" 
-            alt="Game Character" 
-            className="max-h-[600px] object-contain drop-shadow-[0_0_50px_rgba(242,169,0,0.3)] hover:scale-105 transition-transform duration-700"
+            src="/army_character.png" 
+            alt="Army Character" 
+            className="max-h-[600px] object-contain drop-shadow-[0_0_50px_rgba(242,169,0,0.3)] hover:scale-105 transition-transform duration-700 mix-blend-screen relative z-10"
           />
         </motion.div>
 
