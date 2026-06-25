@@ -198,6 +198,58 @@ export default function TournamentsPage() {
         </div>
       </section>
 
+      {/* Time Table Section */}
+      <section className="py-12 relative z-20 bg-black/40 border-b border-white/10">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-5xl font-black font-heading uppercase text-white mb-4">
+              Match <span className="text-pubg-yellow">Schedule</span>
+            </h2>
+            <p className="text-white/60 font-bold uppercase tracking-widest text-sm">
+              Daily Scrims & Tournament Timings
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 9 AM to 1 PM Slots */}
+            {[
+              { time: "09:00 AM", name: "Morning Skirmish", type: "Erangel - Squad" },
+              { time: "10:00 AM", name: "Rush Hour", type: "Sanhok - Duo" },
+              { time: "11:00 AM", name: "Sniper Alley", type: "Miramar - Solo" },
+              { time: "12:00 PM", name: "High Noon Battle", type: "Erangel - Squad" },
+            ].map((slot, i) => (
+              <div key={`am-${i}`} className="bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
+                <div className="text-pubg-yellow font-black text-xl mb-2 group-hover:scale-110 transition-transform">{slot.time}</div>
+                <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
+                <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
+              </div>
+            ))}
+            
+            {/* Lunch Break */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-4 bg-pubg-yellow/10 border border-pubg-yellow/20 rounded-md p-4 text-center my-2">
+              <div className="text-pubg-yellow font-black uppercase tracking-widest text-lg flex items-center justify-center gap-2">
+                <Clock className="w-5 h-5" />
+                01:00 PM - 02:00 PM : Lunch Break / Server Maintenance
+              </div>
+            </div>
+
+            {/* 2 PM to 5 PM Slots */}
+            {[
+              { time: "02:00 PM", name: "Afternoon Assault", type: "Erangel - Squad" },
+              { time: "03:00 PM", name: "Desert Storm", type: "Miramar - Squad" },
+              { time: "04:00 PM", name: "Jungle Warfare", type: "Sanhok - Squad" },
+              { time: "05:00 PM", name: "Evening Showdown", type: "Erangel - Squad" },
+            ].map((slot, i) => (
+              <div key={`pm-${i}`} className="bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
+                <div className="text-pubg-yellow font-black text-xl mb-2 group-hover:scale-110 transition-transform">{slot.time}</div>
+                <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
+                <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Filter & Search */}
       <section className="py-12 relative z-20">
         <div className="container mx-auto px-4">
