@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
 import { Search, Map as MapIcon, Clock, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -83,7 +83,80 @@ export default function TournamentsPage() {
   const [selectedTournament, setSelectedTournament] = useState<typeof TOURNAMENTS[0] | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXAbs = useMotionValue(0);
+  const mouseYAbs = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // For tilt
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+
+    // For reflection
+    mouseXAbs.set(mouseX);
+    mouseYAbs.set(mouseY);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  const glareBackground = useMotionTemplate`radial-gradient(500px circle at ${mouseXAbs}px ${mouseYAbs}px, rgba(255,255,255,0.15), transparent 80%)`;
+
   const faqRef = useRef(null);
+  const prizeRef = useRef(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: prizeRef.current,
+        start: "top 85%",
+      }
+    });
+
+    tl.from(".prize-card-wrapper", {
+      y: 50,
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.8,
+      ease: "power3.out",
+    })
+    .from(".prize-content", {
+      x: -30,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.out",
+    }, "-=0.4")
+    .from(".prize-stat", {
+      y: 30,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.2,
+      ease: "back.out(1.7)",
+    }, "-=0.4")
+    .from(".prize-divider", {
+      scale: 0,
+      opacity: 0,
+      duration: 0.4,
+    }, "-=0.4");
+  }, { scope: prizeRef });
 
   useGSAP(() => {
     gsap.from(".faq-title", {
@@ -198,6 +271,121 @@ export default function TournamentsPage() {
         </div>
       </section>
 
+      {/* Prize Pool & Entry Fee Section */}
+      <section ref={prizeRef} className="py-16 md:py-20 relative z-30">
+        <div className="container mx-auto px-4" style={{ perspective: 1000 }}>
+          <div className="prize-card-wrapper max-w-5xl mx-auto">
+            <motion.div 
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+              }}
+              className="rounded-[2rem] p-6 md:p-12 overflow-hidden relative shadow-[0_15px_50px_0_rgba(249,115,22,0.1)] border border-white/10 group hover:border-orange-500 hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] transition-all duration-300 bg-zinc-900"
+            >
+              
+              {/* Generated Background Image */}
+              <div className="absolute inset-0 z-0">
+                <img 
+                  src="/pubg_battleground_bg.png" 
+                  alt="PUBG Battleground" 
+                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-900/80 to-zinc-950" />
+                <div className="absolute inset-0 bg-orange-500/5 mix-blend-overlay" />
+              </div>
+
+              {/* Lottie Animation */}
+              <div className="absolute inset-0 z-0 opacity-30 pointer-events-none mix-blend-screen transition-opacity duration-500 group-hover:opacity-50">
+                <Lottie 
+                  animationData={animationData} 
+                  loop={true} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              </div>
+
+              {/* Glassmorphism Overlays */}
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-md z-0" />
+
+              {/* Dynamic Glare/Reflection */}
+              <motion.div
+                className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay"
+                style={{ background: glareBackground }}
+              />
+              
+              {/* Gun & Bazooka Animations */}
+              <motion.div
+                initial={{ z: 30 }}
+                animate={{ x: ["-20vw", "100vw"], y: [0, -20, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+                className="absolute top-1/4 left-0 pointer-events-none opacity-40 mix-blend-screen"
+              >
+                <div className="text-6xl drop-shadow-[0_0_20px_orange] rotate-45">🚀</div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ z: 20 }}
+                animate={{ x: ["-20vw", "100vw"] }}
+                transition={{ duration: 0.5, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+                className="absolute top-[30%] left-0 h-[3px] w-48 bg-orange-400 shadow-[0_0_20px_orange] rounded-full pointer-events-none"
+              />
+              
+              <motion.div
+                initial={{ z: 40 }}
+                animate={{ x: ["100vw", "-20vw"] }}
+                transition={{ duration: 0.4, repeat: Infinity, ease: "linear", repeatDelay: 1.5 }}
+                className="absolute top-2/3 right-0 h-[3px] w-32 bg-orange-600 shadow-[0_0_20px_orange] rounded-full pointer-events-none"
+              />
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10" style={{ transform: "translateZ(50px)" }}>
+                
+                {/* Text & Stats Content */}
+                <div className="flex-1 text-center md:text-left prize-content relative z-10">
+                  <div className="inline-block px-3 py-1 mb-4 rounded-full bg-orange-500/20 border border-orange-500/50 text-orange-500 text-xs font-bold uppercase tracking-widest">
+                    Tactical Showdown
+                  </div>
+                  <h3 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading uppercase text-white mb-4">
+                    Daily <span className="text-orange-500 text-glow drop-shadow-[0_0_15px_rgba(249,115,22,0.8)]">Battle</span>
+                  </h3>
+                  <p className="text-white/80 font-bold tracking-wider text-sm md:text-base max-w-lg mx-auto md:mx-0 drop-shadow-md mb-8">
+                    Enter the battlefield for just ₹50 and stand a chance to win the grand prize of ₹1000! Assemble your squad and prove your dominance.
+                  </p>
+
+                  <div className="flex flex-row items-center justify-center md:justify-start gap-6 md:gap-10 w-full md:w-auto bg-zinc-900/60 p-4 md:p-6 rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl inline-flex">
+                    <div className="text-center prize-stat">
+                      <div className="text-xs md:text-sm text-white/70 uppercase tracking-widest font-bold mb-1">Entry Fee</div>
+                      <div className="text-3xl md:text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">₹50</div>
+                    </div>
+                    
+                    <div className="h-12 w-px bg-white/20 hidden md:block prize-divider" />
+                    <div className="h-px w-12 bg-white/20 md:hidden prize-divider" />
+
+                    <div className="text-center prize-stat">
+                      <div className="text-xs md:text-sm text-orange-500/90 uppercase tracking-widest font-bold mb-1">Winner Gets</div>
+                      <div className="text-4xl md:text-5xl font-black text-orange-500 text-glow drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]">₹1000</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Character Image */}
+                <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10 pointer-events-none mt-8 md:mt-0">
+                  <motion.img 
+                    src="/gemini_soldier.png" 
+                    alt="Tactical Soldier"
+                    className="w-64 md:w-80 lg:w-[28rem] drop-shadow-[0_10px_30px_rgba(249,115,22,0.4)] object-contain mix-blend-screen"
+                    animate={{ y: [0, -15, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ transform: "translateZ(80px)" }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Time Table Section */}
       <section className="py-12 relative z-20 bg-black/40 border-b border-white/10">
         <div className="container mx-auto px-4 max-w-5xl">
@@ -213,13 +401,13 @@ export default function TournamentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* 9 AM to 1 PM Slots */}
             {[
-              { time: "09:00 AM", name: "Morning Skirmish", type: "Erangel - Squad" },
-              { time: "10:00 AM", name: "Rush Hour", type: "Sanhok - Duo" },
-              { time: "11:00 AM", name: "Sniper Alley", type: "Miramar - Solo" },
-              { time: "12:00 PM", name: "High Noon Battle", type: "Erangel - Squad" },
+              { time: "09:00 AM - 10:00 AM", name: "Morning Skirmish", type: "Erangel - Squad" },
+              { time: "10:00 AM - 11:00 AM", name: "Rush Hour", type: "Sanhok - Duo" },
+              { time: "11:00 AM - 12:00 PM", name: "Sniper Alley", type: "Miramar - Solo" },
+              { time: "12:00 PM - 01:00 PM", name: "High Noon Battle", type: "Erangel - Squad" },
             ].map((slot, i) => (
               <div key={`am-${i}`} className="bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                <div className="text-pubg-yellow font-black text-xl mb-2 group-hover:scale-110 transition-transform">{slot.time}</div>
+                <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
                 <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
                 <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
               </div>
@@ -235,13 +423,13 @@ export default function TournamentsPage() {
 
             {/* 2 PM to 5 PM Slots */}
             {[
-              { time: "02:00 PM", name: "Afternoon Assault", type: "Erangel - Squad" },
-              { time: "03:00 PM", name: "Desert Storm", type: "Miramar - Squad" },
-              { time: "04:00 PM", name: "Jungle Warfare", type: "Sanhok - Squad" },
-              { time: "05:00 PM", name: "Evening Showdown", type: "Erangel - Squad" },
+              { time: "02:00 PM - 03:00 PM", name: "Afternoon Assault", type: "Erangel - Squad" },
+              { time: "03:00 PM - 04:00 PM", name: "Desert Storm", type: "Miramar - Squad" },
+              { time: "04:00 PM - 05:00 PM", name: "Jungle Warfare", type: "Sanhok - Squad" },
+              { time: "05:00 PM - 06:00 PM", name: "Evening Showdown", type: "Erangel - Squad" },
             ].map((slot, i) => (
               <div key={`pm-${i}`} className="bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                <div className="text-pubg-yellow font-black text-xl mb-2 group-hover:scale-110 transition-transform">{slot.time}</div>
+                <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
                 <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
                 <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
               </div>
