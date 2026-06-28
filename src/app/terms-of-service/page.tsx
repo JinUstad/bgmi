@@ -18,7 +18,7 @@ const RULES = [
   "Tournament decisions made by the organizers are final."
 ];
 
-export default function TermsPage() {
+export default function TermsOfServicePage() {
   return (
     <div className="flex flex-col w-full min-h-screen bg-black relative">
       
@@ -55,23 +55,23 @@ export default function TermsPage() {
 
       {/* Hero Banner */}
       <section className="relative pt-32 pb-20 border-b border-white/10 z-10">
-        <div className="container relative mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto">
+        <div className="container relative mx-auto px-4">
+          <div className="max-w-2xl text-left">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-4 leading-none"
             >
-              TERMS &<br />
-              <span className="text-pubg-yellow text-glow">CONDITIONS</span>
+              TERMS OF<br />
+              <span className="text-pubg-yellow text-glow">SERVICE</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-white/80 text-lg md:text-xl font-medium max-w-md mx-auto"
+              className="text-white/80 text-lg md:text-xl font-medium max-w-md"
             >
-              Please read the terms and conditions carefully before participating.
+              Please read our terms of service carefully before participating in the tournament.
             </motion.p>
           </div>
         </div>

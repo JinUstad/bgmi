@@ -7,44 +7,28 @@ import { cn } from "@/lib/utils";
 
 const FAQS = [
   {
-    question: "How do I register?",
-    answer: "You can register by navigating to our Contact/Registration page. Fill out the required details including your Full Name, BGMI ID, Mobile Number, and preferred Time Slot. Don't forget to accept the Terms and Conditions before submitting."
+    question: "How do I register for the tournament?",
+    answer: "You can register by visiting the Tournament page and filling out the registration form."
   },
   {
-    question: "How will I receive my Room ID and Password?",
-    answer: "Room ID and Password will be shared via WhatsApp and our official Discord server 15 minutes before the match start time. Make sure you have provided a valid WhatsApp number."
+    question: "What is the entry fee?",
+    answer: "The entry fee is mentioned on the Tournament page. Make sure to read all the details before registering."
   },
   {
-    question: "What are the tournament rules?",
-    answer: "Players must play in their selected slots. Cheating, teaming up, or using third-party software is strictly prohibited and will lead to instant disqualification. Please read our Terms & Conditions for detailed rules."
+    question: "Can I change my team after registration?",
+    answer: "No, once your team is registered, you cannot make any changes to the team members."
   },
   {
-    question: "When will the match start?",
-    answer: "Matches start precisely according to the time slot you have selected during registration. Please join the room at least 10 minutes prior to the start time."
+    question: "What are the rules of the tournament?",
+    answer: "All rules are mentioned on the Tournament page and must be followed strictly."
   },
   {
-    question: "How is the winner selected?",
-    answer: "Winners are selected based on their total points, which is a combination of placement points and kill points according to the official BGMI competitive point system."
+    question: "How will the matches be played?",
+    answer: "Matches will be played online in the classic battle royale mode as per the schedule."
   },
   {
-    question: "What happens if a player disconnects?",
-    answer: "If a player disconnects due to their personal network issues, the match will continue. We highly recommend playing on a stable internet connection. No rematches will be held for individual disconnects."
-  },
-  {
-    question: "How do I claim my prize?",
-    answer: "Prize money will be transferred via UPI, Google Pay, or Paytm within 24 hours of the tournament's completion. Winners will be contacted by our support team for their payment details."
-  },
-  {
-    question: "Can I change my selected slot after registration?",
-    answer: "No, once a slot is selected and registration is complete, you cannot change your slot. Please double-check your availability before registering."
-  },
-  {
-    question: "Is the registration fee refundable?",
-    answer: "The registration fee is strictly non-refundable under any circumstances. Once the payment has been successfully completed, no refund requests will be accepted."
-  },
-  {
-    question: "How do I contact support?",
-    answer: "You can reach out to our support team 24/7 via WhatsApp, Email (support@bgmiesports.in), or by joining our official Discord server."
+    question: "How will the winners be decided?",
+    answer: "Winners will be decided based on the total points scored in all matches."
   }
 ];
 
@@ -108,17 +92,25 @@ export default function FAQPage() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-black font-heading uppercase tracking-tighter text-white mb-4 text-glow"
+            className="text-6xl md:text-8xl font-black font-heading uppercase tracking-tighter text-white mb-2 text-glow"
           >
-            Frequently Asked <span className="text-pubg-yellow">Questions</span>
+            FAQ
           </motion.h1>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-2xl md:text-4xl font-black font-heading uppercase tracking-tighter text-pubg-yellow mb-6"
+          >
+            Frequently Asked Questions
+          </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-white/60 text-lg max-w-2xl mx-auto uppercase tracking-widest font-bold"
+            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-medium"
           >
-            Everything You Need to Know Before Joining the Tournament
+            Find answers to common questions about our BGMI Tournament.
           </motion.p>
         </div>
       </section>
@@ -182,6 +174,34 @@ export default function FAQPage() {
               );
             })}
           </div>
+
+          {/* Contact Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="mt-12 p-6 md:p-8 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm hover:bg-white/5 transition-colors flex flex-col md:flex-row items-center justify-between gap-6"
+          >
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 rounded-xl border border-pubg-yellow/50 bg-pubg-yellow/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pubg-yellow">
+                  <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                  <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Still have questions?</h3>
+                <p className="text-white/60">Contact our support team, we're here to help you!</p>
+              </div>
+            </div>
+            <a 
+              href="/contact" 
+              className="px-8 py-3 bg-pubg-yellow text-black font-bold rounded hover:bg-pubg-yellow/90 transition-colors whitespace-nowrap flex items-center gap-2"
+            >
+              Contact Us <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          </motion.div>
         </div>
       </section>
     </div>

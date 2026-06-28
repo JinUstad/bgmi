@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
         {/* Subtle grid pattern overlay */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 z-10" />
 
-        {/* Laser Sights (Privacy Theme - Blue & Purple) */}
+        {/* Laser Sights (Privacy Theme - Yellow) */}
         <motion.div
           animate={{
             x: ["-20vw", "120vw", "-20vw"],
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
             rotate: [-10, 15, -20],
           }}
           transition={{ duration: 11, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[2px] w-[45vw] bg-blue-500/60 shadow-[0_0_15px_rgba(59,130,246,0.8)] z-10 top-0 left-0 origin-left"
+          className="absolute h-[2px] w-[45vw] bg-pubg-yellow/60 shadow-[0_0_15px_rgba(240,165,0,0.8)] z-10 top-0 left-0 origin-left"
         />
         <motion.div
           animate={{
@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
             rotate: [20, -15, 10],
           }}
           transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[2px] w-[40vw] bg-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.8)] z-10 top-0 left-0 origin-left"
+          className="absolute h-[2px] w-[40vw] bg-pubg-yellow/50 shadow-[0_0_15px_rgba(240,165,0,0.8)] z-10 top-0 left-0 origin-left"
         />
       </div>
 
@@ -90,16 +90,16 @@ export default function PrivacyPolicyPage() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-16 h-16 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-6 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+            className="w-16 h-16 mx-auto bg-pubg-yellow/20 rounded-full flex items-center justify-center mb-6 border border-pubg-yellow/50 shadow-[0_0_15px_rgba(240,165,0,0.4)]"
           >
-            <ShieldCheck className="w-8 h-8 text-blue-400" />
+            <ShieldCheck className="w-8 h-8 text-pubg-yellow" />
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-black font-heading uppercase tracking-tighter text-white mb-4"
           >
-            Privacy <span className="text-blue-400 text-glow">Policy</span>
+            Privacy <span className="text-pubg-yellow text-glow">Policy</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -140,15 +140,15 @@ export default function PrivacyPolicyPage() {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="p-6 md:p-8 bg-black/40 backdrop-blur-md border border-white/10 hover:border-blue-500/30 transition-all group overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-500/10 transition-colors pointer-events-none" />
+                  <Card className="p-6 md:p-8 bg-black/40 backdrop-blur-md border border-white/10 hover:border-pubg-yellow/30 transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-pubg-yellow/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-pubg-yellow/10 transition-colors pointer-events-none" />
                     
                     <div className="flex flex-col md:flex-row gap-6 relative z-10">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:bg-blue-500/20 transition-colors">
-                        <Icon className="w-6 h-6 text-blue-400" />
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-pubg-yellow/10 flex items-center justify-center border border-pubg-yellow/20 group-hover:bg-pubg-yellow/20 transition-colors">
+                        <Icon className="w-6 h-6 text-pubg-yellow" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold uppercase tracking-widest text-white mb-3 group-hover:text-blue-400 transition-colors">
+                        <h3 className="text-xl font-bold uppercase tracking-widest text-white mb-3 group-hover:text-pubg-yellow transition-colors">
                           {section.title}
                         </h3>
                         <p className="text-white/60 leading-relaxed text-sm md:text-base">
