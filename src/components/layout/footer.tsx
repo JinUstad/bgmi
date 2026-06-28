@@ -57,7 +57,7 @@ export function Footer() {
             © {new Date().getFullYear()} BGMI Esports. All rights reserved.
           </p>
           <p className="text-white/50 text-xs">
-            Not affiliated with Krafton or Tencent Games.
+            Design by <a href="https://www.devfordevs.in/" target="_blank" rel="noopener noreferrer" className="text-pubg-yellow hover:underline font-bold">DevforDevs</a>
           </p>
         </div>
       </div>
