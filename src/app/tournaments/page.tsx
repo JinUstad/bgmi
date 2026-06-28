@@ -271,6 +271,44 @@ export default function TournamentsPage() {
         </div>
       </section>
 
+      {/* Prize Distribution Section (Moved from Terms) */}
+      <section className="py-12 relative z-30 bg-black/80 border-b border-white/10">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="w-full"
+          >
+            <h2 className="text-3xl font-black font-heading uppercase text-white mb-8 border-b border-white/10 pb-4 flex items-center justify-center gap-3">
+              <Trophy className="text-pubg-yellow w-8 h-8" />
+              Prize <span className="text-pubg-yellow">Distribution</span>
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { place: "1st Place", prize: "₹X", icon: "🥇", glow: "shadow-[0_0_30px_rgba(255,215,0,0.3)]", border: "border-yellow-400/50" },
+                { place: "2nd Place", prize: "₹X", icon: "🥈", glow: "shadow-[0_0_20px_rgba(192,192,192,0.2)]", border: "border-gray-400/50" },
+                { place: "3rd Place", prize: "Free Entry in Next Tournament", icon: "🥉", glow: "shadow-[0_0_20px_rgba(205,127,50,0.2)]", border: "border-amber-700/50" }
+              ].map((item, index) => (
+                <Card 
+                  key={index} 
+                  className={cn(
+                    "p-8 text-center flex flex-col items-center justify-center gap-4 bg-black/60 backdrop-blur-md transition-all hover:-translate-y-2 border",
+                    item.border, item.glow
+                  )}
+                >
+                  <div className="text-5xl">{item.icon}</div>
+                  <h3 className="text-2xl font-black font-heading uppercase text-white tracking-widest">{item.place}</h3>
+                  <div className="h-px w-16 bg-white/20 mx-auto" />
+                  <p className="text-pubg-yellow font-bold text-xl uppercase tracking-wider">{item.prize}</p>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Prize Pool & Entry Fee Section */}
       <section ref={prizeRef} className="py-16 md:py-20 relative z-30">
         <div className="container mx-auto px-4" style={{ perspective: 1000 }}>

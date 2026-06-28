@@ -143,7 +143,7 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">BGMI ID *</label>
-                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="5123456789" />
+                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="e.g. 22222, 33333, 444444, 555555" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Team Name (Optional)</label>
@@ -159,12 +159,25 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
+                      <select required className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" defaultValue="squad">
+                        <option value="squad">Squad Team Only</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">UPI ID *</label>
+                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="yourupi@okbank" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Time Slot *</label>
                       <select required className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none">
-                        <option value="">Select Category</option>
-                        <option value="solo">Solo Match</option>
-                        <option value="duo">Duo Match</option>
-                        <option value="squad">Squad Match</option>
-                        <option value="custom">Custom Room</option>
+                        <option value="">Select Time Slot</option>
+                        <option value="9-10am">9:00 AM - 10:00 AM</option>
+                        <option value="10-11am">10:00 AM - 11:00 AM</option>
+                        <option value="11-12pm">11:00 AM - 12:00 PM</option>
+                        <option value="12-1pm">12:00 PM - 1:00 PM</option>
+                        <option value="2-3pm">2:00 PM - 3:00 PM</option>
+                        <option value="3-4pm">3:00 PM - 4:00 PM</option>
+                        <option value="4-5pm">4:00 PM - 5:00 PM</option>
                       </select>
                     </div>
                   </div>
@@ -174,16 +187,25 @@ export default function ContactPage() {
                     <textarea rows={4} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow resize-none" placeholder="Any specific requests?" />
                   </div>
 
-                  <div className="pt-4 border-t border-white/10">
+                  <div className="pt-4 border-t border-white/10 space-y-6">
+                    <div className="flex items-start gap-3">
+                      <input 
+                        type="checkbox" 
+                        id="terms" 
+                        required 
+                        className="mt-1 w-4 h-4 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer" 
+                      />
+                      <label htmlFor="terms" className="text-white/70 text-sm leading-tight cursor-pointer">
+                        I accept the Terms and Conditions and Privacy Policy.
+                      </label>
+                    </div>
+
                     <Button type="submit" size="lg" glow className="w-full md:w-auto">
-                      <span className="flex  items-start gap-2">
-                        <Send className="w-6 h-6" />
+                      <span className="flex items-center gap-2">
+                        <Send className="w-5 h-5" />
                         <span>Submit Registration</span>
                       </span>
                     </Button>
-                    <p className="text-white/40 text-xs mt-4">
-                      By submitting this form, you agree to our Terms of Service and Privacy Policy. Your data is secure with us.
-                    </p>
                   </div>
                 </form>
               </Card>

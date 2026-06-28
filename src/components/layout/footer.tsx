@@ -38,17 +38,16 @@ export function Footer() {
               <li><Link href="/" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Home</Link></li>
               <li><Link href="/tournaments" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Tournaments</Link></li>
               <li><Link href="/contact" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Contact Us</Link></li>
-              <li><Link href="#" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">About Platform</Link></li>
+              <li><Link href="/about" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">About Platform</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="text-lg font-bold uppercase tracking-widest text-pubg-yellow mb-6">Support</h3>
             <ul className="space-y-4">
-              <li><Link href="#" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">FAQ</Link></li>
-              <li><Link href="#" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Rules</Link></li>
-              <li><Link href="#" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Privacy Policy</Link></li>
-              <li><Link href="#" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Terms of Service</Link></li>
+              <li><Link href="/faq" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">FAQ</Link></li>
+              <li><Link href="/privacy" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Terms & Conditions</Link></li>
             </ul>
           </div>
         </div>

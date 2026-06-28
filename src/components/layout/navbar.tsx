@@ -10,6 +10,7 @@ import { AudioToggle } from "../ui/audio-toggle";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About Platform" },
   { href: "/tournaments", label: "Tournaments" },
   { href: "/contact", label: "Contact Us" },
 ];
