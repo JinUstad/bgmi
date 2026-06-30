@@ -20,12 +20,12 @@ export function UpcomingTournament() {
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
-        
+
       if (tournamentData) {
         setData(tournamentData);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -33,19 +33,19 @@ export function UpcomingTournament() {
 
   return (
     <section className="relative py-24 overflow-hidden border-y border-white/10">
-      {/* Dynamic Background Image */}
-      <motion.div 
+      {/* Dynamic Background Image----- */}
+      <motion.div
         initial={{ scale: 1.1 }}
         whileInView={{ scale: 1 }}
         transition={{ duration: 2, ease: "easeOut" }}
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${data.bg_image_url})` }}
       />
-      
+
       {/* Overlays */}
       <div className="absolute inset-0 bg-black/60" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
-      
+
       {/* Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-1/4 w-[500px] h-[500px] bg-yellow-500/20 rounded-full blur-[120px]" />
@@ -54,7 +54,7 @@ export function UpcomingTournament() {
 
       <div className="container relative z-10 mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
-          
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -66,7 +66,7 @@ export function UpcomingTournament() {
             <span className="text-sm font-bold tracking-widest uppercase">Next Big Event</span>
           </motion.div>
 
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -75,8 +75,8 @@ export function UpcomingTournament() {
           >
             {data.headline}
           </motion.h2>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -95,7 +95,7 @@ export function UpcomingTournament() {
           </motion.div>
 
           {/* Quick Stats Grid */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
