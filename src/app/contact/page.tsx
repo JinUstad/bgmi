@@ -1,15 +1,93 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, MessageSquare } from "lucide-react";
+import { Mail, Phone, MapPin, Send, MessageSquare, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { load } from '@cashfreepayments/cashfree-js';
+import { useState, useEffect } from "react";
+
+import { supabase } from "@/lib/supabase";
 
 export default function ContactPage() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [cashfree, setCashfree] = useState<any>(null);
+  const [currentDate, setCurrentDate] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localDate = new Date(today.getTime() - (offset*60*1000));
+    setCurrentDate(localDate.toISOString().split('T')[0]);
+
+    const initCashfree = async () => {
+      const cf = await load({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT === 'PRODUCTION' ? 'production' : 'sandbox'
+      });
+      setCashfree(cf);
+    };
+    initCashfree();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    alert("Registration submitted successfully! We will contact you shortly.");
+    if (!cashfree) {
+      alert("Payment system is initializing, please wait a moment and try again.");
+      return;
+    }
+
+    setLoading(true);
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      // 1. Create order on our backend
+      const response = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const orderData = await response.json();
+
+      if (!response.ok) throw new Error(orderData.error || "Failed to create order");
+
+      // 2. Open Cashfree Checkout Modal
+      let checkoutOptions = {
+        paymentSessionId: orderData.payment_session_id,
+        redirectTarget: "_modal",
+      };
+
+      cashfree.checkout(checkoutOptions).then(async (result: any) => {
+        if (result.error) {
+          alert("Payment was closed or failed. Please try again.");
+          setLoading(false);
+        }
+        if (result.paymentDetails) {
+          // Payment completed, verify status
+          const verifyResponse = await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderData.order_id })
+          });
+          const verifyData = await verifyResponse.json();
+
+          if (verifyData.status === 'verified') {
+            alert("Registration and Payment successful! We will contact you shortly.");
+            form.reset();
+          } else {
+            alert("Payment is pending or failed. Please check your status later or contact support.");
+          }
+          setLoading(false);
+        }
+      });
+
+    } catch (error: any) {
+      console.error("Error submitting registration:", error);
+      alert("There was an error initializing payment. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -139,37 +217,47 @@ export default function ContactPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Full Name *</label>
-                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="John Doe" />
+                      <input required name="fullName" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="John Doe" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">BGMI ID *</label>
-                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="e.g. 22222, 33333, 444444, 555555" />
+                      <input required name="bgmiId" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="e.g. 22222, 33333, 444444, 555555" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Team Name (Optional)</label>
-                      <input type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Team Soul" />
+                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Team Name *</label>
+                      <input required name="teamName" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Team Soul" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Mobile Number *</label>
-                      <input required type="tel" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="+91" />
+                      <input required name="mobileNumber" type="tel" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="+91" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Email Address</label>
-                      <input type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
+                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Email Address (Optional)</label>
+                      <input name="email" type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
-                      <select required className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" defaultValue="squad">
+                      <select required name="tournamentType" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" defaultValue="squad">
                         <option value="squad">Squad Team Only</option>
                       </select>
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">UPI ID *</label>
-                      <input required type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="yourupi@okbank" />
+                      <input required name="upiId" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="yourupi@okbank" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Registration Date *</label>
+                      <input 
+                        name="registrationDate" 
+                        type="date" 
+                        value={currentDate} 
+                        readOnly 
+                        className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white/50 cursor-not-allowed focus:outline-none" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Time Slot *</label>
-                      <select required className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none">
+                      <select required name="timeSlot" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none">
                         <option value="">Select Time Slot</option>
                         <option value="9-10am">9:00 AM - 10:00 AM</option>
                         <option value="10-11am">10:00 AM - 11:00 AM</option>
@@ -184,7 +272,7 @@ export default function ContactPage() {
 
                   <div className="space-y-2">
                     <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Message / Query (Optional)</label>
-                    <textarea rows={4} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow resize-none" placeholder="Any specific requests?" />
+                    <textarea name="message" rows={4} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow resize-none" placeholder="Any specific requests?" />
                   </div>
 
                   <div className="pt-4 border-t border-white/10 space-y-6">
@@ -200,10 +288,10 @@ export default function ContactPage() {
                       </label>
                     </div>
 
-                    <Button type="submit" size="lg" glow className="w-full md:w-auto">
+                    <Button type="submit" size="lg" glow disabled={loading} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
                       <span className="flex items-center gap-2">
-                        <Send className="w-5 h-5" />
-                        <span>Submit Registration</span>
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                        <span>{loading ? "Processing Payment..." : "Pay & Register (₹99)"}</span>
                       </span>
                     </Button>
                   </div>

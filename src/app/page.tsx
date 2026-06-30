@@ -1,6 +1,7 @@
 "use client";
 
 import { HeroSection } from "@/components/home/hero-section";
+import { UpcomingTournament } from "@/components/home/upcoming-tournament";
 import { LiveStats } from "@/components/home/live-stats";
 import { AboutSection } from "@/components/home/about-section";
 import { CategoriesSection } from "@/components/home/categories";
@@ -13,6 +14,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       <HeroSection />
+      <UpcomingTournament />
       <LiveStats />
       <AboutSection />
       <GameExpoSection />
