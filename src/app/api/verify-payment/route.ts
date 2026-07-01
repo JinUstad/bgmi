@@ -9,7 +9,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
-    const cashfreeApiUrl = process.env.CASHFREE_ENVIRONMENT === 'PRODUCTION' 
+    const envStr = (process.env.CASHFREE_ENVIRONMENT || process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT || '').toUpperCase();
+    const cashfreeApiUrl = envStr === 'PRODUCTION' 
       ? `https://api.cashfree.com/pg/orders/${order_id}`
       : `https://sandbox.cashfree.com/pg/orders/${order_id}`;
 

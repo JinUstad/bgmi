@@ -9,10 +9,25 @@ import { useState, useEffect } from "react";
 
 import { supabase } from "@/lib/supabase";
 
+const MAX_SLOT_CAPACITY = 6;
+
+const TIME_SLOTS = [
+  { value: "9-10am", label: "9:00 AM - 10:00 AM" },
+  { value: "10-11am", label: "10:00 AM - 11:00 AM" },
+  { value: "11-12pm", label: "11:00 AM - 12:00 PM" },
+  { value: "12-1pm", label: "12:00 PM - 1:00 PM" },
+  { value: "2-3pm", label: "2:00 PM - 3:00 PM" },
+  { value: "3-4pm", label: "3:00 PM - 4:00 PM" },
+  { value: "4-5pm", label: "4:00 PM - 5:00 PM" },
+];
+
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [cashfree, setCashfree] = useState<any>(null);
   const [currentDate, setCurrentDate] = useState("");
+  const [registrationFee, setRegistrationFee] = useState<number>(99);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const today = new Date();
@@ -21,12 +36,37 @@ export default function ContactPage() {
     setCurrentDate(localDate.toISOString().split('T')[0]);
 
     const initCashfree = async () => {
+      const envStr = (process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT || '').toUpperCase();
       const cf = await load({
-        mode: process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT === 'PRODUCTION' ? 'production' : 'sandbox'
+        mode: envStr === 'PRODUCTION' ? 'production' : 'sandbox'
       });
       setCashfree(cf);
     };
+
+    const fetchFee = async () => {
+      const { data, error } = await supabase.from('settings').select('registration_fee').eq('id', 1).single();
+      if (!error && data) {
+        setRegistrationFee(data.registration_fee);
+      }
+    };
+
+    const fetchSlotCounts = async () => {
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('time_slot');
+      
+      if (!error && data) {
+        const counts: Record<string, number> = {};
+        data.forEach((row: any) => {
+          counts[row.time_slot] = (counts[row.time_slot] || 0) + 1;
+        });
+        setSlotCounts(counts);
+      }
+    };
+
     initCashfree();
+    fetchFee();
+    fetchSlotCounts();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,8 +90,17 @@ export default function ContactPage() {
       });
       
       const orderData = await response.json();
+      console.log('[contact] API response:', JSON.stringify(orderData));
 
       if (!response.ok) throw new Error(orderData.error || "Failed to create order");
+
+      // Validate payment_session_id before calling checkout
+      if (!orderData.payment_session_id) {
+        throw new Error(`Server returned success but no payment_session_id. Full response: ${JSON.stringify(orderData)}`);
+      }
+
+      console.log('[contact] Using payment_session_id:', orderData.payment_session_id);
+      console.log('[contact] Server CF environment:', orderData.cf_environment);
 
       // 2. Open Cashfree Checkout Modal
       let checkoutOptions = {
@@ -76,6 +125,7 @@ export default function ContactPage() {
           if (verifyData.status === 'verified') {
             alert("Registration and Payment successful! We will contact you shortly.");
             form.reset();
+            window.location.href = `/user-dashboard?order_id=${orderData.order_id}`;
           } else {
             alert("Payment is pending or failed. Please check your status later or contact support.");
           }
@@ -85,7 +135,7 @@ export default function ContactPage() {
 
     } catch (error: any) {
       console.error("Error submitting registration:", error);
-      alert("There was an error initializing payment. Please try again.");
+      alert(`Payment error: ${error.message || 'Unknown error. Please try again.'}`);
       setLoading(false);
     }
   };
@@ -255,18 +305,46 @@ export default function ContactPage() {
                         className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white/50 cursor-not-allowed focus:outline-none" 
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 md:col-span-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Time Slot *</label>
-                      <select required name="timeSlot" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none">
-                        <option value="">Select Time Slot</option>
-                        <option value="9-10am">9:00 AM - 10:00 AM</option>
-                        <option value="10-11am">10:00 AM - 11:00 AM</option>
-                        <option value="11-12pm">11:00 AM - 12:00 PM</option>
-                        <option value="12-1pm">12:00 PM - 1:00 PM</option>
-                        <option value="2-3pm">2:00 PM - 3:00 PM</option>
-                        <option value="3-4pm">3:00 PM - 4:00 PM</option>
-                        <option value="4-5pm">4:00 PM - 5:00 PM</option>
-                      </select>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {TIME_SLOTS.map((slot) => {
+                          const count = slotCounts[slot.value] || 0;
+                          const isFull = count >= MAX_SLOT_CAPACITY;
+                          return (
+                            <label
+                              key={slot.value}
+                              className={`relative flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
+                                isFull 
+                                  ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60' 
+                                  : 'border-white/10 bg-black hover:border-pubg-yellow/50 hover:bg-pubg-yellow/5 has-[:checked]:border-pubg-yellow has-[:checked]:bg-pubg-yellow/10'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="timeSlot"
+                                value={slot.value}
+                                required
+                                disabled={isFull}
+                                className="w-4 h-4 accent-pubg-yellow"
+                              />
+                              <div className="flex-1">
+                                <span className={`text-sm font-medium ${isFull ? 'text-white/40 line-through' : 'text-white'}`}>
+                                  {slot.label}
+                                </span>
+                                <div className={`text-xs mt-0.5 ${isFull ? 'text-red-400' : 'text-white/40'}`}>
+                                  {isFull ? 'FULL' : `${count}/${MAX_SLOT_CAPACITY} registered`}
+                                </div>
+                              </div>
+                              {isFull && (
+                                <span className="px-2 py-0.5 bg-red-500/20 border border-red-500/30 rounded text-red-400 text-[10px] font-bold uppercase tracking-wider">
+                                  Completed
+                                </span>
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
 
@@ -276,24 +354,31 @@ export default function ContactPage() {
                   </div>
 
                   <div className="pt-4 border-t border-white/10 space-y-6">
-                    <div className="flex items-start gap-3">
+                    <div 
+                      className="flex items-center gap-3"
+                      title="Read the terms and condition and privacy and polices"
+                    >
                       <input 
                         type="checkbox" 
                         id="terms" 
                         required 
-                        className="mt-1 w-4 h-4 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer" 
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        className="w-5 h-5 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer shrink-0" 
                       />
-                      <label htmlFor="terms" className="text-white/70 text-sm leading-tight cursor-pointer">
+                      <label htmlFor="terms" className="text-white/70 text-sm cursor-pointer select-none">
                         I accept the Terms and Conditions and Privacy Policy.
                       </label>
                     </div>
 
-                    <Button type="submit" size="lg" glow disabled={loading} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
-                      <span className="flex items-center gap-2">
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                        <span>{loading ? "Processing Payment..." : "Pay & Register (₹99)"}</span>
-                      </span>
-                    </Button>
+                    <div className="flex justify-start w-full">
+                      <Button type="submit" size="lg" glow disabled={loading || !termsAccepted} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
+                        <span className="flex items-center gap-2">
+                          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                          <span>{loading ? "Processing Payment..." : `Pay & Register (₹${registrationFee})`}</span>
+                        </span>
+                      </Button>
+                    </div>
                   </div>
                 </form>
               </Card>
