@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 
+import Link from 'next/link';
+
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-military-gradient ">
@@ -85,12 +87,16 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Button size="lg" glow className="w-full sm:w-auto text-lg">
-              Register Now
-            </Button>
-            <Button variant="outline" size="lg" glow className="w-full sm:w-auto text-lg">
-              Explore Tournaments
-            </Button>
+            <Link href="/contact" className="w-full sm:w-auto">
+              <Button size="lg" glow className="w-full text-lg">
+                Register Now
+              </Button>
+            </Link>
+            <Link href="/tournaments" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" glow className="w-full text-lg">
+                Explore Tournaments
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </div>

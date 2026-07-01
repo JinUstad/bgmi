@@ -9,6 +9,7 @@ import { TimelineSection } from "@/components/home/timeline";
 import { GameExpoSection } from "@/components/home/game-expo-section";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -37,9 +38,11 @@ export default function Home() {
             <p className="text-xl text-black/80 font-bold mb-10">
               Join thousands of players already competing for massive prize pools.
             </p>
-            <Button size="lg" className="px-8 py-4 text-lg border-2 border-black">
-              Register For Next Tournament
-            </Button>
+            <Link href="/contact">
+              <Button size="lg" className="px-8 py-4 text-lg border-2 border-black">
+                Register For Next Tournament
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
