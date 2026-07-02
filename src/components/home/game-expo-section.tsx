@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export function GameExpoSection() {
   return (
@@ -56,13 +57,15 @@ export function GameExpoSection() {
             <span className="text-pubg-yellow text-glow">INNOVATION</span>
           </h2>
           <div>
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-pubg-yellow text-black font-black tracking-[0.2em] uppercase px-10 py-5 rounded-tl-3xl rounded-br-3xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all duration-300 shadow-[0_0_20px_rgba(242,169,0,0.4)]"
-            >
-              VIEW SCHEDULE
-            </motion.button>
+            <Link href="/tournaments">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-pubg-yellow text-black font-black tracking-[0.2em] uppercase px-10 py-5 rounded-tl-3xl rounded-br-3xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all duration-300 shadow-[0_0_20px_rgba(242,169,0,0.4)]"
+              >
+                VIEW SCHEDULE
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
       </div>

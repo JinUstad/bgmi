@@ -7,38 +7,41 @@ const categories = [
   {
     title: "Solo",
     image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070",
-    entryFee: "₹50",
-    prizePool: "₹5,000",
-    timing: "Daily 8:00 PM",
+    entryFee: "₹0",
+    prizePool: "₹0",
+    timing: "null",
+    disabled: true,
   },
   {
     title: "Duo",
     image: "https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?q=80&w=2070",
-    entryFee: "₹100",
-    prizePool: "₹12,000",
-    timing: "Weekends 7:00 PM",
+    entryFee: "0",
+    prizePool: "0",
+    timing: "null",
+    disabled: true,
   },
   {
-    title: "Squad",
+    title: "TDM Squad ",
     image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071",
-    entryFee: "₹200",
-    prizePool: "₹50,000",
+    entryFee: "₹220",
+    prizePool: "1st: ₹800 | 2nd: ₹500",
     timing: "Monthly Mega",
+    disabled: false,
   },
 ];
 
 export function CategoriesSection() {
   return (
     <section className="py-24 relative overflow-hidden">
-      
+
       {/* Animated War Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-black/80 z-10" />
-        
-        <motion.div 
+
+        <motion.div
           animate={{ scale: [1, 1.05, 1], x: [0, -10, 0], y: [0, 5, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[url('/categories_bg.png')] bg-cover bg-center mix-blend-overlay opacity-60" 
+          className="absolute inset-0 bg-[url('/categories_bg.png')] bg-cover bg-center mix-blend-overlay opacity-60"
         />
 
         {/* Sniper Laser Sights */}
@@ -92,20 +95,20 @@ export function CategoriesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.2, duration: 0.5 }}
-              whileHover={{ y: -10 }}
-              className="relative rounded-tl-[48px] rounded-br-[48px] rounded-tr-lg rounded-bl-lg overflow-hidden border border-white/10 group bg-black cursor-pointer"
+              whileHover={!cat.disabled ? { y: -10 } : {}}
+              className={`relative rounded-tl-[48px] rounded-br-[48px] rounded-tr-lg rounded-bl-lg overflow-hidden border border-white/10 bg-black ${cat.disabled ? 'opacity-60 cursor-not-allowed grayscale' : 'group cursor-pointer'}`}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
               <img
                 src={cat.image}
                 alt={cat.title}
-                className="w-full h-[400px] object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+                className={`w-full h-[400px] object-cover opacity-60 ${!cat.disabled ? 'group-hover:opacity-100 group-hover:scale-110' : ''} transition-all duration-700`}
               />
               <div className="absolute inset-0 z-20 p-6 flex flex-col justify-end">
-                <h3 className="text-3xl font-black uppercase tracking-widest text-white mb-4 drop-shadow-lg group-hover:text-pubg-yellow transition-colors">
+                <h3 className={`text-3xl font-black uppercase tracking-widest text-white mb-4 drop-shadow-lg ${!cat.disabled ? 'group-hover:text-pubg-yellow' : ''} transition-colors`}>
                   {cat.title}
                 </h3>
-                
+
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between items-center border-b border-white/10 pb-2">
                     <span className="text-white/60 uppercase text-sm font-bold">Entry Fee</span>
@@ -121,8 +124,11 @@ export function CategoriesSection() {
                   </div>
                 </div>
 
-                <Button className="w-full opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-300">
-                  Join {cat.title}
+                <Button
+                  disabled={cat.disabled}
+                  className={`w-full ${cat.disabled ? 'bg-white/10 text-white/50 opacity-100 cursor-not-allowed hover:bg-white/10' : 'opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0'} transition-all duration-300`}
+                >
+                  {cat.disabled ? 'Unavailable' : `Join ${cat.title}`}
                 </Button>
               </div>
             </motion.div>
