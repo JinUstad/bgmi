@@ -16,11 +16,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "BGMI Esports | Premium Tournament Platform",
-  description: "Join India's Biggest BGMI Tournament Platform. Play Solo, Duo, or Squad matches and win massive cash prizes.",
+  title: "Xyloesports | Premium Tournament Platform",
+  description: "Join India's Biggest Xyloesports Tournament Platform. Play Solo, Duo, or Squad matches and win massive cash prizes.",
   openGraph: {
-    title: "BGMI Esports | Premium Tournament Platform",
-    description: "Join India's Biggest BGMI Tournament Platform. Play Solo, Duo, or Squad matches and win massive cash prizes.",
+    title: "Xyloesports | Premium Tournament Platform",
+    description: "Join India's Biggest Xyloesports Tournament Platform. Play Solo, Duo, or Squad matches and win massive cash prizes.",
     images: [{ url: "/og-image.jpg" }],
   },
 };

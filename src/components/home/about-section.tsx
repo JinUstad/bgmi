@@ -79,7 +79,7 @@ export function AboutSection() {
             transition={{ delay: 0.2 }}
             className="text-white/70 text-lg"
           >
-            We provide the most authentic, secure, and rewarding BGMI esports experience. From daily scrims to massive prize pool tournaments, we've got it all.
+            We provide the most authentic, secure, and rewarding Xyloesports experience. From daily scrims to massive prize pool tournaments, we've got it all.
           </motion.p>
         </div>
 

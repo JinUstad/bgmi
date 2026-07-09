@@ -61,7 +61,7 @@ function DashboardContent() {
       doc.setTextColor(255, 214, 0);
       doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
-      doc.text('BGMI ESPORTS', pageWidth / 2, 22, { align: 'center' });
+      doc.text('XYLOESPORTS', pageWidth / 2, 22, { align: 'center' });
       
       doc.setTextColor(200, 200, 200);
       doc.setFontSize(12);
@@ -180,7 +180,7 @@ function DashboardContent() {
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
       doc.text('This is a computer-generated receipt. No signature required.', pageWidth / 2, footerY + 3, { align: 'center' });
-      doc.text('BGMI Esports | support@bgmiesports.in | bgmi-seven-sandy.vercel.app', pageWidth / 2, footerY + 9, { align: 'center' });
+      doc.text('Xyloesports | support@xyloesports.in | bgmi-seven-sandy.vercel.app', pageWidth / 2, footerY + 9, { align: 'center' });
 
       // Save
       doc.save(`BGMI_Registration_${data.cashfree_order_id}.pdf`);

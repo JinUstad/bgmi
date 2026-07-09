@@ -40,7 +40,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <Crosshair className="h-8 w-8 text-pubg-yellow transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
             <span className="font-heading text-2xl font-black uppercase tracking-wider text-white">
-              BGMI<span className="text-pubg-yellow text-glow">ESPORTS</span>
+              XYLO<span className="text-pubg-yellow text-glow">ESPORTS</span>
             </span>
           </Link>
 

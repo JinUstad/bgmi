@@ -78,7 +78,7 @@ export async function POST(request: Request) {
         customer_details: {
           customer_id: `cust_${crypto.randomBytes(4).toString('hex')}`,
           customer_name: data.fullName,
-          customer_email: data.email || 'support@bgmiesports.in',
+          customer_email: data.email || 'support@xyloesports.in',
           customer_phone: data.mobileNumber,
         },
         order_meta: {

@@ -10,7 +10,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-6 group w-fit">
               <Crosshair className="h-8 w-8 text-pubg-yellow transition-transform duration-300 group-hover:rotate-90" />
               <span className="font-heading text-2xl font-black uppercase tracking-wider text-white">
-                BGMI<span className="text-pubg-yellow text-glow">ESPORTS</span>
+                XYLO<span className="text-pubg-yellow text-glow">ESPORTS</span>
               </span>
             </Link>
             <p className="text-white/90 mb-6 max-w-sm">
@@ -20,14 +20,6 @@ export function Footer() {
               <Share2 className="w-5 h-5 text-pubg-yellow mr-2" />
               <a href="#" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
                 YouTube
-              </a>
-              <span className="text-white/20">|</span>
-              <a href="#" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
-                Instagram
-              </a>
-              <span className="text-white/20">|</span>
-              <a href="#" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
-                Discord
               </a>
             </div>
           </div>
@@ -54,7 +46,7 @@ export function Footer() {
         
         <div className="pt-8 border-t border-white/10 text-center flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white/70 text-sm">
-            © {new Date().getFullYear()} BGMI Esports. All rights reserved.
+            © {new Date().getFullYear()} Xyloesports. All rights reserved.
           </p>
           <p className="text-white/50 text-xs">
             Design by <a href="https://www.devfordevs.in/" target="_blank" rel="noopener noreferrer" className="text-pubg-yellow hover:underline font-bold">DevforDevs</a>

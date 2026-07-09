@@ -224,7 +224,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Email Support</h4>
-                      <p className="text-white/60">support@bgmiesports.in</p>
+                      <p className="text-white/60">support@xyloesports.in</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -233,7 +233,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Discord / Telegram</h4>
-                      <p className="text-white/60">@bgmiesports</p>
+                      <p className="text-white/60">@xyloesports</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">

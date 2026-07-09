@@ -43,7 +43,7 @@ const POLICY_SECTIONS = [
   {
     icon: Mail,
     title: "Contact Information",
-    content: "If you have any questions or concerns regarding this Privacy Policy, please contact our Data Protection Officer at privacy@bgmiesports.in or reach out via our Contact page."
+    content: "If you have any questions or concerns regarding this Privacy Policy, please contact our Data Protection Officer at privacy@xyloesports.in or reach out via our Contact page."
   }
 ];
 
@@ -125,7 +125,7 @@ export default function PrivacyPolicyPage() {
               Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </p>
             <p className="mt-4">
-              At BGMI Esports, we are committed to protecting your privacy and ensuring that your personal information is handled securely and responsibly. This Privacy Policy outlines the types of information we collect, how we use it, and the measures we take to safeguard your data when you use our tournament platform.
+              At Xyloesports, we are committed to protecting your privacy and ensuring that your personal information is handled securely and responsibly. This Privacy Policy outlines the types of information we collect, how we use it, and the measures we take to safeguard your data when you use our tournament platform.
             </p>
           </motion.div>
 
