@@ -52,13 +52,13 @@ const TOURNAMENTS = [
     id: 3,
     name: "Mega Championship",
     type: "TDM Squad",
-    date: "July 1, 2026",
-    time: "06:00 PM",
+    date: "September 5,6, 2026",
+    time: "10:00 AM",
     entryFee: "₹220",
     prizePool: "1st: ₹800 | 2nd: ₹500",
     totalSlots: 100,
-    remainingSlots: 80,
-    map: "Erangel + Miramar",
+    remainingSlots: 36,
+    map: "TDM",
     disabled: false,
   },
 ];
@@ -197,7 +197,7 @@ export default function TournamentsPage() {
   }, { scope: faqRef });
 
   const filteredTournaments = TOURNAMENTS.filter((t) => {
-    const matchesTab = activeTab === "All" || t.type === activeTab;
+    const matchesTab = activeTab === "All" || t.type.includes(activeTab);
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTab && matchesSearch;
   });
@@ -275,7 +275,7 @@ export default function TournamentsPage() {
               <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Active Players</div>
             </div>
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
-              <div className="text-pubg-yellow text-4xl font-black mb-2">₹5</div>
+              <div className="text-pubg-yellow text-4xl font-black mb-2">5</div>
               <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Prizes Awarded</div>
             </div>
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
