@@ -33,14 +33,14 @@ const FEATURES = [
 export default function AboutPage() {
   return (
     <div className="flex flex-col w-full min-h-screen bg-black relative">
-      
+
       {/* Global Animated Background */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-black/80 z-10" />
-        <motion.div 
+        <motion.div
           animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[url('/about_bg.png')] bg-cover bg-center mix-blend-overlay" 
+          className="absolute inset-0 bg-[url('/about_bg.png')] bg-cover bg-center mix-blend-overlay"
         />
         {/* Animated grid */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 z-10" />
@@ -73,7 +73,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-6 text-glow"
           >
-            About The <span className="text-pubg-yellow">Platform</span>
+            About  The <span className="text-pubg-yellow">Platform</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -114,9 +114,9 @@ export default function AboutPage() {
               className="relative"
             >
               <div className="absolute inset-0 bg-pubg-yellow/20 blur-[100px] rounded-full pointer-events-none" />
-              <img 
-                src="/army_character.png" 
-                alt="BGMI Character" 
+              <img
+                src="/army_character.png"
+                alt="BGMI Character"
                 className="w-full max-w-md mx-auto drop-shadow-[0_0_30px_rgba(240,165,0,0.3)] relative z-10"
               />
             </motion.div>

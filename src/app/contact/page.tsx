@@ -279,6 +279,8 @@ export default function ContactPage() {
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
                       <select required name="tournamentType" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" defaultValue="squad">
                         <option value="squad">Squad Team Only</option>
+                        <option value="solo" disabled>Solo (Coming Soon)</option>
+                        <option value="duo" disabled>Duo/Dual (Coming Soon)</option>
                       </select>
                     </div>
                     <div className="space-y-2">
