@@ -73,7 +73,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-6 text-glow"
           >
-            About  The <span className="text-pubg-yellow">Platform</span>
+            About The <span className="text-pubg-yellow">Platform</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
