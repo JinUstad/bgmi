@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
 import { Search, Map as MapIcon, Clock, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -74,6 +75,28 @@ export default function TournamentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTournament, setSelectedTournament] = useState<typeof TOURNAMENTS[0] | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [registrations, setRegistrations] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchRegistrations = async () => {
+      const { data } = await supabase
+        .from('registrations')
+        .select('team_name, time_slot')
+        .eq('payment_status', 'verified');
+      if (data) {
+        setRegistrations(data);
+      }
+    };
+    fetchRegistrations();
+  }, []);
+
+  const groupedRegistrations = registrations.reduce((acc: any, curr: any) => {
+    if (!acc[curr.time_slot]) acc[curr.time_slot] = [];
+    acc[curr.time_slot].push(curr);
+    return acc;
+  }, {});
+
+  const hasRegistrations = Object.keys(groupedRegistrations).length > 0;
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -428,23 +451,24 @@ export default function TournamentsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex flex-col gap-4">
             {/* 9 AM to 1 PM Slots */}
-            {[
-              { time: "09:00 AM - 10:00 AM", name: "Knokout TDM", type: "TDM - Squad" },
-              { time: "10:00 AM - 11:00 AM", name: "Knokout TDM", type: "TDM - Squad" },
-              { time: "11:00 AM - 12:00 PM", name: "Knokout TDM", type: "TDM - Squad" },
-              { time: "12:00 PM - 01:00 PM", name: "Knokout TDM", type: "TDM - Squad" },
-            ].map((slot, i) => (
-              <div key={`am-${i}`} className="bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
-                <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
-                <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
-              </div>
-            ))}
+            <div className="flex flex-wrap justify-center gap-4">
+              {[
+                { time: "10:00 AM - 11:00 AM", name: "Knockout TDM", type: "TDM - Squad" },
+                { time: "11:00 AM - 12:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
+                { time: "12:00 PM - 01:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
+              ].map((slot, i) => (
+                <div key={`am-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
+                  <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
+                  <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
+                  <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
+                </div>
+              ))}
+            </div>
 
             {/* Lunch Break */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-4 bg-pubg-yellow/10 border border-pubg-yellow/20 rounded-md p-4 text-center my-2">
+            <div className="w-full bg-pubg-yellow/10 border border-pubg-yellow/20 rounded-md p-4 text-center my-2">
               <div className="text-pubg-yellow font-black uppercase tracking-widest text-lg flex items-center justify-center gap-2">
                 <Clock className="w-5 h-5" />
                 01:00 PM - 02:00 PM : Lunch Break / Server Maintenance
@@ -452,21 +476,86 @@ export default function TournamentsPage() {
             </div>
 
             {/* 2 PM to 5 PM Slots */}
-            {[
-              { time: "02:00 PM - 03:00 PM", name: "Knokout TDM", type: "TDM - Squad" },
-              { time: "03:00 PM - 04:00 PM", name: "Knokout TDM", type: "TDM - Squad" },
-              { time: "04:00 PM - 05:00 PM", name: "Knokout TDM", type: "TDM - Squad" },
-              { time: "05:00 PM - 06:00 PM", name: "Knokout TDM", type: "TDM - Squad" },
-            ].map((slot, i) => (
-              <div key={`pm-${i}`} className="bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
-                <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
-                <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
-              </div>
-            ))}
+            <div className="flex flex-wrap justify-center gap-4">
+              {[
+                { time: "02:00 PM - 03:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
+                { time: "03:00 PM - 04:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
+                { time: "04:00 PM - 05:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
+              ].map((slot, i) => (
+                <div key={`pm-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
+                  <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
+                  <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
+                  <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Registered Teams Section */}
+      {hasRegistrations && (
+        <section className="py-12 relative z-20 bg-black/60 border-b border-white/10">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-5xl font-black font-heading uppercase text-white mb-4">
+                Registered <span className="text-pubg-yellow">Teams</span>
+              </h2>
+              <p className="text-white/60 font-bold uppercase tracking-widest text-sm">
+                Slot Matchups & Squads
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              {Object.entries(groupedRegistrations).map(([slot, teams]: [string, any]) => {
+                const teamA = teams.slice(0, 3);
+                const teamB = teams.slice(3, 6);
+
+                return (
+                  <div key={slot} className="bg-gunmetal border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+                    <div className="bg-white/5 p-4 border-b border-white/10 text-center">
+                      <h3 className="text-pubg-yellow font-black uppercase text-xl tracking-wider">{slot}</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2">
+                      <div className="p-6 border-b md:border-b-0 md:border-r border-white/10 bg-black/20">
+                        <h4 className="text-white font-bold uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
+                          <Users className="w-5 h-5 text-blue-500" /> Team A
+                        </h4>
+                        <div className="space-y-3">
+                          {teamA.length > 0 ? teamA.map((t: any, i: number) => (
+                            <div key={i} className="bg-white/5 border border-white/10 rounded-lg p-3 text-center text-white/80 font-medium tracking-wide">
+                              {t.team_name}
+                            </div>
+                          )) : (
+                            <div className="text-center text-white/30 text-sm">Waiting for squads...</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-6 bg-black/20 relative flex flex-col">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-1/2 md:-translate-y-1/2 md:-left-[22px] bg-pubg-yellow text-black font-black italic px-3 py-1 rounded shadow-lg transform md:-rotate-12 z-10 border-2 border-black">
+                          VS
+                        </div>
+                        <h4 className="text-white font-bold uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
+                          <Users className="w-5 h-5 text-red-500" /> Team B
+                        </h4>
+                        <div className="space-y-3">
+                          {teamB.length > 0 ? teamB.map((t: any, i: number) => (
+                            <div key={i} className="bg-white/5 border border-white/10 rounded-lg p-3 text-center text-white/80 font-medium tracking-wide">
+                              {t.team_name}
+                            </div>
+                          )) : (
+                            <div className="text-center text-white/30 text-sm">Waiting for squads...</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Filter & Search */}
       <section className="py-12 relative z-20">
@@ -550,7 +639,7 @@ export default function TournamentsPage() {
                       </div>
 
                       <div className="mt-auto">
-                        <Button 
+                        <Button
                           disabled={tournament.disabled}
                           className={`w-full ${tournament.disabled ? 'bg-white/10 text-white/50 cursor-not-allowed hover:bg-white/10' : 'group-hover:bg-orange-accent'} transition-colors`}
                         >

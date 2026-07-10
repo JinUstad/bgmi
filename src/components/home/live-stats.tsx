@@ -5,10 +5,10 @@ import { Users, Trophy, Swords, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const stats = [
-  { label: "Players Registered", value: 25000, suffix: "+", icon: Users },
-  { label: "Prize Distributed", value: 1500000, prefix: "₹", icon: Trophy },
-  { label: "Matches Hosted", value: 1200, suffix: "+", icon: Swords },
-  { label: "Active Tournaments", value: 45, icon: Target },
+  { label: "Players Registered", value: 36, suffix: "+", icon: Users },
+  { label: "Prize Distributed", value: 1200, prefix: "₹", icon: Trophy },
+  { label: "Matches Hosted", value: 1, suffix: "+", icon: Swords },
+  { label: "Active Tournaments", value: 1, icon: Target },
 ];
 
 function Counter({ value }: { value: number }) {
@@ -18,7 +18,7 @@ function Counter({ value }: { value: number }) {
     let start = 0;
     const duration = 2000;
     const increment = value / (duration / 16);
-    
+
     const timer = setInterval(() => {
       start += increment;
       if (start >= value) {

@@ -12,7 +12,6 @@ import { supabase } from "@/lib/supabase";
 const MAX_SLOT_CAPACITY = 6;
 
 const TIME_SLOTS = [
-  { value: "9-10am", label: "9:00 AM - 10:00 AM" },
   { value: "10-11am", label: "10:00 AM - 11:00 AM" },
   { value: "11-12pm", label: "11:00 AM - 12:00 PM" },
   { value: "12-1pm", label: "12:00 PM - 1:00 PM" },
@@ -32,7 +31,7 @@ export default function ContactPage() {
   useEffect(() => {
     const today = new Date();
     const offset = today.getTimezoneOffset();
-    const localDate = new Date(today.getTime() - (offset*60*1000));
+    const localDate = new Date(today.getTime() - (offset * 60 * 1000));
     setCurrentDate(localDate.toISOString().split('T')[0]);
 
     const initCashfree = async () => {
@@ -54,7 +53,7 @@ export default function ContactPage() {
       const { data, error } = await supabase
         .from('registrations')
         .select('time_slot');
-      
+
       if (!error && data) {
         const counts: Record<string, number> = {};
         data.forEach((row: any) => {
@@ -88,7 +87,7 @@ export default function ContactPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      
+
       const orderData = await response.json();
       console.log('[contact] API response:', JSON.stringify(orderData));
 
@@ -142,16 +141,16 @@ export default function ContactPage() {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-black relative">
-      
+
       {/* Global Animated Background for Contact Page */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-black/70 z-10" />
-        
+
         {/* PUBG Theme Background */}
-        <motion.div 
+        <motion.div
           animate={{ scale: [1, 1.05, 1], x: [0, 10, 0], y: [0, -10, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[url('/pubg_contact_bg.png')] bg-cover bg-center mix-blend-overlay opacity-50" 
+          className="absolute inset-0 bg-[url('/pubg_contact_bg.png')] bg-cover bg-center mix-blend-overlay opacity-50"
         />
 
         {/* Sniper Laser Sights */}
@@ -215,7 +214,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Call / WhatsApp</h4>
-                      <p className="text-white/60">+91 98765 43210</p>
+                      <p className="text-white/60">8512889586</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -229,20 +228,11 @@ export default function ContactPage() {
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-gunmetal border border-white/10 flex items-center justify-center shrink-0">
-                      <MessageSquare className="w-5 h-5 text-pubg-yellow" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Discord / Telegram</h4>
-                      <p className="text-white/60">@xyloesports</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gunmetal border border-white/10 flex items-center justify-center shrink-0">
                       <MapPin className="w-5 h-5 text-pubg-yellow" />
                     </div>
                     <div>
-                      <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Headquarters</h4>
-                      <p className="text-white/60">Cyber City, Gurugram, Haryana 122002, India</p>
+                      <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Location</h4>
+                      <p className="text-white/60">Rafikabad Colony Dasna Ghaizabad Uttar Pradesh</p>
                     </div>
                   </div>
                 </div>
@@ -297,12 +287,12 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-white/70 text-sm font-bold uppercase tracking-widest">Registration Date *</label>
-                      <input 
-                        name="registrationDate" 
-                        type="date" 
-                        value={currentDate} 
-                        readOnly 
-                        className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white/50 cursor-not-allowed focus:outline-none" 
+                      <input
+                        name="registrationDate"
+                        type="date"
+                        value={currentDate}
+                        readOnly
+                        className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white/50 cursor-not-allowed focus:outline-none"
                       />
                     </div>
                     <div className="space-y-2 md:col-span-2">
@@ -314,11 +304,10 @@ export default function ContactPage() {
                           return (
                             <label
                               key={slot.value}
-                              className={`relative flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
-                                isFull 
-                                  ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60' 
+                              className={`relative flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${isFull
+                                  ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60'
                                   : 'border-white/10 bg-black hover:border-pubg-yellow/50 hover:bg-pubg-yellow/5 has-[:checked]:border-pubg-yellow has-[:checked]:bg-pubg-yellow/10'
-                              }`}
+                                }`}
                             >
                               <input
                                 type="radio"
@@ -354,17 +343,17 @@ export default function ContactPage() {
                   </div>
 
                   <div className="pt-4 border-t border-white/10 space-y-6">
-                    <div 
+                    <div
                       className="flex items-center gap-3"
                       title="Read the terms and condition and privacy and polices"
                     >
-                      <input 
-                        type="checkbox" 
-                        id="terms" 
-                        required 
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        required
                         checked={termsAccepted}
                         onChange={(e) => setTermsAccepted(e.target.checked)}
-                        className="w-5 h-5 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer shrink-0" 
+                        className="w-5 h-5 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer shrink-0"
                       />
                       <label htmlFor="terms" className="text-white/70 text-sm cursor-pointer select-none">
                         I accept the Terms and Conditions and Privacy Policy.

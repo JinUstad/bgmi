@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Menu, X, Crosshair } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AudioToggle } from "../ui/audio-toggle";
+import { supabase } from "@/lib/supabase";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -18,6 +19,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [liveStreamSettings, setLiveStreamSettings] = useState({ url: '', enabled: false });
   const pathname = usePathname();
 
   useEffect(() => {
@@ -25,6 +27,19 @@ export function Navbar() {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
+
+    const fetchLiveStream = async () => {
+      try {
+        const { data, error } = await supabase.from('settings').select('live_stream_url, is_live_stream_enabled').eq('id', 1).single();
+        if (!error && data) {
+          setLiveStreamSettings({ url: data.live_stream_url || '', enabled: data.is_live_stream_enabled || false });
+        }
+      } catch (err) {
+        console.error("Failed to fetch live stream setting", err);
+      }
+    };
+    fetchLiveStream();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -68,6 +83,19 @@ export function Navbar() {
               );
             })}
             <AudioToggle />
+            {liveStreamSettings.enabled && (
+              <Link
+                href={liveStreamSettings.url || '#'}
+                target={liveStreamSettings.url ? "_blank" : "_self"}
+                className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors text-white/80 hover:text-red-500"
+              >
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_10px_red]"></span>
+                </span>
+                Live Stream
+              </Link>
+            )}
             <Link
               href="/contact"
               className="px-6 py-2 bg-pubg-yellow text-black font-black uppercase tracking-widest text-sm rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all shadow-lg box-glow"
@@ -110,6 +138,20 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          {liveStreamSettings.enabled && (
+            <Link
+              href={liveStreamSettings.url || '#'}
+              target={liveStreamSettings.url ? "_blank" : "_self"}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-center gap-2 p-4 text-center font-bold uppercase tracking-widest transition-colors border border-white/5 text-white hover:bg-white/5"
+            >
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-[0_0_10px_red]"></span>
+              </span>
+              Live Stream
+            </Link>
+          )}
           <Link
             href="/contact"
             onClick={() => setIsMobileMenuOpen(false)}
