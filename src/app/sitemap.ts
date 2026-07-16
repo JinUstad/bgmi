@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { SITE_CONFIG } from "@/lib/seo/config";
+import { supabase } from "@/lib/supabase";
 
 const BASE = SITE_CONFIG.url; // https://xyloesports.in
 
@@ -64,21 +65,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // ── Dynamic Blog Pages ────────────────────────────────────────────────────
-  // When you have a CMS / Supabase blog table, fetch slugs here:
-  //
-  // const { data: posts } = await supabase
-  //   .from("blog_posts")
-  //   .select("slug, updated_at")
-  //   .eq("published", true);
-  //
-  // const blogPages: MetadataRoute.Sitemap = (posts ?? []).map((post) => ({
-  //   url: `${BASE}/blog/${post.slug}`,
-  //   lastModified: new Date(post.updated_at),
-  //   changeFrequency: "weekly",
-  //   priority: 0.75,
-  // }));
-  //
-  // return [...staticPages, ...blogPages];
+  const { data: blogs } = await supabase
+    .from("ai_blogs")
+    .select("slug, updated_at")
+    .eq("status", "published");
 
-  return staticPages;
+  const blogPages: MetadataRoute.Sitemap = (blogs ?? []).map((blog) => ({
+    url: `${BASE}/blogs/${blog.slug}`,
+    lastModified: new Date(blog.updated_at),
+    changeFrequency: "weekly",
+    priority: 0.75,
+  }));
+
+  // Also add the main /blogs index page
+  staticPages.push({
+    url: `${BASE}/blogs`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.85,
+  });
+
+  return [...staticPages, ...blogPages];
 }

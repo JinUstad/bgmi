@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 
   // Verification tokens — add your codes here when ready
   verification: {
-    // google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",
+    google: "ADD_YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE_HERE",
     // yandex: "YOUR_YANDEX_CODE",
     // yahoo: "YOUR_YAHOO_CODE",
     // other: { "msvalidate.01": "YOUR_BING_CODE" },

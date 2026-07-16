@@ -6,7 +6,7 @@
 
 export const SITE_CONFIG = {
   /** Canonical site URL — no trailing slash, no www */
-  url: "https://xyloesports.in",
+  url: "https://www.xyloesports.in",
 
   /** Brand name used in title template and OG */
   name: "XYLO Esports",
@@ -39,7 +39,7 @@ export const SITE_CONFIG = {
   creator: "XYLO Esports",
 
   /** Author array */
-  authors: [{ name: "XYLO Esports", url: "https://xyloesports.in" }],
+  authors: [{ name: "XYLO Esports", url: "https://www.xyloesports.in" }],
 
   /** Default global keywords */
   keywords: [
