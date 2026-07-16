@@ -10,6 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
 import { HeroSection } from "@/components/home/hero-section";
 import { UpcomingTournament } from "@/components/home/upcoming-tournament";
+import { PastLiveStreams } from "@/components/home/past-live-streams";
 import { LiveStats } from "@/components/home/live-stats";
 import { AboutSection } from "@/components/home/about-section";
 import { CategoriesSection } from "@/components/home/categories";
@@ -43,6 +44,7 @@ export default function Home() {
 
       <HeroSection />
       <UpcomingTournament />
+      <PastLiveStreams />
       <LiveStats />
       <AboutSection />
       <GameExpoSection />
