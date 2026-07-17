@@ -10,18 +10,20 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
 import { HeroSection } from "@/components/home/hero-section";
 import { UpcomingTournament } from "@/components/home/upcoming-tournament";
-import { PastLiveStreams } from "@/components/home/past-live-streams";
-import { LiveStats } from "@/components/home/live-stats";
-import { AboutSection } from "@/components/home/about-section";
-import { CategoriesSection } from "@/components/home/categories";
-import { TimelineSection } from "@/components/home/timeline";
-import { GameExpoSection } from "@/components/home/game-expo-section";
-import HomeCtaSection from "./_components/home-cta-section";
+import dynamic from "next/dynamic";
+
+const PastLiveStreams = dynamic(() => import("@/components/home/past-live-streams").then(mod => mod.PastLiveStreams), { ssr: true });
+const LiveStats = dynamic(() => import("@/components/home/live-stats").then(mod => mod.LiveStats), { ssr: true });
+const AboutSection = dynamic(() => import("@/components/home/about-section").then(mod => mod.AboutSection), { ssr: true });
+const CategoriesSection = dynamic(() => import("@/components/home/categories").then(mod => mod.CategoriesSection), { ssr: true });
+const TimelineSection = dynamic(() => import("@/components/home/timeline").then(mod => mod.TimelineSection), { ssr: true });
+const GameExpoSection = dynamic(() => import("@/components/home/game-expo-section").then(mod => mod.GameExpoSection), { ssr: true });
+const HomeCtaSection = dynamic(() => import("./_components/home-cta-section"), { ssr: true });
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "XYLO Esports | India's #1 BGMI & Esports Tournament Platform",
+  title: "XYLO Esports | Play BGMI Tournaments & Win Cash",
   description:
-    "XYLO Esports is India's premier BGMI tournament platform. Join competitive BGMI events, win exciting cash prizes, register your squad, and experience fair esports tournaments.",
+    "Join XYLO Esports for BGMI tournaments, esports competitions, secure registrations, exciting prize pools, and fair competitive gaming across India.",
   path: "/",
   keywords: [
     "BGMI Solo Tournament",

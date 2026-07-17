@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { MonitorPlay, PlayCircle, ExternalLink, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
@@ -133,9 +134,11 @@ export default function PastStreamsPage() {
                   >
                     <div className="aspect-video relative overflow-hidden bg-black/50 shrink-0">
                       {stream.thumbnail_url ? (
-                        <img
+                        <Image
                           src={stream.thumbnail_url}
                           alt={stream.title}
+                          width={400}
+                          height={225}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (

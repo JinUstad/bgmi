@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 export function GameExpoSection() {
   return (
@@ -36,10 +37,12 @@ export function GameExpoSection() {
             className="absolute h-[2px] w-32 bg-orange-500 shadow-[0_0_15px_orange] z-20 top-[40%] left-[45%] rounded-full"
           />
           
-          <img 
+          <Image 
             src="/army_character.png" 
             alt="Army Character" 
-            className="max-h-[600px] object-contain drop-shadow-[0_0_50px_rgba(242,169,0,0.3)] hover:scale-105 transition-transform duration-700 mix-blend-screen relative z-10"
+            width={600}
+            height={600}
+            className="max-h-[600px] w-auto object-contain drop-shadow-[0_0_50px_rgba(242,169,0,0.3)] hover:scale-105 transition-transform duration-700 mix-blend-screen relative z-10"
           />
         </motion.div>
 

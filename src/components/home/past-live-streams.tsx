@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { MonitorPlay, PlayCircle, ExternalLink } from "lucide-react";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import gsap from "gsap";
@@ -129,9 +130,11 @@ export function PastLiveStreams() {
             >
               <div className="aspect-video relative overflow-hidden bg-black/50">
                 {stream.thumbnail_url ? (
-                  <img
+                  <Image
                     src={stream.thumbnail_url}
                     alt={stream.title}
+                    width={400}
+                    height={225}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 ) : (

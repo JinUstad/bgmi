@@ -12,7 +12,7 @@ export const SITE_CONFIG = {
   name: "XYLO Esports",
 
   /** Short tagline for meta descriptions */
-  tagline: "India's #1 BGMI & Esports Tournament Platform",
+  tagline: "BGMI & Esports Tournament Platform",
 
   /** Full default description */
   description:

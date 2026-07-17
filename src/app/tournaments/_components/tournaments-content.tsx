@@ -13,6 +13,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/war_lottie.json";
+import Image from "next/image";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -271,7 +272,7 @@ export default function TournamentsContent() {
               className="rounded-[2rem] p-6 md:p-12 overflow-hidden relative shadow-[0_15px_50px_0_rgba(249,115,22,0.1)] border border-white/10 group hover:border-orange-500 hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] transition-all duration-300 bg-zinc-900"
             >
               <div className="absolute inset-0 z-0" aria-hidden="true">
-                <img src="/pubg_battleground_bg.png" alt="" className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700" />
+                <Image src="/pubg_battleground_bg.png" alt="" width={1200} height={800} className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-900/80 to-zinc-950" />
                 <div className="absolute inset-0 bg-orange-500/5 mix-blend-overlay" />
               </div>
@@ -305,7 +306,9 @@ export default function TournamentsContent() {
                   </div>
                 </div>
                 <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10 pointer-events-none mt-8 md:mt-0">
-                  <motion.img src="/gemini_soldier.png" alt="XYLO Esports tactical soldier character" className="w-64 md:w-80 lg:w-[28rem] drop-shadow-[0_10px_30px_rgba(249,115,22,0.4)] object-contain mix-blend-screen" animate={{ y: [0, -15, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} style={{ transform: "translateZ(80px)" }} />
+                  <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} style={{ transform: "translateZ(80px)" }} className="w-64 md:w-80 lg:w-[28rem] drop-shadow-[0_10px_30px_rgba(249,115,22,0.4)] mix-blend-screen">
+                    <Image src="/gemini_soldier.png" alt="XYLO Esports tactical soldier character" width={600} height={800} className="w-full h-auto object-contain" />
+                  </motion.div>
                 </div>
               </div>
             </motion.div>

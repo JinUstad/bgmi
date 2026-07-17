@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 const categories = [
   {
@@ -99,9 +100,11 @@ export function CategoriesSection() {
               className={`relative rounded-tl-[48px] rounded-br-[48px] rounded-tr-lg rounded-bl-lg overflow-hidden border border-white/10 bg-black ${cat.disabled ? 'opacity-60 cursor-not-allowed grayscale' : 'group cursor-pointer'}`}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
-              <img
+              <Image
                 src={cat.image}
                 alt={cat.title}
+                width={800}
+                height={400}
                 className={`w-full h-[400px] object-cover opacity-60 ${!cat.disabled ? 'group-hover:opacity-100 group-hover:scale-110' : ''} transition-all duration-700`}
               />
               <div className="absolute inset-0 z-20 p-6 flex flex-col justify-end">

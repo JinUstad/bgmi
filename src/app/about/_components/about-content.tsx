@@ -5,6 +5,7 @@ import { Target, Users, Trophy, ShieldCheck, Zap, Crosshair } from "lucide-react
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const FEATURES = [
@@ -119,13 +120,13 @@ export default function AboutContent() {
               className="relative"
             >
               <div className="absolute inset-0 bg-pubg-yellow/20 blur-[100px] rounded-full pointer-events-none" aria-hidden="true" />
-              <img
+              <Image
                 src="/army_character.png"
                 alt="BGMI esports character representing XYLO Esports competitive gaming"
                 width={400}
                 height={500}
                 className="w-full max-w-md mx-auto drop-shadow-[0_0_30px_rgba(240,165,0,0.3)] relative z-10"
-                loading="lazy"
+                priority={false}
               />
             </motion.div>
           </div>
