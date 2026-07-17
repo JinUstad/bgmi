@@ -6,10 +6,12 @@ import type { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, tournamentEventSchema } from "@/lib/seo/schemas";
-import TournamentsContent from "./_components/tournaments-content";
+import dynamic from "next/dynamic";
+
+const TournamentsContent = dynamic(() => import("./_components/tournaments-content"), { ssr: true });
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "BGMI Tournaments — Register & Compete",
+  title: { absolute: "BGMI Tournaments - Register & Compete | XYLO Esports" },
   description:
     "Browse all upcoming BGMI tournaments on XYLO Esports. Solo, Duo, and Squad modes available. Register, pay, and compete for massive cash prize pools.",
   path: "/tournaments",

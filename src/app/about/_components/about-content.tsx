@@ -38,7 +38,7 @@ const FEATURES = [
  */
 export default function AboutContent() {
   return (
-    <div className="flex flex-col w-full min-h-screen bg-black relative">
+    <main className="flex flex-col w-full min-h-screen bg-black relative">
 
       {/* Global Animated Background */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -201,6 +201,6 @@ export default function AboutContent() {
         </div>
       </section>
 
-    </div>
+    </main>
   );
 }

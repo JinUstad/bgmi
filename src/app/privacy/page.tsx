@@ -6,10 +6,12 @@ import type { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/schemas";
-import PrivacyContent from "./_components/privacy-content";
+import dynamic from "next/dynamic";
+
+const PrivacyContent = dynamic(() => import("./_components/privacy-content"), { ssr: true });
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Privacy Policy",
+  title: { absolute: "Privacy Policy | XYLO Esports BGMI Platform Data" },
   description:
     "Read the XYLO Esports Privacy Policy. Learn how we collect, use, and protect your personal data when you register for BGMI tournaments on our platform.",
   path: "/privacy",
@@ -32,8 +34,8 @@ export default function PrivacyPage() {
             { name: "Privacy Policy", url: "/privacy" },
           ]),
           webPageSchema({
-            title: "Privacy Policy | XYLO Esports",
-            description: "XYLO Esports Privacy Policy — how we collect and protect your data.",
+            title: "Privacy Policy | XYLO Esports BGMI Platform Data",
+            description: "Read the XYLO Esports Privacy Policy. Learn how we collect, use, and protect your personal data when you register for BGMI tournaments on our platform.",
             path: "/privacy",
           }),
         ]}

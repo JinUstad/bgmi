@@ -6,10 +6,12 @@ import type { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/schemas";
-import ContactContent from "./_components/contact-content";
+import dynamic from "next/dynamic";
+
+const ContactContent = dynamic(() => import("./_components/contact-content"), { ssr: true });
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Tournament Registration & Contact",
+  title: { absolute: "BGMI Tournament Registration & Contact | XYLO Esports" },
   description:
     "Register for BGMI tournaments on XYLO Esports. Fill out the form, pay the entry fee, and secure your slot. Contact our 24/7 support team for any queries.",
   path: "/contact",
@@ -36,7 +38,7 @@ export default function ContactPage() {
             { name: "Register & Contact", url: "/contact" },
           ]),
           webPageSchema({
-            title: "Tournament Registration & Contact | XYLO Esports",
+            title: "BGMI Tournament Registration & Contact | XYLO Esports",
             description:
               "Register for BGMI tournaments on XYLO Esports. Secure your slot and win exciting cash prizes.",
             path: "/contact",

@@ -6,10 +6,12 @@ import type { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/schemas";
-import TermsContent from "./_components/terms-content";
+import dynamic from "next/dynamic";
+
+const TermsContent = dynamic(() => import("./_components/terms-content"), { ssr: true });
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Terms & Conditions",
+  title: { absolute: "Terms & Conditions | XYLO Esports BGMI Tournaments" },
   description:
     "Read the XYLO Esports Terms and Conditions for participating in BGMI tournaments. Rules include fair play, no refund policy, and match conduct guidelines.",
   path: "/terms",
@@ -32,8 +34,8 @@ export default function TermsPage() {
             { name: "Terms & Conditions", url: "/terms" },
           ]),
           webPageSchema({
-            title: "Terms & Conditions | XYLO Esports",
-            description: "XYLO Esports Terms & Conditions for BGMI tournament participants.",
+            title: "Terms & Conditions | XYLO Esports BGMI Tournaments",
+            description: "Read the XYLO Esports Terms and Conditions for participating in BGMI tournaments. Rules include fair play, no refund policy, and match conduct guidelines.",
             path: "/terms",
           }),
         ]}

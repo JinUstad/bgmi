@@ -110,6 +110,8 @@ export function Navbar() {
             <AudioToggle />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle mobile menu"
+              aria-expanded={isMobileMenuOpen}
               className="text-white hover:text-pubg-yellow transition-colors"
             >
               {isMobileMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}

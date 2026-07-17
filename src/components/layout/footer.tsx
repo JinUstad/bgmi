@@ -18,7 +18,7 @@ export function Footer() {
             </p>
             <div className="flex gap-4 items-center">
               <Share2 className="w-5 h-5 text-pubg-yellow mr-2" />
-              <a href="#" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
+              <a href="#" aria-label="Visit our YouTube channel" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
                 YouTube
               </a>
             </div>

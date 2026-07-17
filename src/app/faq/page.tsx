@@ -6,7 +6,9 @@ import type { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, faqSchema } from "@/lib/seo/schemas";
-import FAQContent from "./_components/faq-content";
+import dynamic from "next/dynamic";
+
+const FAQContent = dynamic(() => import("./_components/faq-content"), { ssr: true });
 
 // Keep FAQs here so they appear in JSON-LD (server-side) even though the
 // accordion UI is client-side.
@@ -44,7 +46,7 @@ const FAQS = [
 ];
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "FAQ — Frequently Asked Questions",
+  title: { absolute: "FAQ - Frequently Asked Questions | XYLO Esports" },
   description:
     "Find answers to common questions about XYLO Esports BGMI tournaments — registration process, entry fees, rules, match format, and prize payouts.",
   path: "/faq",

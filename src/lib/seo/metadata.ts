@@ -6,8 +6,8 @@ import { SITE_CONFIG, buildUrl } from "./config";
  * All fields are optional — sensible defaults are applied from SITE_CONFIG.
  */
 export interface PageMetadataOptions {
-  /** Page title (without site name suffix — that's added by the template) */
-  title?: string;
+  /** Page title (without site name suffix unless absolute object is used) */
+  title?: string | { absolute?: string; default?: string; template?: string };
   /** Page-specific description */
   description?: string;
   /** Relative or absolute URL path for this page (e.g. "/about") */
@@ -83,13 +83,12 @@ export function generatePageMetadata(options: PageMetadataOptions = {}): Metadat
   const mergedKeywords = [...new Set([...SITE_CONFIG.keywords, ...keywords])];
 
   const metadata: Metadata = {
-    // ── Title ──────────────────────────────────────────────────────────────
-    title: title
-      ? { default: title, template: `%s | ${SITE_CONFIG.name}` }
+    title: (title
+      ? (typeof title === "string" ? { default: title, template: `%s | ${SITE_CONFIG.name}` } : title)
       : {
         default: `${SITE_CONFIG.name} | ${SITE_CONFIG.tagline}`,
         template: `%s | ${SITE_CONFIG.name}`,
-      },
+      }) as any,
 
     // ── Core ───────────────────────────────────────────────────────────────
     description,
@@ -130,7 +129,7 @@ export function generatePageMetadata(options: PageMetadataOptions = {}): Metadat
       locale: SITE_CONFIG.locale,
       url: canonicalUrl,
       siteName: SITE_CONFIG.name,
-      title: title ?? `${SITE_CONFIG.name} | ${SITE_CONFIG.tagline}`,
+      title: typeof title === "string" ? title : (title?.absolute || title?.default || `${SITE_CONFIG.name} | ${SITE_CONFIG.tagline}`),
       description,
       images: [
         {
@@ -154,7 +153,7 @@ export function generatePageMetadata(options: PageMetadataOptions = {}): Metadat
       card: "summary_large_image",
       site: `@${SITE_CONFIG.twitterHandle}`,
       creator: `@${SITE_CONFIG.twitterHandle}`,
-      title: title ?? `${SITE_CONFIG.name} | ${SITE_CONFIG.tagline}`,
+      title: typeof title === "string" ? title : (title?.absolute || title?.default || `${SITE_CONFIG.name} | ${SITE_CONFIG.tagline}`),
       description,
       images: [
         {
