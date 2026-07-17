@@ -9,6 +9,8 @@ import { organizationSchema, websiteSchema } from "@/lib/seo/schemas";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { SITE_CONFIG } from "@/lib/seo/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { ClarityProvider } from "@/components/analytics/ClarityProvider";
+
 
 // ─── Fonts ─────────────────────────────────────────────────────────────────
 const inter = Inter({
@@ -107,6 +109,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </AudioProvider>
+        <ClarityProvider />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
       </body>
     </html>

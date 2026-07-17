@@ -21,7 +21,7 @@ import HomeCtaSection from "./_components/home-cta-section";
 export const metadata: Metadata = generatePageMetadata({
   title: "XYLO Esports | India's #1 BGMI & Esports Tournament Platform",
   description:
-    "Join India's premier BGMI and Esports tournament platform. Play Solo, Duo, Squad, and Custom Room matches to win exciting cash prizes. Register online and compete with the best gamers.",
+    "Join XYLOEsports for BGMI tournaments, esports competitions, live leaderboards, secure registrations, exciting prize pools, and the best gaming experience in India.",
   path: "/",
   keywords: [
     "BGMI Solo Tournament",
