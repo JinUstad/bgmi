@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { Calendar, Trophy, Users, ShieldAlert } from "lucide-react";
+import { Calendar, Trophy, Users, ShieldAlert, Map as MapIcon } from "lucide-react";
 
 export function UpcomingTournament() {
   const [data, setData] = useState<{
@@ -11,6 +11,8 @@ export function UpcomingTournament() {
     match_name: string;
     bg_image_url: string;
     tournament_date?: string;
+    match_mode?: string;
+    map_area?: string;
     slots?: string[];
   } | null>(null);
 
@@ -102,15 +104,16 @@ export function UpcomingTournament() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            className="flex flex-wrap justify-center gap-4"
           >
             {[
               { icon: Users, label: "Slots", value: data.slots ? `${data.slots.length} Slots` : "Limited" },
               { icon: Calendar, label: "Date", value: data.tournament_date || "Coming Soon" },
-              { icon: ShieldAlert, label: "Mode", value: "Squad" },
+              { icon: ShieldAlert, label: "Mode", value: data.match_mode || "Squad" },
+              { icon: MapIcon, label: "Map", value: data.map_area || "TDM" },
               { icon: Trophy, label: "Prize", value: "TBA" },
             ].map((stat, idx) => (
-              <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
+              <div key={idx} className="w-[calc(50%-0.5rem)] md:w-auto md:min-w-[140px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
                 <stat.icon className="w-6 h-6 text-yellow-500 mx-auto mb-2 opacity-80" />
                 <div className="text-white/60 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</div>
                 <div className="text-white font-black">{stat.value}</div>
