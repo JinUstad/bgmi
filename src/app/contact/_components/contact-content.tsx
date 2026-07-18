@@ -24,6 +24,7 @@ export default function ContactContent() {
   const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
   const [timeSlots, setTimeSlots] = useState<{ value: string, label: string, capacity: number }[]>([]);
   const [maxSlotCapacity, setMaxSlotCapacity] = useState<number>(6); // Legacy/Fallback
+  const [matchMode, setMatchMode] = useState<string>("Squad");
 
   useEffect(() => {
     const today = new Date();
@@ -49,12 +50,15 @@ export default function ContactContent() {
     const fetchTournamentDetails = async () => {
       const { data, error } = await supabase
         .from('upcoming_tournaments')
-        .select('slots, slot_capacity')
+        .select('slots, slot_capacity, match_mode')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
         
       if (!error && data) {
+        if (data.match_mode) {
+          setMatchMode(data.match_mode);
+        }
         if (data.slots && data.slots.length > 0) {
           setTimeSlots(data.slots.map((s: any) => {
             if (typeof s === 'string') {
@@ -300,10 +304,10 @@ export default function ContactContent() {
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="tournamentType" className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
-                      <select id="tournamentType" required name="tournamentType" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" defaultValue="squad">
-                        <option value="squad">Squad Team Only</option>
-                        <option value="solo" disabled>Solo (Coming Soon)</option>
-                        <option value="duo" disabled>Duo/Dual (Coming Soon)</option>
+                      <select id="tournamentType" required name="tournamentType" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" value={matchMode.toLowerCase()} onChange={() => {}}>
+                        <option value={matchMode.toLowerCase()}>
+                          {matchMode === 'Squad' ? 'Squad Team Only' : matchMode === 'Solo' ? 'Solo Match' : matchMode === 'Duo' ? 'Duo/Dual Match' : matchMode + ' Match'}
+                        </option>
                       </select>
                     </div>
                     <div className="space-y-2">
