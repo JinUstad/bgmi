@@ -81,6 +81,7 @@ export default function TournamentsContent() {
   const [selectedTournament, setSelectedTournament] = useState<typeof TOURNAMENTS[0] | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [registrations, setRegistrations] = useState<any[]>([]);
+  const [upcomingTournamentData, setUpcomingTournamentData] = useState<any>(null);
 
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -92,7 +93,19 @@ export default function TournamentsContent() {
         setRegistrations(data);
       }
     };
+    const fetchUpcomingTournament = async () => {
+      const { data } = await supabase
+        .from('upcoming_tournaments')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (data) {
+        setUpcomingTournamentData(data);
+      }
+    };
     fetchRegistrations();
+    fetchUpcomingTournament();
   }, []);
 
   const groupedRegistrations = registrations.reduce((acc: any, curr: any) => {
@@ -323,39 +336,25 @@ export default function TournamentsContent() {
             <h2 className="text-3xl md:text-5xl font-black font-heading uppercase text-white mb-4">Match <span className="text-pubg-yellow">Schedule</span></h2>
             <p className="text-white/60 font-bold uppercase tracking-widest text-sm">Daily Scrims &amp; Tournament Timings</p>
           </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-wrap justify-center gap-4">
-              {[
-                { time: "10:00 AM - 11:00 AM", name: "Knockout TDM", type: "TDM - Squad" },
-                { time: "11:00 AM - 12:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
-                { time: "12:00 PM - 01:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
-              ].map((slot, i) => (
-                <div key={`am-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                  <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
-                  <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
-                  <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
-                </div>
-              ))}
-            </div>
-            <div className="w-full bg-pubg-yellow/10 border border-pubg-yellow/20 rounded-md p-4 text-center my-2">
-              <div className="text-pubg-yellow font-black uppercase tracking-widest text-lg flex items-center justify-center gap-2">
-                <Clock className="w-5 h-5" aria-hidden="true" />
-                01:00 PM - 02:00 PM : Lunch Break / Server Maintenance
+          <div className="flex flex-wrap justify-center gap-4">
+            {upcomingTournamentData?.slots && Array.isArray(upcomingTournamentData.slots) ? (
+              upcomingTournamentData.slots.map((slot: any, i: number) => {
+                const timeString = `${slot.startHour}:${slot.startMin} ${slot.startAmPm} - ${slot.endHour}:${slot.endMin} ${slot.endAmPm}`;
+                return (
+                  <div key={`slot-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
+                    <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{timeString}</div>
+                    <div className="text-white font-bold uppercase text-sm mb-1">{upcomingTournamentData.match_name || "Tournament Match"}</div>
+                    <div className="text-white/50 text-xs uppercase tracking-widest">
+                      {(upcomingTournamentData.map_area || "Map") + " - " + (upcomingTournamentData.match_mode || "Mode")}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-white/50 text-sm py-8 font-bold uppercase tracking-widest">
+                Loading schedule...
               </div>
-            </div>
-            <div className="flex flex-wrap justify-center gap-4">
-              {[
-                { time: "02:00 PM - 03:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
-                { time: "03:00 PM - 04:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
-                { time: "04:00 PM - 05:00 PM", name: "Knockout TDM", type: "TDM - Squad" },
-              ].map((slot, i) => (
-                <div key={`pm-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                  <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{slot.time}</div>
-                  <div className="text-white font-bold uppercase text-sm mb-1">{slot.name}</div>
-                  <div className="text-white/50 text-xs uppercase tracking-widest">{slot.type}</div>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
         </div>
       </section>
