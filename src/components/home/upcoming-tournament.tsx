@@ -112,7 +112,7 @@ export function UpcomingTournament() {
               { icon: Calendar, label: "Date", value: data.tournament_date || "Coming Soon" },
               { icon: ShieldAlert, label: "Mode", value: data.match_mode || "Squad" },
               { icon: MapIcon, label: "Map", value: data.map_area || "TDM" },
-              { icon: Trophy, label: "Prize", value: data.prize || "TBA" },
+              { icon: Trophy, label: "Prize Pool", value: data.prize || "TBA" },
             ].map((stat, idx) => (
               <div key={idx} className="w-[calc(50%-0.5rem)] md:w-auto md:min-w-[140px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
                 <stat.icon className="w-6 h-6 text-yellow-500 mx-auto mb-2 opacity-80" />
