@@ -342,7 +342,7 @@ export default function TournamentsContent() {
                 <div className="flex-1 text-center md:text-left prize-content relative z-10">
                   <div className="inline-block px-3 py-1 mb-4 rounded-full bg-orange-500/20 border border-orange-500/50 text-orange-500 text-xs font-bold uppercase tracking-widest">Tactical Showdown</div>
                   <h2 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading uppercase text-white mb-4">Daily <span className="text-orange-500 text-glow drop-shadow-[0_0_15px_rgba(249,115,22,0.8)]">Battle</span></h2>
-                  <p className="text-white/80 font-bold tracking-wider text-sm md:text-base max-w-lg mx-auto md:mx-0 drop-shadow-md mb-8">Enter the battlefield for just ₹220 and stand a chance to win the grand prize of 1st: ₹800 | 2nd: ₹500. Assemble your squad and prove your dominance.</p>
+                  <p className="text-white/80 font-bold tracking-wider text-sm md:text-base max-w-lg mx-auto md:mx-0 drop-shadow-md mb-8">Enter the battlefield for just {settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"} and stand a chance to win the grand prize of {upcomingTournamentData?.prize || "1st: ₹800 | 2nd: ₹500"}. Assemble your squad and prove your dominance.</p>
                   <div className="flex flex-row items-center justify-center md:justify-start gap-6 md:gap-10 w-full md:w-auto bg-zinc-900/60 p-4 md:p-6 rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl inline-flex">
                     <div className="text-center prize-stat">
                       <div className="text-xs md:text-sm text-white/70 uppercase tracking-widest font-bold mb-1">Entry Fee</div>
