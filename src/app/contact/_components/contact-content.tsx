@@ -8,16 +8,7 @@ import { load } from '@cashfreepayments/cashfree-js';
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
-const MAX_SLOT_CAPACITY = 6;
 
-const TIME_SLOTS = [
-  { value: "10-11am", label: "10:00 AM - 11:00 AM" },
-  { value: "11-12pm", label: "11:00 AM - 12:00 PM" },
-  { value: "12-1pm", label: "12:00 PM - 1:00 PM" },
-  { value: "2-3pm", label: "2:00 PM - 3:00 PM" },
-  { value: "3-4pm", label: "3:00 PM - 4:00 PM" },
-  { value: "4-5pm", label: "4:00 PM - 5:00 PM" },
-];
 
 /**
  * Contact Content — Client Component
@@ -31,6 +22,8 @@ export default function ContactContent() {
   const [registrationFee, setRegistrationFee] = useState<number>(99);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
+  const [timeSlots, setTimeSlots] = useState<{ value: string, label: string, capacity: number }[]>([]);
+  const [maxSlotCapacity, setMaxSlotCapacity] = useState<number>(6); // Legacy/Fallback
 
   useEffect(() => {
     const today = new Date();
@@ -53,6 +46,43 @@ export default function ContactContent() {
       }
     };
 
+    const fetchTournamentDetails = async () => {
+      const { data, error } = await supabase
+        .from('upcoming_tournaments')
+        .select('slots, slot_capacity')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+        
+      if (!error && data) {
+        if (data.slots && data.slots.length > 0) {
+          setTimeSlots(data.slots.map((s: any) => {
+            if (typeof s === 'string') {
+              return { value: s, label: s, capacity: data.slot_capacity || 6 };
+            }
+            let timeStr = s.time;
+            if (s.startHour) {
+              timeStr = `${s.startHour}:${s.startMin} ${s.startAmPm} - ${s.endHour}:${s.endMin} ${s.endAmPm}`;
+            }
+            return { value: timeStr, label: timeStr, capacity: s.capacity || data.slot_capacity || 6 };
+          }));
+        } else {
+          setTimeSlots([
+            { value: "10:00 AM - 11:00 AM", label: "10:00 AM - 11:00 AM", capacity: 6 },
+            { value: "Night Match 2 AM", label: "Night Match 2 AM", capacity: 6 }
+          ]);
+        }
+        if (data.slot_capacity) {
+          setMaxSlotCapacity(data.slot_capacity);
+        }
+      } else {
+        setTimeSlots([
+          { value: "10:00 AM - 11:00 AM", label: "10:00 AM - 11:00 AM", capacity: 6 },
+          { value: "Night Match 2 AM", label: "Night Match 2 AM", capacity: 6 }
+        ]);
+      }
+    };
+
     const fetchSlotCounts = async () => {
       const { data, error } = await supabase
         .from('registrations')
@@ -69,6 +99,7 @@ export default function ContactContent() {
 
     initCashfree();
     fetchFee();
+    fetchTournamentDetails();
     fetchSlotCounts();
   }, []);
 
@@ -293,10 +324,10 @@ export default function ContactContent() {
                     <div className="space-y-2 md:col-span-2">
                       <fieldset>
                         <legend className="text-white/70 text-sm font-bold uppercase tracking-widest mb-3">Time Slot *</legend>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {TIME_SLOTS.map((slot) => {
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {timeSlots.map((slot) => {
                             const count = slotCounts[slot.value] || 0;
-                            const isFull = count >= MAX_SLOT_CAPACITY;
+                            const isFull = count >= slot.capacity;
                             return (
                               <label
                                 key={slot.value}
@@ -318,7 +349,7 @@ export default function ContactContent() {
                                     {slot.label}
                                   </span>
                                   <div className={`text-xs mt-0.5 ${isFull ? 'text-red-400' : 'text-white/40'}`}>
-                                    {isFull ? 'FULL' : `${count}/${MAX_SLOT_CAPACITY} registered`}
+                                    {isFull ? 'FULL' : `${count}/${slot.capacity} registered`}
                                   </div>
                                 </div>
                                 {isFull && (

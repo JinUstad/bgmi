@@ -10,6 +10,8 @@ export function UpcomingTournament() {
     headline: string;
     match_name: string;
     bg_image_url: string;
+    tournament_date?: string;
+    slots?: string[];
   } | null>(null);
 
   useEffect(() => {
@@ -103,8 +105,8 @@ export function UpcomingTournament() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {[
-              { icon: Users, label: "Slots", value: "Limited" },
-              { icon: Calendar, label: "Status", value: "Coming Soon" },
+              { icon: Users, label: "Slots", value: data.slots ? `${data.slots.length} Slots` : "Limited" },
+              { icon: Calendar, label: "Date", value: data.tournament_date || "Coming Soon" },
               { icon: ShieldAlert, label: "Mode", value: "Squad" },
               { icon: Trophy, label: "Prize", value: "TBA" },
             ].map((stat, idx) => (
