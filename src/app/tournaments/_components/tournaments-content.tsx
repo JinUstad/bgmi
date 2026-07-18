@@ -82,6 +82,7 @@ export default function TournamentsContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [upcomingTournamentData, setUpcomingTournamentData] = useState<any>(null);
+  const [settingsData, setSettingsData] = useState<any>(null);
 
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -104,8 +105,19 @@ export default function TournamentsContent() {
         setUpcomingTournamentData(data);
       }
     };
+    const fetchSettings = async () => {
+      const { data } = await supabase
+        .from('settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+      if (data) {
+        setSettingsData(data);
+      }
+    };
     fetchRegistrations();
     fetchUpcomingTournament();
+    fetchSettings();
   }, []);
 
   const groupedRegistrations = registrations.reduce((acc: any, curr: any) => {
@@ -173,8 +185,34 @@ export default function TournamentsContent() {
     });
   }, { scope: faqRef });
 
-  const filteredTournaments = TOURNAMENTS.filter((t) => {
-    const matchesTab = activeTab === "All" || t.type.includes(activeTab);
+  const dynamicTournaments = TOURNAMENTS.map(t => {
+    if (t.id === 3 && upcomingTournamentData) {
+      let totalCap = 100;
+      if (upcomingTournamentData.slots && Array.isArray(upcomingTournamentData.slots)) {
+        totalCap = upcomingTournamentData.slots.reduce((acc: number, slot: any) => acc + (parseInt(slot.capacity) || 0), 0);
+      }
+      const timeStr = (upcomingTournamentData.slots && upcomingTournamentData.slots.length > 0) 
+        ? `${upcomingTournamentData.slots[0].startHour}:${upcomingTournamentData.slots[0].startMin} ${upcomingTournamentData.slots[0].startAmPm}`
+        : t.time;
+
+      return {
+        ...t,
+        name: upcomingTournamentData.headline || upcomingTournamentData.match_name || t.name,
+        type: upcomingTournamentData.match_mode ? upcomingTournamentData.match_mode.toUpperCase() : t.type,
+        date: upcomingTournamentData.tournament_date || t.date,
+        time: timeStr,
+        entryFee: settingsData?.registration_fee ? "₹" + settingsData.registration_fee : t.entryFee,
+        prizePool: upcomingTournamentData.prize || t.prizePool,
+        map: upcomingTournamentData.map_area || t.map,
+        totalSlots: totalCap > 0 ? totalCap : t.totalSlots,
+        remainingSlots: totalCap > 0 ? totalCap : t.remainingSlots,
+      };
+    }
+    return t;
+  });
+
+  const filteredTournaments = dynamicTournaments.filter((t) => {
+    const matchesTab = activeTab === "All" || t.type.toLowerCase().includes(activeTab.toLowerCase());
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.type.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTab && matchesSearch;
@@ -308,13 +346,13 @@ export default function TournamentsContent() {
                   <div className="flex flex-row items-center justify-center md:justify-start gap-6 md:gap-10 w-full md:w-auto bg-zinc-900/60 p-4 md:p-6 rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl inline-flex">
                     <div className="text-center prize-stat">
                       <div className="text-xs md:text-sm text-white/70 uppercase tracking-widest font-bold mb-1">Entry Fee</div>
-                      <div className="text-3xl md:text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">₹220</div>
+                      <div className="text-3xl md:text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">{settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"}</div>
                     </div>
                     <div className="h-12 w-px bg-white/20 hidden md:block prize-divider" />
                     <div className="h-px w-12 bg-white/20 md:hidden prize-divider" />
                     <div className="text-center prize-stat">
                       <div className="text-xs md:text-sm text-orange-500/90 uppercase tracking-widest font-bold mb-1">Winner Gets</div>
-                      <div className="text-4xl md:text-5xl font-black text-orange-500 text-glow drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]">1st: ₹800</div>
+                      <div className="text-4xl md:text-5xl font-black text-orange-500 text-glow drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]">{upcomingTournamentData?.prize || "1st: ₹800"}</div>
                     </div>
                   </div>
                 </div>
