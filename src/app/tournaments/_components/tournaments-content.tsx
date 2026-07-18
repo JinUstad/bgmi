@@ -24,42 +24,42 @@ const TABS = ["All", "Solo", "Duo", "Squad"];
 const TOURNAMENTS = [
   {
     id: 1,
-    name: "Lone Wolf Challenge",
+    name: "Solo Battle",
     type: "Solo",
-    date: "June 26, 2026",
+    date: "Coming Soon",
     time: "---",
     entryFee: "₹0",
-    prizePool: "0",
+    prizePool: "₹0",
     totalSlots: 100,
-    remainingSlots: 45,
-    map: "Sanhok",
+    remainingSlots: 0,
+    map: "Erangel",
     disabled: true,
   },
   {
     id: 2,
-    name: "Duo Deathmatch",
+    name: "Duo Showdown",
     type: "Duo",
-    date: "June 27, 2026",
-    time: "----",
+    date: "Coming Soon",
+    time: "---",
     entryFee: "₹0",
     prizePool: "₹0",
     totalSlots: 50,
-    remainingSlots: 5,
+    remainingSlots: 0,
     map: "Miramar",
     disabled: true,
   },
   {
     id: 3,
-    name: "Mega Championship",
-    type: "TDM Squad",
-    date: "September 5,6, 2026",
-    time: "10:00 AM",
-    entryFee: "₹220",
-    prizePool: "1st: ₹800 | 2nd: ₹500",
-    totalSlots: 100,
-    remainingSlots: 36,
-    map: "TDM",
-    disabled: false,
+    name: "Squad Championship",
+    type: "Squad",
+    date: "Coming Soon",
+    time: "---",
+    entryFee: "₹0",
+    prizePool: "₹0",
+    totalSlots: 25,
+    remainingSlots: 0,
+    map: "Erangel",
+    disabled: true,
   },
 ];
 
@@ -186,7 +186,17 @@ export default function TournamentsContent() {
   }, { scope: faqRef });
 
   const dynamicTournaments = TOURNAMENTS.map(t => {
-    if (t.id === 3 && upcomingTournamentData) {
+    let isThisActive = false;
+    if (upcomingTournamentData) {
+      const activeMode = upcomingTournamentData.match_mode?.toLowerCase() || '';
+      isThisActive = t.type.toLowerCase() === activeMode;
+      // If the active mode isn't Solo/Duo/Squad (e.g. TDM), default to the Squad card (id 3)
+      if (!['solo', 'duo', 'squad'].includes(activeMode) && t.id === 3) {
+        isThisActive = true;
+      }
+    }
+
+    if (isThisActive && upcomingTournamentData) {
       let totalCap = 100;
       if (upcomingTournamentData.slots && Array.isArray(upcomingTournamentData.slots)) {
         totalCap = upcomingTournamentData.slots.reduce((acc: number, slot: any) => acc + (parseInt(slot.capacity) || 0), 0);
@@ -206,9 +216,11 @@ export default function TournamentsContent() {
         map: upcomingTournamentData.map_area || t.map,
         totalSlots: totalCap > 0 ? totalCap : t.totalSlots,
         remainingSlots: totalCap > 0 ? totalCap : t.remainingSlots,
+        disabled: false,
       };
     }
-    return t;
+    
+    return { ...t, disabled: true };
   });
 
   const filteredTournaments = dynamicTournaments.filter((t) => {
