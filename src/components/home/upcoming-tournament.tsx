@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { Calendar, Trophy, Users, ShieldAlert, Map as MapIcon } from "lucide-react";
+import { Calendar, Trophy, Users, ShieldAlert, Map as MapIcon, IndianRupee } from "lucide-react";
 
 export function UpcomingTournament() {
   const [data, setData] = useState<{
@@ -16,6 +16,7 @@ export function UpcomingTournament() {
     prize?: string;
     slots?: string[];
   } | null>(null);
+  const [fee, setFee] = useState<string>("220");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +29,16 @@ export function UpcomingTournament() {
 
       if (tournamentData) {
         setData(tournamentData);
+      }
+
+      const { data: settings } = await supabase
+        .from('settings')
+        .select('registration_fee')
+        .eq('id', 1)
+        .single();
+
+      if (settings) {
+        setFee(settings.registration_fee.toString());
       }
     };
 
@@ -112,6 +123,7 @@ export function UpcomingTournament() {
               { icon: Calendar, label: "Date", value: data.tournament_date || "Coming Soon" },
               { icon: ShieldAlert, label: "Mode", value: data.match_mode || "Squad" },
               { icon: MapIcon, label: "Map", value: data.map_area || "TDM" },
+              { icon: IndianRupee, label: "Entry Fee", value: `₹${fee}` },
               { icon: Trophy, label: "Prize Pool", value: data.prize || "TBA" },
             ].map((stat, idx) => (
               <div key={idx} className="w-[calc(50%-0.5rem)] md:w-auto md:min-w-[140px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
