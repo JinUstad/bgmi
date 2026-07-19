@@ -82,7 +82,7 @@ export async function POST(request: Request) {
           customer_phone: data.mobileNumber,
         },
         order_meta: {
-          return_url: `${origin}/contact?order_id={order_id}`
+          return_url: `${origin}/registration?order_id={order_id}`
         }
       })
     });
@@ -123,7 +123,8 @@ export async function POST(request: Request) {
           message: data.message,
           cashfree_order_id: orderId,
           payment_status: 'pending',
-          payment_amount: orderAmount
+          payment_amount: orderAmount,
+          user_id: data.user_id || null
         }
       ]);
 

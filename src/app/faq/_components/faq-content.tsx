@@ -190,7 +190,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
               </div>
             </div>
             <Link
-              href="/contact"
+              href="/registration"
               className="px-8 py-3 bg-pubg-yellow text-black font-bold rounded hover:bg-pubg-yellow/90 transition-colors whitespace-nowrap flex items-center gap-2"
               aria-label="Contact XYLO Esports support team"
             >

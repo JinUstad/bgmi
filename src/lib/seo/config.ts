@@ -74,7 +74,7 @@ export const PAGE_PATHS = {
   home: "/",
   about: "/about",
   tournaments: "/tournaments",
-  contact: "/contact",
+  contact: "/registration",
   faq: "/faq",
   blog: "/blog",
   privacy: "/privacy",

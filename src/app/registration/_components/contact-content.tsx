@@ -25,8 +25,16 @@ export default function ContactContent() {
   const [timeSlots, setTimeSlots] = useState<{ value: string, label: string, capacity: number }[]>([]);
   const [maxSlotCapacity, setMaxSlotCapacity] = useState<number>(6); // Legacy/Fallback
   const [matchMode, setMatchMode] = useState<string>("Squad");
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    fetchUser();
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - (offset * 60 * 1000));
@@ -118,12 +126,17 @@ export default function ContactContent() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+    
+    const payload = {
+      ...data,
+      user_id: userId
+    };
 
     try {
       const response = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       });
 
       const orderData = await response.json();

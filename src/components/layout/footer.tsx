@@ -30,7 +30,7 @@ export function Footer() {
               <li><Link href="/" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Home</Link></li>
               <li><Link href="/tournaments" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Tournaments</Link></li>
               <li><Link href="/blogs" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Blogs</Link></li>
-              <li><Link href="/contact" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Contact Us</Link></li>
+              <li><Link href="/registration" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">Contact Us</Link></li>
               <li><Link href="/about" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">About Platform</Link></li>
             </ul>
           </div>

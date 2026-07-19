@@ -28,7 +28,7 @@ export default function HomeCtaSection() {
           <p className="text-xl text-black/80 font-bold mb-10">
             Join thousands of players already competing for massive prize pools.
           </p>
-          <Link href="/contact" aria-label="Register for the next BGMI tournament">
+          <Link href="/registration" aria-label="Register for the next BGMI tournament">
             <Button size="lg" className="px-8 py-4 text-lg border-2 border-black">
               Register For Next Tournament
             </Button>

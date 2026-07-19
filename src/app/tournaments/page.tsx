@@ -47,7 +47,7 @@ export default function TournamentsPage() {
             endDate: "2026-09-06T22:00:00+05:30",
             prizePool: "1st: ₹800 | 2nd: ₹500",
             entryFee: "₹220",
-            registrationUrl: "/contact",
+            registrationUrl: "/registration",
             image: "/tournaments_hero_bg.png",
             status: "EventScheduled",
           }),

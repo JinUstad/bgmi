@@ -87,7 +87,7 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Link href="/contact" className="w-full sm:w-auto">
+            <Link href="/registration" className="w-full sm:w-auto">
               <Button size="lg" glow className="w-full text-lg">
                 Register Now
               </Button>

@@ -8,19 +8,20 @@ import { Menu, X, Crosshair } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AudioToggle } from "../ui/audio-toggle";
 import { supabase } from "@/lib/supabase";
+import { LogOut, User } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Platform" },
   { href: "/tournaments", label: "Tournaments" },
   { href: "/blogs", label: "Blogs" },
-  { href: "/contact", label: "Contact Us" },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [liveStreamSettings, setLiveStreamSettings] = useState({ url: '', enabled: false });
+  const [user, setUser] = useState<any>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -39,10 +40,37 @@ export function Navbar() {
         console.error("Failed to fetch live stream setting", err);
       }
     };
-    fetchLiveStream();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    fetchLiveStream();
+    fetchUser();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      authListener.subscription.unsubscribe();
+    };
   }, []);
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/user-dashboard`,
+      }
+    });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <header
@@ -98,11 +126,43 @@ export function Navbar() {
               </Link>
             )}
             <Link
-              href="/contact"
+              href="/registration"
               className="px-6 py-2 bg-pubg-yellow text-black font-black uppercase tracking-widest text-sm rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all shadow-lg box-glow"
             >
-              Register Now
+              Registration Now
             </Link>
+
+            {user ? (
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/group"
+                  className="text-sm font-bold uppercase tracking-widest text-pubg-yellow hover:text-white transition-colors"
+                >
+                  Tournament Group
+                </Link>
+                <Link href="/user-dashboard" className="flex items-center gap-2">
+                  <img
+                    src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=User"}
+                    alt="User"
+                    className="w-10 h-10 rounded-full border-2 border-pubg-yellow hover:border-white transition-colors"
+                    title="My Dashboard"
+                  />
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="px-4 py-2 border border-red-500/50 text-red-400 font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
+                >
+                  <LogOut className="w-3 h-3" /> Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleGoogleLogin}
+                className="px-6 py-2 border border-white/20 text-white font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white/10 transition-colors"
+              >
+                Login
+              </button>
+            )}
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -156,12 +216,38 @@ export function Navbar() {
             </Link>
           )}
           <Link
-            href="/contact"
+            href="/registration"
             onClick={() => setIsMobileMenuOpen(false)}
             className="block w-full p-4 text-center bg-pubg-yellow text-black font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none shadow-lg box-glow"
           >
-            Register Now
+            Registration Now
           </Link>
+
+          {user ? (
+            <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
+              <Link href="/group" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-3 p-4 text-pubg-yellow hover:bg-white/5 transition-colors border border-white/5 font-bold uppercase tracking-widest">
+                Tournament Group
+              </Link>
+              <Link href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 p-4 text-white hover:bg-white/5 transition-colors border border-white/5">
+                 <img
+                  src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=User"}
+                  alt="User"
+                  className="w-8 h-8 rounded-full border border-pubg-yellow"
+                />
+                <span className="font-bold uppercase tracking-widest">My Dashboard</span>
+              </Link>
+              <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="flex items-center justify-center gap-2 p-4 text-center font-bold uppercase tracking-widest transition-colors border border-red-500/30 text-red-400 hover:bg-red-500/10">
+                <LogOut className="w-5 h-5" /> Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => { handleGoogleLogin(); setIsMobileMenuOpen(false); }}
+              className="block w-full p-4 text-center border border-white/20 text-white font-bold uppercase tracking-widest rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Login with Google
+            </button>
+          )}
         </motion.div>
       )}
     </header>

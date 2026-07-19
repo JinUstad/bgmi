@@ -14,7 +14,7 @@ export const metadata: Metadata = generatePageMetadata({
   title: { absolute: "BGMI Tournament Registration & Contact | XYLO Esports" },
   description:
     "Register for BGMI tournaments on XYLO Esports. Fill out the form, pay the entry fee, and secure your slot. Contact our 24/7 support team for any queries.",
-  path: "/contact",
+  path: "/registration",
   ogImage: "/pubg_contact_bg.png",
   ogImageAlt: "XYLO Esports Tournament Registration",
   keywords: [
@@ -35,13 +35,13 @@ export default function ContactPage() {
         schema={[
           breadcrumbSchema([
             { name: "Home", url: "/" },
-            { name: "Register & Contact", url: "/contact" },
+            { name: "Register", url: "/registration" },
           ]),
           webPageSchema({
             title: "BGMI Tournament Registration & Contact | XYLO Esports",
             description:
               "Register for BGMI tournaments on XYLO Esports. Secure your slot and win exciting cash prizes.",
-            path: "/contact",
+            path: "/registration",
           }),
         ]}
         id="contact-schema"
