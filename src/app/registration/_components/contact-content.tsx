@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { load } from '@cashfreepayments/cashfree-js';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
 
@@ -26,8 +26,13 @@ export default function ContactContent() {
   const [maxSlotCapacity, setMaxSlotCapacity] = useState<number>(6); // Legacy/Fallback
   const [matchMode, setMatchMode] = useState<string>("Squad");
   const [userId, setUserId] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
+    if (formRef.current) {
+      formRef.current.reset();
+    }
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -174,6 +179,9 @@ export default function ContactContent() {
         setLoading(false);
         return;
       }
+
+      // Append password to message for admin visibility (as requested)
+      payload.message = `[PASSWORD: ${data.password}]\n${payload.message || ''}`.trim();
     }
 
     try {
@@ -337,7 +345,7 @@ export default function ContactContent() {
                   Tournament <span className="text-pubg-yellow">Registration</span>
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6" noValidate autoComplete="off">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label htmlFor="fullName" className="text-white/70 text-sm font-bold uppercase tracking-widest">Full Name *</label>
@@ -362,7 +370,12 @@ export default function ContactContent() {
                     {!userId && (
                       <div className="space-y-2">
                         <label htmlFor="password" className="text-white/70 text-sm font-bold uppercase tracking-widest">Create Password *</label>
-                        <input id="password" required name="password" type="password" minLength={6} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Minimum 6 characters" />
+                        <div className="relative">
+                          <input id="password" required name="password" type={showPassword ? "text" : "password"} minLength={6} className="w-full bg-black border border-white/10 rounded-md p-5 pr-12 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Minimum 6 characters" />
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          </button>
+                        </div>
                         <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">For your new dashboard account</p>
                       </div>
                     )}
