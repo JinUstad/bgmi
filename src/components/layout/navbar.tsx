@@ -134,26 +134,14 @@ export function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <Link
-                  href="/group"
-                  className="text-sm font-bold uppercase tracking-widest text-pubg-yellow hover:text-white transition-colors"
-                >
-                  Tournament Group
-                </Link>
-                <Link href="/user-dashboard" className="flex items-center gap-2">
+                <Link href="/user-dashboard" className="flex items-center gap-3 px-5 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all">
                   <img
-                    src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=User"}
+                    src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user.email || 'User'}&background=random`}
                     alt="User"
-                    className="w-10 h-10 rounded-full border-2 border-pubg-yellow hover:border-white transition-colors"
-                    title="My Dashboard"
+                    className="w-8 h-8 rounded-full border border-pubg-yellow"
                   />
+                  <span className="text-sm font-bold uppercase tracking-widest text-white">My Dashboard</span>
                 </Link>
-                <button 
-                  onClick={handleLogout} 
-                  className="px-4 py-2 border border-red-500/50 text-red-400 font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
-                >
-                  <LogOut className="w-3 h-3" /> Logout
-                </button>
               </div>
             ) : (
               <Link
@@ -225,20 +213,14 @@ export function Navbar() {
 
           {user ? (
             <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
-              <Link href="/group" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-3 p-4 text-pubg-yellow hover:bg-white/5 transition-colors border border-white/5 font-bold uppercase tracking-widest">
-                Tournament Group
-              </Link>
-              <Link href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 p-4 text-white hover:bg-white/5 transition-colors border border-white/5">
+              <Link href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-3 p-4 bg-white/10 hover:bg-white/20 transition-colors border border-white/5 rounded-xl">
                  <img
-                  src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=User"}
+                  src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user.email || 'User'}&background=random`}
                   alt="User"
                   className="w-8 h-8 rounded-full border border-pubg-yellow"
                 />
-                <span className="font-bold uppercase tracking-widest">My Dashboard</span>
+                <span className="font-bold uppercase tracking-widest text-white">My Dashboard</span>
               </Link>
-              <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="flex items-center justify-center gap-2 p-4 text-center font-bold uppercase tracking-widest transition-colors border border-red-500/30 text-red-400 hover:bg-red-500/10">
-                <LogOut className="w-5 h-5" /> Logout
-              </button>
             </div>
             ) : (
             <Link
