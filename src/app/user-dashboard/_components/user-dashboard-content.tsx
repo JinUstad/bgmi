@@ -20,11 +20,6 @@ export default function UserDashboardContent() {
   const [copiedText, setCopiedText] = useState('');
 
   useEffect(() => {
-    if (!orderId) {
-      setLoading(false);
-      return;
-    }
-
     const fetchRegistration = async () => {
       // First try to get by orderId if it exists, otherwise by current logged in user
       let regData = null;
