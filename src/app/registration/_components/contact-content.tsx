@@ -130,9 +130,9 @@ export default function ContactContent() {
     setLoading(true);
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+    const data: Record<string, any> = Object.fromEntries(formData.entries());
     
-    const payload = {
+    const payload: Record<string, any> = {
       ...data,
       user_id: userId
     };
