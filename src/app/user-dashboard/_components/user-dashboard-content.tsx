@@ -86,7 +86,7 @@ export default function UserDashboardContent() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = '/login';
+    window.location.href = '/registration';
   };
 
   const handleDownloadPDF = async () => {
@@ -251,7 +251,7 @@ export default function UserDashboardContent() {
     );
   }
 
-  if (!data && !authUser) {
+  if (!authUser) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
         <AlertCircle className="w-16 h-16 text-red-500 mb-6" />
