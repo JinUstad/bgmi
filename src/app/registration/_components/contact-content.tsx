@@ -132,6 +132,50 @@ export default function ContactContent() {
       user_id: userId
     };
 
+    let finalUserId = userId;
+
+    // If user is not logged in, try to sign them up with Email & Password
+    if (!userId) {
+      if (!data.email || !data.password) {
+        alert("Email and Password are required to create an account.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: data.email as string,
+          password: data.password as string,
+          options: {
+            data: {
+              full_name: data.fullName,
+              mobile_number: data.mobileNumber
+            }
+          }
+        });
+
+        if (authError) {
+          if (authError.message.includes('User already registered')) {
+            alert("This email is already registered. Please login from the Navbar first.");
+          } else {
+            alert(`Account creation failed: ${authError.message}`);
+          }
+          setLoading(false);
+          return;
+        }
+
+        if (authData.user) {
+          finalUserId = authData.user.id;
+          payload.user_id = authData.user.id;
+          setUserId(authData.user.id);
+        }
+      } catch (err: any) {
+        alert(`Account creation error: ${err.message}`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const response = await fetch('/api/create-order', {
         method: 'POST',
@@ -312,9 +356,16 @@ export default function ContactContent() {
                       <input id="mobileNumber" required name="mobileNumber" type="tel" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="+91" />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-white/70 text-sm font-bold uppercase tracking-widest">Email Address (Optional)</label>
-                      <input id="email" name="email" type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
+                      <label htmlFor="email" className="text-white/70 text-sm font-bold uppercase tracking-widest">Email Address *</label>
+                      <input id="email" required name="email" type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
                     </div>
+                    {!userId && (
+                      <div className="space-y-2">
+                        <label htmlFor="password" className="text-white/70 text-sm font-bold uppercase tracking-widest">Create Password *</label>
+                        <input id="password" required name="password" type="password" minLength={6} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Minimum 6 characters" />
+                        <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">For your new dashboard account</p>
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <label htmlFor="tournamentType" className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
                       <select id="tournamentType" required name="tournamentType" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" value={matchMode.toLowerCase()} onChange={() => {}}>

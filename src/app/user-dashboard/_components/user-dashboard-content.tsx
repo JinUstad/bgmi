@@ -13,6 +13,7 @@ export default function UserDashboardContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id');
   const [data, setData] = useState<any>(null);
+  const [authUser, setAuthUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [matchChats, setMatchChats] = useState<any[]>([]);
@@ -27,6 +28,13 @@ export default function UserDashboardContent() {
     const fetchRegistration = async () => {
       // First try to get by orderId if it exists, otherwise by current logged in user
       let regData = null;
+      let currentUser = null;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        currentUser = user;
+        setAuthUser(user);
+      }
 
       if (orderId) {
         const { data, error } = await supabase
@@ -36,12 +44,11 @@ export default function UserDashboardContent() {
           .single();
         if (!error) regData = data;
       } else {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
+        if (currentUser) {
           const { data, error } = await supabase
             .from('registrations')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('user_id', currentUser.id)
             .order('created_at', { ascending: false })
             .limit(1)
             .single();
@@ -242,18 +249,31 @@ export default function UserDashboardContent() {
     );
   }
 
-  if (!data) {
+  if (!data && !authUser) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
         <AlertCircle className="w-16 h-16 text-red-500 mb-6" />
-        <h1 className="text-3xl font-black font-heading uppercase text-white mb-4">Record Not Found</h1>
-        <p className="text-white/60 text-center mb-8">We couldn&apos;t find a registration associated with this order ID.</p>
-        <Link href="/registration">
-          <Button glow>Register Now</Button>
+        <h1 className="text-3xl font-black font-heading uppercase text-white mb-4">Not Logged In</h1>
+        <p className="text-white/60 text-center mb-8">Please login to view your dashboard.</p>
+        <Link href="/login">
+          <Button glow>Login Now</Button>
         </Link>
       </div>
     );
   }
+
+  // Use dummy data if no registration is found but user is logged in
+  const displayData = data || {
+    full_name: authUser?.user_metadata?.full_name || authUser?.email?.split('@')[0] || 'Player',
+    payment_status: 'none',
+    payment_amount: 0,
+    team_name: '-',
+    bgmi_id: '-',
+    mobile_number: '-',
+    tournament_type: '-',
+    time_slot: '-',
+    cashfree_order_id: '-',
+  };
 
   return (
     <div className="min-h-screen bg-black relative pb-20">
@@ -276,22 +296,24 @@ export default function UserDashboardContent() {
               </div>
               <div>
                 <h1 className="text-3xl md:text-5xl font-black font-heading uppercase text-white tracking-tighter">
-                  Welcome, <span className="text-pubg-yellow">{data.full_name}</span>
+                  Welcome, <span className="text-pubg-yellow">{displayData.full_name}</span>
                 </h1>
                 <p className="text-white/60 text-lg mt-1">Player Dashboard & Registration Details</p>
               </div>
             </div>
-            <Button 
-              onClick={handleDownloadPDF} 
-              disabled={downloading}
-              glow
-              className="shrink-0"
-            >
-              <span className="flex items-center gap-2">
-                {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                <span>{downloading ? 'Generating...' : 'Download Receipt'}</span>
-              </span>
-            </Button>
+            {data && (
+              <Button 
+                onClick={handleDownloadPDF} 
+                disabled={downloading}
+                glow
+                className="shrink-0"
+              >
+                <span className="flex items-center gap-2">
+                  {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  <span>{downloading ? 'Generating...' : 'Download Receipt'}</span>
+                </span>
+              </Button>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -308,7 +330,8 @@ export default function UserDashboardContent() {
                   <div>
                     <p className="text-white/50 text-xs font-bold uppercase tracking-widest">Status</p>
                     <p className="text-white font-bold text-xl uppercase">
-                      {data.payment_status === 'verified' ? 'Registered' : 'Pending'}
+                      {displayData.payment_status === 'verified' ? 'Registered' : 
+                       displayData.payment_status === 'none' ? 'No Active Tournaments' : 'Pending'}
                     </p>
                   </div>
                 </div>
@@ -345,7 +368,7 @@ export default function UserDashboardContent() {
                   </div>
                   <div>
                     <p className="text-white/50 text-xs font-bold uppercase tracking-widest">Amount Paid</p>
-                    <p className="text-white font-bold text-3xl">₹{data.payment_amount || 0}</p>
+                    <p className="text-white font-bold text-3xl">₹{displayData.payment_amount || 0}</p>
                   </div>
                 </div>
               </Card>
@@ -362,50 +385,62 @@ export default function UserDashboardContent() {
                 <h2 className="text-2xl font-black font-heading uppercase text-white">
                   Registration Details
                 </h2>
-                <button 
-                  onClick={handleDownloadPDF}
-                  disabled={downloading}
-                  className="text-pubg-yellow hover:text-white transition-colors text-sm font-bold uppercase tracking-widest flex items-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  PDF
-                </button>
+                {data && (
+                  <button 
+                    onClick={handleDownloadPDF}
+                    disabled={downloading}
+                    className="text-pubg-yellow hover:text-white transition-colors text-sm font-bold uppercase tracking-widest flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    PDF
+                  </button>
+                )}
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Team Name</p>
-                    <p className="text-white text-lg font-medium">{data.team_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">BGMI ID</p>
-                    <p className="text-pubg-yellow text-lg font-bold font-mono">{data.bgmi_id}</p>
-                  </div>
-                  <div>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Contact</p>
-                    <p className="text-white text-lg">{data.mobile_number}</p>
-                  </div>
+              {!data ? (
+                <div className="text-center py-8">
+                  <Gamepad2 className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                  <p className="text-white/50">You haven&apos;t registered for any upcoming tournaments yet.</p>
+                  <Link href="/registration">
+                    <Button glow className="mt-4">Register Now</Button>
+                  </Link>
                 </div>
-                
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Tournament Type</p>
-                    <p className="text-white text-lg capitalize">{data.tournament_type}</p>
-                  </div>
-                  <div>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Preferred Time Slot</p>
-                    <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg mt-1">
-                      <Calendar className="w-4 h-4 text-pubg-yellow" />
-                      <span className="text-white text-sm font-medium">{data.time_slot}</span>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Team Name</p>
+                      <p className="text-white text-lg font-medium">{displayData.team_name}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">BGMI ID</p>
+                      <p className="text-pubg-yellow text-lg font-bold font-mono">{displayData.bgmi_id}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Contact</p>
+                      <p className="text-white text-lg">{displayData.mobile_number}</p>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Order ID</p>
-                    <p className="text-white/70 text-sm font-mono bg-white/5 p-2 rounded">{data.cashfree_order_id}</p>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Tournament Type</p>
+                      <p className="text-white text-lg capitalize">{displayData.tournament_type}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Preferred Time Slot</p>
+                      <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg mt-1">
+                        <Calendar className="w-4 h-4 text-pubg-yellow" />
+                        <span className="text-white text-sm font-medium">{displayData.time_slot}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Order ID</p>
+                      <p className="text-white/70 text-sm font-mono bg-white/5 p-2 rounded">{displayData.cashfree_order_id}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Card>
           </motion.div>
 

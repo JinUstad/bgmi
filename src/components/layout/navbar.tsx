@@ -156,12 +156,12 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={handleGoogleLogin}
+              <Link
+                href="/login"
                 className="px-6 py-2 border border-white/20 text-white font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white/10 transition-colors"
               >
                 Login
-              </button>
+              </Link>
             )}
           </nav>
 
@@ -240,13 +240,14 @@ export function Navbar() {
                 <LogOut className="w-5 h-5" /> Logout
               </button>
             </div>
-          ) : (
-            <button
-              onClick={() => { handleGoogleLogin(); setIsMobileMenuOpen(false); }}
+            ) : (
+            <Link
+              href="/login"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="block w-full p-4 text-center border border-white/20 text-white font-bold uppercase tracking-widest rounded-lg hover:bg-white/10 transition-colors"
             >
-              Login with Google
-            </button>
+              Login
+            </Link>
           )}
         </motion.div>
       )}
