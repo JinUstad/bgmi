@@ -296,11 +296,11 @@ export default function UserDashboardContent() {
               <Card className="p-6 border-white/10 bg-[#111]/80 backdrop-blur-md">
                 <div className="flex flex-col items-center text-center">
                   <img
-                    src={authUser?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${displayData.full_name}&background=random`}
+                    src={authUser?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${displayData.team_name !== '-' ? displayData.team_name : displayData.full_name}&background=random`}
                     alt="User Avatar"
                     className="w-24 h-24 rounded-full border-4 border-pubg-yellow/30 mb-4"
                   />
-                  <h3 className="text-xl font-black text-white uppercase tracking-wider">{displayData.full_name}</h3>
+                  <h3 className="text-xl font-black text-white uppercase tracking-wider">{displayData.team_name !== '-' ? displayData.team_name : displayData.full_name}</h3>
                   <p className="text-white/50 text-sm">{authUser?.email}</p>
                 </div>
               </Card>
@@ -330,16 +330,17 @@ export default function UserDashboardContent() {
                 >
                   <MessageSquare className="w-5 h-5" /> Announcements
                 </button>
-                {data && (
-                  <button
-                    onClick={handleDownloadPDF}
-                    disabled={downloading}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold uppercase tracking-widest text-blue-400 hover:bg-blue-500/10"
-                  >
-                    {downloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />} 
-                    {downloading ? 'Downloading...' : 'Receipt'}
-                  </button>
-                )}
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={!data || downloading}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold uppercase tracking-widest",
+                    !data ? "text-white/30 cursor-not-allowed" : "text-blue-400 hover:bg-blue-500/10"
+                  )}
+                >
+                  {downloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />} 
+                  {downloading ? 'Downloading...' : 'Receipt'}
+                </button>
                 <div className="h-px bg-white/10 my-2" />
                 <button
                   onClick={handleLogout}

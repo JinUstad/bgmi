@@ -22,6 +22,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [liveStreamSettings, setLiveStreamSettings] = useState({ url: '', enabled: false });
   const [user, setUser] = useState<any>(null);
+  const [userReg, setUserReg] = useState<any>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -44,6 +45,16 @@ export function Navbar() {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (user) {
+        const { data } = await supabase
+          .from('registrations')
+          .select('full_name, team_name')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        if (data) setUserReg(data);
+      }
     };
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -135,13 +146,13 @@ export function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/user-dashboard" className="flex items-center gap-3 px-5 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all">
+                <Link href="/user-dashboard" className="flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all">
                   <img
-                    src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user.email || 'User'}&background=random`}
+                    src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${userReg?.team_name && userReg.team_name !== '-' ? userReg.team_name : (userReg?.full_name || user.email || 'User')}&background=random`}
                     alt="User"
-                    className="w-8 h-8 rounded-full border border-pubg-yellow"
+                    className="w-full h-full rounded-full border border-pubg-yellow"
+                    title="My Dashboard"
                   />
-                  <span className="text-sm font-bold uppercase tracking-widest text-white">My Dashboard</span>
                 </Link>
               </div>
             ) : (
@@ -214,13 +225,12 @@ export function Navbar() {
 
           {user ? (
             <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
-              <Link href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-3 p-4 bg-white/10 hover:bg-white/20 transition-colors border border-white/5 rounded-xl">
+              <Link href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center p-4 bg-white/10 hover:bg-white/20 transition-colors border border-white/5 rounded-xl">
                  <img
-                  src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user.email || 'User'}&background=random`}
+                  src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${userReg?.team_name && userReg.team_name !== '-' ? userReg.team_name : (userReg?.full_name || user.email || 'User')}&background=random`}
                   alt="User"
-                  className="w-8 h-8 rounded-full border border-pubg-yellow"
+                  className="w-10 h-10 rounded-full border border-pubg-yellow"
                 />
-                <span className="font-bold uppercase tracking-widest text-white">My Dashboard</span>
               </Link>
             </div>
             ) : (
