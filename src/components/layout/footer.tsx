@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Crosshair, Share2 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  
+  if (pathname?.startsWith('/user-dashboard')) return null;
+
   return (
     <footer className="bg-black border-t border-white/10 pt-16 pb-8 relative z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

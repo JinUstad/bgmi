@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
-import { Trophy, Calendar, CheckCircle2, IndianRupee, Loader2, Gamepad2, AlertCircle, Download, MessageSquare, Copy, ShieldAlert, User, LogOut, Send, Zap } from 'lucide-react';
+import { Trophy, Calendar, CheckCircle2, IndianRupee, Loader2, Gamepad2, AlertCircle, Download, MessageSquare, Copy, ShieldAlert, User, LogOut, Send, Zap, Menu, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ export default function UserDashboardContent() {
   const [matchChats, setMatchChats] = useState<any[]>([]);
   const [copiedText, setCopiedText] = useState('');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'announcements' | 'upcoming'>('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Registration State
   const [cashfree, setCashfree] = useState<any>(null);
@@ -423,16 +424,29 @@ export default function UserDashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-black relative pb-20">
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-pubg-yellow/10 to-transparent" />
+    <div className="min-h-screen bg-[#0a0a0a] relative pb-20">
+      {/* Top bar for mobile */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-[#111] border-b border-white/10 sticky top-0 z-50">
+         <div className="font-heading font-black text-xl text-white uppercase tracking-wider">
+           Player <span className="text-pubg-yellow">Dashboard</span>
+         </div>
+         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-white/70 hover:text-white">
+           {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+         </button>
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 pt-32">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-          
+      {/* Main container */}
+      <div className="flex relative z-10 max-w-[1440px] mx-auto">
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className={cn(
+             "fixed lg:sticky top-0 lg:top-0 left-0 h-full lg:h-screen w-72 bg-[#111] lg:bg-transparent border-r border-white/10 z-40 transition-transform duration-300 lg:translate-x-0 p-6 overflow-y-auto",
+             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          )}>
+            <div className="hidden lg:block font-heading font-black text-2xl text-white uppercase tracking-wider mb-8">
+              Player <span className="text-pubg-yellow">Dashboard</span>
+            </div>
+            
+            <div className="space-y-6">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <Card className="p-6 border-white/10 bg-[#111]/80 backdrop-blur-md">
                 <div className="flex flex-col items-center text-center">
@@ -463,7 +477,7 @@ export default function UserDashboardContent() {
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
               <Card className="p-4 border-white/10 bg-[#111]/80 backdrop-blur-md space-y-2">
                 <button
-                  onClick={() => setActiveTab('dashboard')}
+                  onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold uppercase tracking-widest",
                     activeTab === 'dashboard' ? "bg-pubg-yellow text-black" : "text-white/70 hover:bg-white/5 hover:text-white"
@@ -472,7 +486,7 @@ export default function UserDashboardContent() {
                   <User className="w-5 h-5" /> Dashboard
                 </button>
                 <button
-                  onClick={() => setActiveTab('upcoming')}
+                  onClick={() => { setActiveTab('upcoming'); setIsSidebarOpen(false); }}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold uppercase tracking-widest relative overflow-hidden",
                     activeTab === 'upcoming' ? "bg-pubg-yellow text-black" : "text-white/70 hover:bg-white/5 hover:text-white"
@@ -485,7 +499,7 @@ export default function UserDashboardContent() {
                   )}
                 </button>
                 <button
-                  onClick={() => setActiveTab('announcements')}
+                  onClick={() => { setActiveTab('announcements'); setIsSidebarOpen(false); }}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-bold uppercase tracking-widest",
                     activeTab === 'announcements' ? "bg-pubg-yellow text-black" : "text-white/70 hover:bg-white/5 hover:text-white"
@@ -503,9 +517,15 @@ export default function UserDashboardContent() {
               </Card>
             </motion.div>
           </div>
+          </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
+          {/* Overlay for mobile sidebar */}
+          {isSidebarOpen && (
+             <div className="fixed inset-0 bg-black/80 z-30 lg:hidden" onClick={() => setIsSidebarOpen(false)} />
+          )}
+
+          {/* Main Content Area */}
+          <div className="flex-1 p-4 lg:p-8 overflow-x-hidden min-h-screen">
             {activeTab === 'dashboard' ? (
               <div className="space-y-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4 mb-6">
@@ -834,9 +854,7 @@ export default function UserDashboardContent() {
               </motion.div>
             )}
           </div>
-
         </div>
       </div>
-    </div>
   );
 }

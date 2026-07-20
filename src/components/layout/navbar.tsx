@@ -12,8 +12,9 @@ import { LogOut, User } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About Platform" },
+  { href: "/about", label: "About" },
   { href: "/tournaments", label: "Tournaments" },
+  { href: "/results", label: "Results" },
   { href: "/blogs", label: "Blogs" },
 ];
 
@@ -84,11 +85,15 @@ export function Navbar() {
     window.location.href = '/registration';
   };
 
+  if (pathname?.startsWith('/user-dashboard')) {
+    return null;
+  }
+
   return (
     <header
       className={cn(
         "fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1440px] z-50 transition-all duration-300",
-        isScrolled ? "bg-black/80 backdrop-blur-md border-b border-white/10 py-4" : "bg-transparent py-6"
+        isScrolled ? "bg-black/80 backdrop-blur-md border-b border-white/10 py-2" : "bg-transparent py-4"
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,7 +146,7 @@ export function Navbar() {
               href="/registration"
               className="px-6 py-2 bg-pubg-yellow text-black font-black uppercase tracking-widest text-sm rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all shadow-lg box-glow"
             >
-              Registration Now
+              Register Now
             </Link>
 
             {user ? (
@@ -220,7 +225,7 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
             className="block w-full p-4 text-center bg-pubg-yellow text-black font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none shadow-lg box-glow"
           >
-            Registration Now
+            Register Now
           </Link>
 
           {user ? (
