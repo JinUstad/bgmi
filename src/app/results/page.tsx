@@ -10,6 +10,8 @@ type Registration = {
   team_name: string;
   full_name: string;
   bgmi_id: string;
+  tournament_type?: string;
+  time_slot?: string;
 };
 
 type TeamMatch = {
