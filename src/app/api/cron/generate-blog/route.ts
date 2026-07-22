@@ -12,7 +12,15 @@ const IDEAS = [
   { topic: "BGMI Advanced Movement Guide: Jiggle and Drop Shot", category: "Gaming Tips", keyword: "BGMI Movement Guide" },
   { topic: "How to qualify for BGIS 2026", category: "Tournament Guides", keyword: "BGIS 2026 Qualification" },
   { topic: "Best landing spots in Erangel for competitive BGMI", category: "Esports Guides", keyword: "Erangel Landing Spots" },
-  { topic: "The role of the IGL in a BGMI team", category: "Esports Guides", keyword: "BGMI IGL Guide" }
+  { topic: "The role of the IGL in a BGMI team", category: "Esports Guides", keyword: "BGMI IGL Guide" },
+  { topic: "How to Improve Close Range Combat in BGMI", category: "Gaming Tips", keyword: "BGMI Close Range" },
+  { topic: "Best Sensitivity Settings for BGMI 2026", category: "Gaming Tips", keyword: "BGMI Sensitivity Settings" },
+  { topic: "Why Game Sense is More Important Than Aim in BGMI", category: "Esports Guides", keyword: "BGMI Game Sense" },
+  { topic: "Top 10 Emerging BGMI Players to Watch", category: "Gaming News", keyword: "Emerging BGMI Players" },
+  { topic: "How to survive hot drops in competitive BGMI", category: "Gaming Tips", keyword: "BGMI Hot Drops" },
+  { topic: "The psychology of a clutch in BGMI", category: "Esports Guides", keyword: "BGMI Clutch Mentality" },
+  { topic: "Common mistakes amateur BGMI teams make", category: "Tournament Guides", keyword: "BGMI Amateur Mistakes" },
+  { topic: "The ultimate guide to using throwables in BGMI", category: "Gaming Tips", keyword: "BGMI Throwables Guide" }
 ];
 
 export async function GET(request: Request) {
@@ -26,8 +34,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Select a random topic idea
-    const randomIdea = IDEAS[Math.floor(Math.random() * IDEAS.length)];
+    // 2. Init Supabase and fetch existing blogs to avoid duplicates
+    const supabaseAdmin = createAdminClient();
+    
+    const { data: existingBlogs } = await supabaseAdmin
+      .from('ai_blogs')
+      .select('focus_keyword');
+      
+    const usedKeywords = existingBlogs?.map((b: any) => b.focus_keyword) || [];
+    
+    // Filter out ideas that have already been generated
+    const availableIdeas = IDEAS.filter(idea => !usedKeywords.includes(idea.keyword));
+    
+    // Select a random topic idea from available ones, or fallback to all if exhausted
+    const pool = availableIdeas.length > 0 ? availableIdeas : IDEAS;
+    const randomIdea = pool[Math.floor(Math.random() * pool.length)];
 
     // 3. Generate the blog using Gemini
     const blogData = await generateBlogWithGemini({
@@ -37,8 +58,6 @@ export async function GET(request: Request) {
     });
 
     // 4. Save to Supabase database
-    const supabaseAdmin = createAdminClient();
-    
     const { data: existing } = await supabaseAdmin
       .from('ai_blogs')
       .select('id')
