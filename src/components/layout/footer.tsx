@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 export function Footer() {
   const pathname = usePathname();
-  
+
   if (pathname?.startsWith('/user-dashboard')) return null;
 
   return (
@@ -25,12 +25,12 @@ export function Footer() {
             </p>
             <div className="flex gap-4 items-center">
               <Share2 className="w-5 h-5 text-pubg-yellow mr-2" />
-              <a href="#" aria-label="Visit our YouTube channel" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
+              <a href="https://www.youtube.com/@xyloesportsofficial" target="_blank" rel="noopener noreferrer" aria-label="Visit our YouTube channel" className="font-bold text-sm uppercase tracking-widest text-white/80 hover:text-pubg-yellow transition-colors">
                 YouTube
               </a>
             </div>
           </div>
-          
+
           <div>
             <h3 className="text-lg font-bold uppercase tracking-widest text-pubg-yellow mb-6">Quick Links</h3>
             <ul className="space-y-4">
@@ -41,7 +41,7 @@ export function Footer() {
               <li><Link href="/about" className="text-white/90 font-medium hover:text-pubg-yellow transition-colors">About Platform</Link></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="text-lg font-bold uppercase tracking-widest text-pubg-yellow mb-6">Support</h3>
             <ul className="space-y-4">
@@ -51,7 +51,7 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        
+
         <div className="pt-8 border-t border-white/10 text-center flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white/70 text-sm">
             © {new Date().getFullYear()} Xyloesports. All rights reserved.
