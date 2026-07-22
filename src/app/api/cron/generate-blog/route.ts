@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { generateBlogWithGemini } from '@/lib/gemini/blog-generator';
 import { createAdminClient } from '@/lib/supabase';
 
+export const runtime = 'edge';
+
 const IDEAS = [
   { topic: "How to Win BGMI Tournaments in 2026", category: "Esports Guides", keyword: "BGMI Tournaments" },
   { topic: "Top 5 Weapon Combinations for BGMI Esports", category: "Gaming Tips", keyword: "BGMI Weapon Combinations" },
