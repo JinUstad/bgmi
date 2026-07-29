@@ -10,6 +10,12 @@ import { cn } from "@/lib/utils";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
+const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
 export function PastLiveStreams() {
   const [streams, setStreams] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -174,22 +180,23 @@ export function PastLiveStreams() {
           ))}
         </div>
 
-        {totalCount > 4 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex justify-center"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col sm:flex-row justify-center items-center gap-4"
+        >
+          <a
+            href="https://www.youtube.com/@xyloesportsofficial"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-4 bg-red-600 border-2 border-red-600 text-white font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl hover:bg-red-700 hover:border-red-700 transition-all duration-300 shadow-[0_0_25px_rgba(220,38,38,0.4)] hover:shadow-[0_0_35px_rgba(220,38,38,0.7)] flex items-center gap-3 group relative overflow-hidden"
           >
-            <Link
-              href="/past-streams"
-              className="px-8 py-4 bg-transparent border-2 border-pubg-yellow text-pubg-yellow font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl hover:bg-pubg-yellow hover:text-black transition-all duration-300 box-glow relative overflow-hidden group"
-            >
-              <span className="relative z-10">View All Streams</span>
-              <div className="absolute inset-0 bg-pubg-yellow transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out"></div>
-            </Link>
-          </motion.div>
-        )}
+            <YoutubeIcon className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+            <span className="relative z-10">View All On YouTube</span>
+            <ExternalLink className="w-4 h-4 text-white/80" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

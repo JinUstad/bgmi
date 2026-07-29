@@ -15,6 +15,7 @@ export function UpcomingTournament() {
     map_area?: string;
     prize?: string;
     slots?: string[];
+    is_active?: boolean;
   } | null>(null);
   const [fee, setFee] = useState<string>("220");
 
@@ -45,7 +46,7 @@ export function UpcomingTournament() {
     fetchData();
   }, []);
 
-  if (!data) return null;
+  if (!data || data.is_active === false) return null;
 
   return (
     <section className="relative py-24 overflow-hidden border-y border-white/10">
