@@ -116,7 +116,7 @@ export default function UserDashboardContent() {
         .limit(1)
         .single();
       
-      if (tournamentData) {
+      if (tournamentData && tournamentData.is_active !== false) {
         setUpcomingTournament(tournamentData);
         if (tournamentData.slots && tournamentData.slots.length > 0) {
           setTimeSlots(tournamentData.slots.map((s: any) => {
@@ -128,11 +128,11 @@ export default function UserDashboardContent() {
             return { value: timeStr, label: timeStr, capacity: s.capacity || tournamentData.slot_capacity || 6 };
           }));
         } else {
-          setTimeSlots([
-            { value: "10:00 AM - 11:00 AM", label: "10:00 AM - 11:00 AM", capacity: 6 },
-            { value: "Night Match 2 AM", label: "Night Match 2 AM", capacity: 6 }
-          ]);
+          setTimeSlots([]);
         }
+      } else {
+        setUpcomingTournament(null);
+        setTimeSlots([]);
       }
 
       const { data: slotData } = await supabase.from('registrations').select('time_slot');

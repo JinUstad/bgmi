@@ -29,6 +29,8 @@ export default function ContactContent() {
   const [showPassword, setShowPassword] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
+  const [isTournamentActive, setIsTournamentActive] = useState<boolean>(true);
+
   useEffect(() => {
     if (formRef.current) {
       formRef.current.reset();
@@ -63,12 +65,20 @@ export default function ContactContent() {
     const fetchTournamentDetails = async () => {
       const { data, error } = await supabase
         .from('upcoming_tournaments')
-        .select('slots, slot_capacity, match_mode')
+        .select('slots, slot_capacity, match_mode, is_active')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
         
       if (!error && data) {
+        const active = data.is_active !== false;
+        setIsTournamentActive(active);
+
+        if (!active) {
+          setTimeSlots([]);
+          return;
+        }
+
         if (data.match_mode) {
           setMatchMode(data.match_mode);
         }
@@ -84,19 +94,14 @@ export default function ContactContent() {
             return { value: timeStr, label: timeStr, capacity: s.capacity || data.slot_capacity || 6 };
           }));
         } else {
-          setTimeSlots([
-            { value: "10:00 AM - 11:00 AM", label: "10:00 AM - 11:00 AM", capacity: 6 },
-            { value: "Night Match 2 AM", label: "Night Match 2 AM", capacity: 6 }
-          ]);
+          setTimeSlots([]);
         }
         if (data.slot_capacity) {
           setMaxSlotCapacity(data.slot_capacity);
         }
       } else {
-        setTimeSlots([
-          { value: "10:00 AM - 11:00 AM", label: "10:00 AM - 11:00 AM", capacity: 6 },
-          { value: "Night Match 2 AM", label: "Night Match 2 AM", capacity: 6 }
-        ]);
+        setIsTournamentActive(false);
+        setTimeSlots([]);
       }
     };
 
@@ -405,43 +410,54 @@ export default function ContactContent() {
                     <div className="space-y-2 md:col-span-2">
                       <fieldset>
                         <legend className="text-white/70 text-sm font-bold uppercase tracking-widest mb-3">Time Slot *</legend>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {timeSlots.map((slot) => {
-                            const count = slotCounts[slot.value] || 0;
-                            const isFull = count >= slot.capacity;
-                            return (
-                              <label
-                                key={slot.value}
-                                className={`relative flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${isFull
-                                    ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60'
-                                    : 'border-white/10 bg-black hover:border-pubg-yellow/50 hover:bg-pubg-yellow/5 has-[:checked]:border-pubg-yellow has-[:checked]:bg-pubg-yellow/10'
-                                  }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name="timeSlot"
-                                  value={slot.value}
-                                  required
-                                  disabled={isFull}
-                                  className="w-4 h-4 accent-pubg-yellow"
-                                />
-                                <div className="flex-1">
-                                  <span className={`text-sm font-medium ${isFull ? 'text-white/40 line-through' : 'text-white'}`}>
-                                    {slot.label}
-                                  </span>
-                                  <div className={`text-xs mt-0.5 ${isFull ? 'text-red-400' : 'text-white/40'}`}>
-                                    {isFull ? 'FULL' : `${count}/${slot.capacity} registered`}
+                        {!isTournamentActive || timeSlots.length === 0 ? (
+                          <div className="p-6 rounded-xl bg-red-500/10 border border-red-500/30 text-center space-y-2">
+                            <div className="text-red-400 font-black text-base uppercase tracking-wider flex items-center justify-center gap-2">
+                              ⚠️ REGISTRATION CLOSED
+                            </div>
+                            <p className="text-white/70 text-xs font-medium uppercase tracking-wider">
+                              No active tournament available for registration right now. Please check back later!
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {timeSlots.map((slot) => {
+                              const count = slotCounts[slot.value] || 0;
+                              const isFull = count >= slot.capacity;
+                              return (
+                                <label
+                                  key={slot.value}
+                                  className={`relative flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${isFull
+                                      ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60'
+                                      : 'border-white/10 bg-black hover:border-pubg-yellow/50 hover:bg-pubg-yellow/5 has-[:checked]:border-pubg-yellow has-[:checked]:bg-pubg-yellow/10'
+                                    }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="timeSlot"
+                                    value={slot.value}
+                                    required
+                                    disabled={isFull}
+                                    className="w-4 h-4 accent-pubg-yellow"
+                                  />
+                                  <div className="flex-1">
+                                    <span className={`text-sm font-medium ${isFull ? 'text-white/40 line-through' : 'text-white'}`}>
+                                      {slot.label}
+                                    </span>
+                                    <div className={`text-xs mt-0.5 ${isFull ? 'text-red-400' : 'text-white/40'}`}>
+                                      {isFull ? 'FULL' : `${count}/${slot.capacity} registered`}
+                                    </div>
                                   </div>
-                                </div>
-                                {isFull && (
-                                  <span className="px-2 py-0.5 bg-red-500/20 border border-red-500/30 rounded text-red-400 text-[10px] font-bold uppercase tracking-wider">
-                                    Completed
-                                  </span>
-                                )}
-                              </label>
-                            );
-                          })}
-                        </div>
+                                  {isFull && (
+                                    <span className="px-2 py-0.5 bg-red-500/20 border border-red-500/30 rounded text-red-400 text-[10px] font-bold uppercase tracking-wider">
+                                      Completed
+                                    </span>
+                                  )}
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
                       </fieldset>
                     </div>
                   </div>
@@ -459,7 +475,8 @@ export default function ContactContent() {
                         required
                         checked={termsAccepted}
                         onChange={(e) => setTermsAccepted(e.target.checked)}
-                        className="w-5 h-5 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer shrink-0"
+                        disabled={!isTournamentActive}
+                        className="w-5 h-5 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer shrink-0 disabled:opacity-50"
                       />
                       <label htmlFor="terms" className="text-white/70 text-sm cursor-pointer select-none">
                         I accept the{" "}
@@ -470,10 +487,10 @@ export default function ContactContent() {
                     </div>
 
                     <div className="flex justify-start w-full">
-                      <Button type="submit" size="lg" glow disabled={loading || !termsAccepted} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
+                      <Button type="submit" size="lg" glow disabled={loading || !termsAccepted || !isTournamentActive} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
                         <span className="flex items-center gap-2">
                           {loading ? <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" /> : <Send className="w-5 h-5" aria-hidden="true" />}
-                          <span>{loading ? "Processing Payment..." : `Pay & Register (₹${registrationFee})`}</span>
+                          <span>{!isTournamentActive ? "Registration Closed" : loading ? "Processing Payment..." : `Pay & Register (₹${registrationFee})`}</span>
                         </span>
                       </Button>
                     </div>

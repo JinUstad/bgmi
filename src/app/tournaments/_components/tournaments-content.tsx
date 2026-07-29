@@ -185,9 +185,11 @@ export default function TournamentsContent() {
     });
   }, { scope: faqRef });
 
+  const isTournamentActive = upcomingTournamentData && upcomingTournamentData.is_active !== false;
+
   const dynamicTournaments = TOURNAMENTS.map(t => {
     let isThisActive = false;
-    if (upcomingTournamentData) {
+    if (isTournamentActive && upcomingTournamentData) {
       const activeMode = upcomingTournamentData.match_mode?.toLowerCase() || '';
       isThisActive = t.type.toLowerCase() === activeMode;
       // If the active mode isn't Solo/Duo/Squad (e.g. TDM), default to the Squad card (id 3)
@@ -196,7 +198,7 @@ export default function TournamentsContent() {
       }
     }
 
-    if (isThisActive && upcomingTournamentData) {
+    if (isThisActive && upcomingTournamentData && isTournamentActive) {
       let totalCap = 100;
       if (upcomingTournamentData.slots && Array.isArray(upcomingTournamentData.slots)) {
         totalCap = upcomingTournamentData.slots.reduce((acc: number, slot: any) => acc + (parseInt(slot.capacity) || 0), 0);
@@ -220,7 +222,7 @@ export default function TournamentsContent() {
       };
     }
     
-    return { ...t, disabled: true };
+    return { ...t, entryFee: "₹0", prizePool: "₹0", time: "---", disabled: true };
   });
 
   const filteredTournaments = dynamicTournaments.filter((t) => {
@@ -330,17 +332,21 @@ export default function TournamentsContent() {
                 <div className="flex-1 text-center md:text-left prize-content relative z-10">
                   <div className="inline-block px-3 py-1 mb-4 rounded-full bg-orange-500/20 border border-orange-500/50 text-orange-500 text-xs font-bold uppercase tracking-widest">Tactical Showdown</div>
                   <h2 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading uppercase text-white mb-4">Daily <span className="text-orange-500 text-glow drop-shadow-[0_0_15px_rgba(249,115,22,0.8)]">Battle</span></h2>
-                  <p className="text-white/80 font-bold tracking-wider text-sm md:text-base max-w-lg mx-auto md:mx-0 drop-shadow-md mb-8">Enter the battlefield for just {settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"} and stand a chance to win the grand prize of {upcomingTournamentData?.prize || "1st: ₹800 | 2nd: ₹500"}. Assemble your squad and prove your dominance.</p>
+                  <p className="text-white/80 font-bold tracking-wider text-sm md:text-base max-w-lg mx-auto md:mx-0 drop-shadow-md mb-8">
+                    {isTournamentActive 
+                      ? `Enter the battlefield for just ${settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"} and stand a chance to win the grand prize of ${upcomingTournamentData?.prize || "1st: ₹800 | 2nd: ₹500"}. Assemble your squad and prove your dominance.`
+                      : "No active tournament currently running. Registration is disabled at the moment."}
+                  </p>
                   <div className="flex flex-row items-center justify-center md:justify-start gap-6 md:gap-10 w-full md:w-auto bg-zinc-900/60 p-4 md:p-6 rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl inline-flex">
                     <div className="text-center prize-stat">
                       <div className="text-xs md:text-sm text-white/70 uppercase tracking-widest font-bold mb-1">Entry Fee</div>
-                      <div className="text-3xl md:text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">{settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"}</div>
+                      <div className="text-3xl md:text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">{isTournamentActive && settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹0"}</div>
                     </div>
                     <div className="h-12 w-px bg-white/20 hidden md:block prize-divider" />
                     <div className="h-px w-12 bg-white/20 md:hidden prize-divider" />
                     <div className="text-center prize-stat">
                       <div className="text-xs md:text-sm text-orange-500/90 uppercase tracking-widest font-bold mb-1">Winner Gets</div>
-                      <div className="text-4xl md:text-5xl font-black text-orange-500 text-glow drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]">{upcomingTournamentData?.prize || "1st: ₹800"}</div>
+                      <div className="text-4xl md:text-5xl font-black text-orange-500 text-glow drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]">{isTournamentActive ? (upcomingTournamentData?.prize || "TBA") : "TBA"}</div>
                     </div>
                   </div>
                 </div>
@@ -363,7 +369,7 @@ export default function TournamentsContent() {
             <p className="text-white/60 font-bold uppercase tracking-widest text-sm">Daily Scrims &amp; Tournament Timings</p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
-            {upcomingTournamentData?.slots && Array.isArray(upcomingTournamentData.slots) ? (
+            {isTournamentActive && upcomingTournamentData?.slots && Array.isArray(upcomingTournamentData.slots) && upcomingTournamentData.slots.length > 0 ? (
               upcomingTournamentData.slots.map((slot: any, i: number) => {
                 const timeString = `${slot.startHour}:${slot.startMin} ${slot.startAmPm} - ${slot.endHour}:${slot.endMin} ${slot.endAmPm}`;
                 return (
@@ -377,8 +383,9 @@ export default function TournamentsContent() {
                 );
               })
             ) : (
-              <div className="text-white/50 text-sm py-8 font-bold uppercase tracking-widest">
-                Loading schedule...
+              <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm">
+                <div className="text-pubg-yellow/60 font-bold text-sm uppercase tracking-widest mb-2">No Active Tournament Schedule</div>
+                <div className="text-white/50 text-xs uppercase tracking-wider">Tournament schedule is disabled at the moment. Please check back later.</div>
               </div>
             )}
           </div>
@@ -386,7 +393,7 @@ export default function TournamentsContent() {
       </section>
 
       {/* Registered Teams Section */}
-      {hasRegistrations && (
+      {isTournamentActive && hasRegistrations && (
         <section className="py-12 relative z-20 bg-black/60 border-b border-white/10">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10">
