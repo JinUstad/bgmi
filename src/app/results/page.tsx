@@ -23,8 +23,15 @@ type TeamMatch = {
   team2_id: string;
   winner_id: string | null;
   status: string;
-  team1: Registration;
-  team2: Registration;
+  team1_name?: string;
+  team1_bgmi_id?: string;
+  team1_player_name?: string;
+  team2_name?: string;
+  team2_bgmi_id?: string;
+  team2_player_name?: string;
+  winner_team_name?: string;
+  team1?: Registration;
+  team2?: Registration;
 };
 
 export default function ResultsPage() {
@@ -115,14 +122,27 @@ export default function ResultsPage() {
                       </thead>
                       <tbody className="text-sm">
                         {matches.map((match) => {
-                          const isTeam2Winner = match.winner_id === match.team2_id;
-                          
-                          let winningTeam = match.team1;
-                          let losingTeam = match.team2;
+                          const t1Name = match.team1_name || match.team1?.team_name || match.team1?.full_name || 'Team 1';
+                          const t1Bgmi = match.team1_bgmi_id || match.team1?.bgmi_id || 'Hidden';
 
-                          if (isTeam2Winner) {
-                            winningTeam = match.team2;
-                            losingTeam = match.team1;
+                          const t2Name = match.team2_name || match.team2?.team_name || match.team2?.full_name || 'Team 2';
+                          const t2Bgmi = match.team2_bgmi_id || match.team2?.bgmi_id || 'Hidden';
+
+                          const isTeam2Winner = (match.winner_id && match.winner_id === match.team2_id) || (match.winner_team_name && match.winner_team_name === t2Name);
+                          const isTeam1Winner = (match.winner_id && match.winner_id === match.team1_id) || (match.winner_team_name && match.winner_team_name === t1Name);
+                          const hasWinner = isTeam1Winner || isTeam2Winner || match.winner_id || match.winner_team_name;
+
+                          let winningTeamName = isTeam2Winner ? t2Name : t1Name;
+                          let winningBgmi = isTeam2Winner ? t2Bgmi : t1Bgmi;
+
+                          let losingTeamName = isTeam2Winner ? t1Name : t2Name;
+                          let losingBgmi = isTeam2Winner ? t1Bgmi : t2Bgmi;
+
+                          if (!hasWinner && match.status === 'pending') {
+                            winningTeamName = t1Name;
+                            winningBgmi = t1Bgmi;
+                            losingTeamName = t2Name;
+                            losingBgmi = t2Bgmi;
                           }
 
                           return (
@@ -135,15 +155,15 @@ export default function ResultsPage() {
                               
                               <td className="p-4">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-pubg-yellow text-base md:text-lg truncate max-w-[150px] md:max-w-[200px]" title={winningTeam?.team_name || winningTeam?.full_name}>
-                                    {winningTeam?.team_name || winningTeam?.full_name || 'TBA'}
+                                  <span className="font-bold text-pubg-yellow text-base md:text-lg truncate max-w-[150px] md:max-w-[200px]" title={winningTeamName}>
+                                    {winningTeamName}
                                   </span>
-                                  {match.winner_id && (
+                                  {hasWinner && (
                                     <Trophy className="w-4 h-4 text-pubg-yellow" />
                                   )}
                                 </div>
                                 <div className="text-white/40 font-mono text-[10px] mt-1 flex items-center gap-1">
-                                  <Shield className="w-3 h-3" /> {winningTeam?.bgmi_id || 'Hidden'}
+                                  <Shield className="w-3 h-3" /> {winningBgmi}
                                 </div>
                               </td>
                               
@@ -160,11 +180,11 @@ export default function ResultsPage() {
 
                               <td className="p-4 text-right">
                                 <div className="flex flex-col items-end">
-                                  <span className={`font-medium text-base md:text-lg truncate max-w-[150px] md:max-w-[200px] ${match.winner_id ? 'text-white/40 line-through' : 'text-white'}`} title={losingTeam?.team_name || losingTeam?.full_name}>
-                                    {losingTeam?.team_name || losingTeam?.full_name || 'TBA'}
+                                  <span className={`font-medium text-base md:text-lg truncate max-w-[150px] md:max-w-[200px] ${hasWinner ? 'text-white/40 line-through' : 'text-white'}`} title={losingTeamName}>
+                                    {losingTeamName}
                                   </span>
                                   <div className="text-white/30 font-mono text-[10px] mt-1 flex items-center gap-1">
-                                    <Shield className="w-3 h-3" /> {losingTeam?.bgmi_id || 'Hidden'}
+                                    <Shield className="w-3 h-3" /> {losingBgmi}
                                   </div>
                                 </div>
                               </td>
