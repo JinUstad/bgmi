@@ -43,7 +43,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
               className="w-full max-w-2xl overflow-hidden rounded-md border border-white/10 bg-gunmetal/95 shadow-2xl pointer-events-auto"
             >
               <div className="flex items-center justify-between border-b border-white/10 p-4">
-                <h2 className="text-xl font-bold uppercase tracking-wider text-pubg-yellow text-glow">
+                <h2 className="text-xl font-bold uppercase tracking-wider text-[var(--theme-primary)] text-glow">
                   {title}
                 </h2>
                 <button

@@ -21,7 +21,7 @@ export function TimelineSection() {
             viewport={{ once: true }}
             className="text-3xl md:text-5xl font-black font-heading uppercase tracking-wider mb-4 text-white"
           >
-            How It <span className="text-pubg-yellow text-glow">Works</span>
+            How It <span className="text-[var(--theme-primary)] text-glow">Works</span>
           </motion.h2>
         </div>
 
@@ -39,13 +39,13 @@ export function TimelineSection() {
                 transition={{ delay: index * 0.2 }}
                 className="relative text-center"
               >
-                <div className="w-20 h-20 mx-auto bg-gunmetal border-2 border-pubg-yellow rounded-full flex items-center justify-center mb-6 relative z-10 box-glow">
+                <div className="w-20 h-20 mx-auto bg-gunmetal border-2 border-[var(--theme-primary)] rounded-full flex items-center justify-center mb-6 relative z-10 box-glow">
                   <step.icon className="w-8 h-8 text-white" />
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-accent rounded-full flex items-center justify-center text-xs font-bold text-black">
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--theme-accent)] rounded-full flex items-center justify-center text-xs font-bold text-black">
                     {index + 1}
                   </div>
                 </div>
-                <h3 className="text-xl font-bold uppercase tracking-wider mb-2 text-pubg-yellow">
+                <h3 className="text-xl font-bold uppercase tracking-wider mb-2 text-[var(--theme-primary)]">
                   {step.title}
                 </h3>
                 <p className="text-white/60 text-sm">{step.desc}</p>

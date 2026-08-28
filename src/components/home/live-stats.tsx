@@ -5,10 +5,10 @@ import { Users, Trophy, Swords, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const stats = [
-  { label: "Players Registered", value: 25000, suffix: "+", icon: Users },
-  { label: "Prize Distributed", value: 1500000, prefix: "₹", icon: Trophy },
-  { label: "Matches Hosted", value: 1200, suffix: "+", icon: Swords },
-  { label: "Active Tournaments", value: 45, icon: Target },
+  { label: "Players Registered", value: 36, suffix: "+", icon: Users },
+  { label: "Prize Distributed", value: 1200, prefix: "₹", icon: Trophy },
+  { label: "Matches Hosted", value: 1, suffix: "+", icon: Swords },
+  { label: "Active Tournaments", value: 1, icon: Target },
 ];
 
 function Counter({ value }: { value: number }) {
@@ -18,7 +18,7 @@ function Counter({ value }: { value: number }) {
     let start = 0;
     const duration = 2000;
     const increment = value / (duration / 16);
-    
+
     const timer = setInterval(() => {
       start += increment;
       if (start >= value) {
@@ -47,18 +47,18 @@ export function LiveStats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="relative p-6 rounded-md bg-gunmetal border border-white/10 group overflow-hidden"
+              className="relative p-6 rounded-tl-[48px] rounded-br-[48px] rounded-tr-lg rounded-bl-lg bg-gunmetal border-2 border-white/5 group overflow-hidden"
             >
-              <div className="absolute inset-0 bg-pubg-yellow/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-[var(--theme-primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-0 right-0 p-4 opacity-10">
                 <stat.icon className="w-24 h-24" />
               </div>
               <div className="relative z-10">
-                <stat.icon className="w-8 h-8 text-pubg-yellow mb-4" />
+                <stat.icon className="w-8 h-8 text-[var(--theme-primary)] mb-4" />
                 <div className="text-4xl font-black font-heading mb-2 text-white">
                   {stat.prefix}
                   <Counter value={stat.value} />
-                  <span className="text-pubg-yellow">{stat.suffix}</span>
+                  <span className="text-[var(--theme-primary)]">{stat.suffix}</span>
                 </div>
                 <div className="text-sm uppercase tracking-widest text-white/60 font-bold">
                   {stat.label}

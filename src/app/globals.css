@@ -1,24 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  --color-pubg-yellow: #F2A900;
+  /* Dynamic Theme Colors from ThemeProvider */
+  --color-primary: var(--color-primary, #F2A900);
+  --color-secondary: var(--color-secondary, #2E4A32);
+  --color-accent: var(--color-accent, #FF6B00);
+  
+  --color-background: var(--color-background, #000000);
+  --color-text: var(--color-text, #FFFFFF);
+  --color-muted: var(--color-muted, #888888);
+  --color-surface: var(--color-surface, #111111);
+  --color-card: var(--color-card, #222222);
+  --color-border: var(--color-border, #333333);
+  --color-glow: var(--color-glow, #FF0000);
+  --color-gradient-start: var(--gradient-start, #FF0000);
+  --color-gradient-end: var(--gradient-end, #000000);
+
+  /* Legacy Colors */
+  --color-brand-primary: var(--color-primary, #F2A900);
+  --color-brand-secondary: var(--color-secondary, #2E4A32);
+  --color-brand-accent: var(--color-accent, #FF6B00);
+  
   --color-tactical-black: #0A0A0A;
-  --color-military-green: #2E4A32;
   --color-gunmetal: #1C1C1C;
   --color-white: #FFFFFF;
-  --color-orange-accent: #FF6B00;
-
-  --color-background: var(--color-tactical-black);
-  --color-foreground: var(--color-white);
+  --color-foreground: var(--color-text);
 
   /* Font families */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+
+  /* Custom Animations */
+  --animate-golden-mist: golden-mist 8s ease-in-out infinite alternate;
+
+  @keyframes golden-mist {
+    0% { opacity: 0.1; transform: scale(1); filter: hue-rotate(0deg); }
+    50% { opacity: 0.35; transform: scale(1.05); filter: hue-rotate(15deg) brightness(1.2); }
+    100% { opacity: 0.1; transform: scale(1); filter: hue-rotate(0deg); }
+  }
 }
 
 @layer base {
   :root {
-    --background: #0A0A0A;
+    --theme-primary: #F2A900;
+    --theme-secondary: #2E4A32;
+    --theme-accent: #FF6B00;
+    --theme-bg: #0A0A0A;
+    
+    --background: var(--theme-bg);
     --foreground: #FFFFFF;
   }
 
@@ -26,6 +55,7 @@
     background-color: var(--background);
     color: var(--foreground);
     overflow-x: hidden;
+    transition: background-color 0.5s ease-in-out;
   }
 
   /* Custom Scrollbar */
@@ -33,37 +63,58 @@
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #0A0A0A;
+    background: var(--theme-bg);
   }
   ::-webkit-scrollbar-thumb {
-    background: #F2A900;
+    background: var(--theme-primary);
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #FF6B00;
+    background: var(--theme-accent);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 10px rgba(242, 169, 0, 0.5), 0 0 20px rgba(242, 169, 0, 0.3);
+    text-shadow: 0 0 5px color-mix(in srgb, var(--theme-primary) 40%, transparent), 
+                 0 0 10px color-mix(in srgb, var(--theme-primary) 20%, transparent);
   }
   
   .box-glow {
-    box-shadow: 0 0 15px rgba(242, 169, 0, 0.2), 0 0 30px rgba(242, 169, 0, 0.1);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--theme-primary) 20%, transparent), 
+                0 0 30px color-mix(in srgb, var(--theme-primary) 10%, transparent);
   }
 
-  .box-glow-orange {
-    box-shadow: 0 0 15px rgba(255, 107, 0, 0.3), 0 0 30px rgba(255, 107, 0, 0.15);
+  .box-glow-accent {
+    box-shadow: 0 0 15px color-mix(in srgb, var(--theme-accent) 30%, transparent), 
+                0 0 30px color-mix(in srgb, var(--theme-accent) 15%, transparent);
   }
 
   .military-gradient {
-    background: linear-gradient(135deg, #0A0A0A 0%, #1C1C1C 100%);
+    background: linear-gradient(135deg, var(--theme-bg) 0%, #1C1C1C 100%);
+  }
+
+  .theme-gradient {
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
   }
 
   .glassmorphism {
     background: rgba(28, 28, 28, 0.6);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .glassmorphism-theme {
+    background: color-mix(in srgb, var(--theme-primary) 5%, rgba(28, 28, 28, 0.6));
+    backdrop-filter: blur(12px);
+    border: 1px solid color-mix(in srgb, var(--theme-primary) 15%, transparent);
   }
 }

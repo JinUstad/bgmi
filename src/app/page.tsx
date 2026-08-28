@@ -1,43 +1,48 @@
-"use client";
-
+/**
+ * Home Page — Server Component
+ *
+ * Exports metadata for SEO. The interactive client components
+ * are imported and rendered here without "use client" at the page level.
+ */
+import type { Metadata } from "next";
+import { generateDynamicMetadata } from "@/lib/seo/dynamic-metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
 import { HeroSection } from "@/components/home/hero-section";
-import { LiveStats } from "@/components/home/live-stats";
-import { AboutSection } from "@/components/home/about-section";
-import { CategoriesSection } from "@/components/home/categories";
-import { TimelineSection } from "@/components/home/timeline";
-import { motion } from "framer-motion";
+import { UpcomingTournament } from "@/components/home/upcoming-tournament";
+import dynamic from "next/dynamic";
+
+const PastLiveStreams = dynamic(() => import("@/components/home/past-live-streams").then(mod => mod.PastLiveStreams), { ssr: true });
+const LiveStats = dynamic(() => import("@/components/home/live-stats").then(mod => mod.LiveStats), { ssr: true });
+const AboutSection = dynamic(() => import("@/components/home/about-section").then(mod => mod.AboutSection), { ssr: true });
+const CategoriesSection = dynamic(() => import("@/components/home/categories").then(mod => mod.CategoriesSection), { ssr: true });
+const TimelineSection = dynamic(() => import("@/components/home/timeline").then(mod => mod.TimelineSection), { ssr: true });
+const GameExpoSection = dynamic(() => import("@/components/home/game-expo-section").then(mod => mod.GameExpoSection), { ssr: true });
+const HomeCtaSection = dynamic(() => import("./_components/home-cta-section"), { ssr: true });
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("home");
+}
+
 
 export default function Home() {
   return (
     <div className="flex flex-col w-full">
+      {/* Home page breadcrumb JSON-LD */}
+      <JsonLd
+        schema={breadcrumbSchema([{ name: "Home", url: "/" }])}
+        id="home-breadcrumb"
+      />
+
       <HeroSection />
+      <UpcomingTournament />
+      <PastLiveStreams />
       <LiveStats />
       <AboutSection />
+      <GameExpoSection />
       <CategoriesSection />
       <TimelineSection />
-
-      {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden bg-pubg-yellow">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070')] bg-cover bg-center mix-blend-overlay opacity-20" />
-        <div className="container relative z-10 mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
-          >
-            <h2 className="text-4xl md:text-6xl font-black font-heading uppercase tracking-tighter text-black mb-6">
-              Ready To Become The Next Champion?
-            </h2>
-            <p className="text-xl text-black/80 font-bold mb-10">
-              Join thousands of players already competing for massive prize pools.
-            </p>
-            <button className="px-8 py-4 bg-black text-pubg-yellow font-black uppercase tracking-widest text-lg hover:bg-gunmetal transition-colors border-2 border-black">
-              Register For Next Tournament
-            </button>
-          </motion.div>
-        </div>
-      </section>
+      <HomeCtaSection />
     </div>
   );
 }
