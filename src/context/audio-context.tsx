@@ -15,7 +15,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // We create the audio element only on the client side
-    audioRef.current = new Audio("/music/bgmi_india.mp3");
+    audioRef.current = new Audio("/music/theme_music.mp3");
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
 

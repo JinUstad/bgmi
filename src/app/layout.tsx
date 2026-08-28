@@ -9,7 +9,7 @@ import { organizationSchema, websiteSchema } from "@/lib/seo/schemas";
 import { generatePageMetadata } from "@/lib/seo/metadata";
 import { SITE_CONFIG } from "@/lib/seo/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
-
+import { ThemeProvider } from "@/context/theme-context";
 // ─── Fonts ─────────────────────────────────────────────────────────────────
 const inter = Inter({
   variable: "--font-inter",
@@ -97,16 +97,18 @@ export default function RootLayout({
           id="global-schema"
         />
       </head>
-      <body className="min-h-full flex flex-col font-sans text-white selection:bg-pubg-yellow selection:text-black overflow-x-hidden">
-        <AudioProvider>
-          <div className="max-w-[1440px] mx-auto w-full flex-grow flex flex-col bg-tactical-black shadow-2xl relative min-h-screen overflow-x-hidden">
-            <Navbar />
-            <main id="main-content" className="flex-grow pt-24">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </AudioProvider>
+      <body className="min-h-full flex flex-col font-sans text-white selection:bg-[var(--theme-primary)] selection:text-black overflow-x-hidden">
+        <ThemeProvider>
+          <AudioProvider>
+            <div className="max-w-[1440px] mx-auto w-full flex-grow flex flex-col bg-[var(--theme-bg)] shadow-2xl relative min-h-screen overflow-x-hidden transition-colors duration-500">
+              <Navbar />
+              <main id="main-content" className="flex-grow pt-24">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </AudioProvider>
+        </ThemeProvider>
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
       </body>
     </html>

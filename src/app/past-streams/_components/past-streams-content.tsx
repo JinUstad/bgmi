@@ -73,7 +73,7 @@ export default function PastStreamsContent() {
       <div className="relative py-16 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[150px]"></div>
-        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-pubg-yellow/10 rounded-full blur-[150px]"></div>
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-[var(--theme-primary)]/10 rounded-full blur-[150px]"></div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -91,7 +91,7 @@ export default function PastStreamsContent() {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl lg:text-7xl font-black text-white uppercase tracking-wider mb-6"
             >
-              Past <span className="text-pubg-yellow text-glow">Live Streams</span>
+              Past <span className="text-[var(--theme-primary)] text-glow">Live Streams</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -105,7 +105,7 @@ export default function PastStreamsContent() {
 
           {loading ? (
             <div className="flex justify-center py-20">
-              <Loader2 className="w-12 h-12 animate-spin text-pubg-yellow" />
+              <Loader2 className="w-12 h-12 animate-spin text-[var(--theme-primary)]" />
             </div>
           ) : streams.length === 0 ? (
             <div className="text-center py-20 bg-[#111] border border-white/10 rounded-2xl">
@@ -122,7 +122,7 @@ export default function PastStreamsContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: (idx % STREAMS_PER_PAGE) * 0.05 }}
-                    className="group relative bg-[#111] rounded-2xl overflow-hidden border border-white/10 hover:border-pubg-yellow/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,178,0,0.15)] flex flex-col h-full"
+                    className="group relative bg-[#111] rounded-2xl overflow-hidden border border-white/10 hover:border-[var(--theme-primary)]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,178,0,0.15)] flex flex-col h-full"
                   >
                     <div className="aspect-video relative overflow-hidden bg-black/50 shrink-0">
                       {stream.thumbnail_url ? (
@@ -149,7 +149,7 @@ export default function PastStreamsContent() {
                     </div>
                     
                     <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="text-white font-bold text-lg line-clamp-2 mb-4 group-hover:text-pubg-yellow transition-colors">
+                      <h3 className="text-white font-bold text-lg line-clamp-2 mb-4 group-hover:text-[var(--theme-primary)] transition-colors">
                         {stream.title}
                       </h3>
                       <div className="flex items-center justify-between mt-auto">
@@ -159,7 +159,7 @@ export default function PastStreamsContent() {
                         <Link 
                           href={stream.url} 
                           target="_blank"
-                          className="flex items-center gap-1 text-pubg-yellow text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
+                          className="flex items-center gap-1 text-[var(--theme-primary)] text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
                         >
                           Watch <ExternalLink className="w-3 h-3" />
                         </Link>
@@ -174,7 +174,7 @@ export default function PastStreamsContent() {
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="px-8 py-4 bg-transparent border-2 border-pubg-yellow text-pubg-yellow font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl hover:bg-pubg-yellow hover:text-black transition-all duration-300 box-glow disabled:opacity-50 flex items-center gap-2"
+                    className="px-8 py-4 bg-transparent border-2 border-[var(--theme-primary)] text-[var(--theme-primary)] font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl hover:bg-[var(--theme-primary)] hover:text-black transition-all duration-300 box-glow disabled:opacity-50 flex items-center gap-2"
                   >
                     {loadingMore ? (
                       <>

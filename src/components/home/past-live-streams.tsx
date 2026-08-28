@@ -85,7 +85,7 @@ export function PastLiveStreams() {
       ></div>
       <div 
         ref={yellowBlobRef}
-        className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-pubg-yellow/10 rounded-full blur-[120px] pointer-events-none z-0"
+        className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-[var(--theme-primary)]/10 rounded-full blur-[120px] pointer-events-none z-0"
       ></div>
       
       {/* Animated grid lines background */}
@@ -111,7 +111,7 @@ export function PastLiveStreams() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-wider mb-6"
           >
-            Past <span className="text-pubg-yellow text-glow">Live Streams</span>
+            Past <span className="text-[var(--theme-primary)] text-glow">Live Streams</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -132,7 +132,7 @@ export function PastLiveStreams() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="group relative bg-[#111] rounded-2xl overflow-hidden border border-white/10 hover:border-pubg-yellow/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,178,0,0.15)] backdrop-blur-sm"
+              className="group relative bg-[#111] rounded-2xl overflow-hidden border border-white/10 hover:border-[var(--theme-primary)]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,178,0,0.15)] backdrop-blur-sm"
             >
               <div className="aspect-video relative overflow-hidden bg-black/50">
                 {stream.thumbnail_url ? (
@@ -160,7 +160,7 @@ export function PastLiveStreams() {
               </div>
               
               <div className="p-5">
-                <h3 className="text-white font-bold text-lg line-clamp-2 mb-3 group-hover:text-pubg-yellow transition-colors">
+                <h3 className="text-white font-bold text-lg line-clamp-2 mb-3 group-hover:text-[var(--theme-primary)] transition-colors">
                   {stream.title}
                 </h3>
                 <div className="flex items-center justify-between mt-auto">
@@ -170,7 +170,7 @@ export function PastLiveStreams() {
                   <Link 
                     href={stream.url} 
                     target="_blank"
-                    className="flex items-center gap-1 text-pubg-yellow text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
+                    className="flex items-center gap-1 text-[var(--theme-primary)] text-xs font-bold uppercase tracking-widest hover:text-white transition-colors"
                   >
                     Watch <ExternalLink className="w-3 h-3" />
                   </Link>

@@ -23,11 +23,11 @@ export function Button({
   const baseStyles = "relative inline-flex items-center justify-center font-black tracking-[0.2em] uppercase transition-all duration-300 rounded-tl-3xl rounded-br-3xl rounded-tr-none rounded-bl-none";
   
   const variants = {
-    primary: "bg-pubg-yellow text-black hover:bg-orange-accent shadow-lg",
-    secondary: "border-[3px] border-pubg-yellow bg-transparent text-pubg-yellow hover:bg-pubg-yellow hover:text-black",
+    primary: "bg-[var(--theme-primary)] text-black hover:brightness-110 hover:drop-shadow-[0_0_15px_var(--theme-primary)] shadow-lg",
+    secondary: "border-[3px] border-[var(--theme-primary)] bg-transparent text-[var(--theme-primary)] hover:bg-[var(--theme-primary)] hover:text-black",
     outline: "border-[3px] border-white/50 text-white hover:border-white hover:bg-white hover:text-black",
-    ghost: "text-white hover:text-pubg-yellow bg-transparent",
-    entry: "bg-pubg-yellow text-black hover:bg-orange-accent shadow-lg",
+    ghost: "text-white hover:text-[var(--theme-primary)] bg-transparent",
+    entry: "bg-[var(--theme-primary)] text-black hover:brightness-110 shadow-lg",
   };
 
   const sizes = {

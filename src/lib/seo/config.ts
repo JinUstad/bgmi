@@ -43,7 +43,7 @@ export const SITE_CONFIG = {
 
   /** Default global keywords */
   keywords: [
-    "BGMI Tournament",
+    "Esports Tournament",
     "BGMI Registration",
     "Esports India",
     "BGMI Cash Tournament",

@@ -13,7 +13,7 @@ const RULES = [
   "Players must join the room before the reporting time.",
   "Late entries may be disqualified.",
   "Any form of cheating, hacking, teaming, exploiting bugs, or using third-party software will result in immediate disqualification.",
-  "Players must follow BGMI's official gameplay rules.",
+  "Players must follow the official gameplay rules.",
   "Organizers reserve the right to change schedules due to technical or unforeseen issues.",
   "Tournament decisions made by the organizers are final."
 ];
@@ -42,7 +42,7 @@ export default function TermsContent() {
           <div className="max-w-2xl mx-auto">
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-4 leading-none">
               TERMS &<br />
-              <span className="text-pubg-yellow text-glow">CONDITIONS</span>
+              <span className="text-[var(--theme-primary)] text-glow">CONDITIONS</span>
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-white/80 text-lg md:text-xl font-medium max-w-md mx-auto">
               Please read the terms and conditions carefully before participating.
@@ -56,15 +56,15 @@ export default function TermsContent() {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="mb-16">
             <h2 className="text-3xl font-black font-heading uppercase text-white mb-8 border-b border-white/10 pb-4 flex items-center gap-3">
-              <AlertTriangle className="text-pubg-yellow w-8 h-8" aria-hidden="true" />
-              Tournament <span className="text-pubg-yellow">Rules</span>
+              <AlertTriangle className="text-[var(--theme-primary)] w-8 h-8" aria-hidden="true" />
+              Tournament <span className="text-[var(--theme-primary)]">Rules</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {RULES.map((rule, index) => (
                 <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}>
-                  <Card className="p-6 h-full flex items-start gap-4 hover:border-pubg-yellow/50 transition-colors group bg-black/40 backdrop-blur-md">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-pubg-yellow font-bold group-hover:bg-pubg-yellow/20 group-hover:border-pubg-yellow/50 transition-all" aria-hidden="true">
+                  <Card className="p-6 h-full flex items-start gap-4 hover:border-[var(--theme-primary)]/50 transition-colors group bg-black/40 backdrop-blur-md">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-[var(--theme-primary)] font-bold group-hover:bg-[var(--theme-primary)]/20 group-hover:border-[var(--theme-primary)]/50 transition-all" aria-hidden="true">
                       {index + 1}
                     </div>
                     <p className="text-white/80 leading-relaxed text-sm md:text-base">{rule}</p>

@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase';
 export const runtime = 'edge';
 
 const IDEAS = [
-  { topic: "How to Win BGMI Tournaments in 2026", category: "Esports Guides", keyword: "BGMI Tournaments" },
+  { topic: "How to Win Esports Tournaments in 2026", category: "Esports Guides", keyword: "Esports Tournaments" },
   { topic: "Top 5 Weapon Combinations for BGMI Esports", category: "Gaming Tips", keyword: "BGMI Weapon Combinations" },
   { topic: "How to Build a Professional BGMI Squad", category: "Esports Guides", keyword: "BGMI Squad" },
   { topic: "The Future of Mobile Esports in India", category: "Gaming News", keyword: "Mobile Esports India" },

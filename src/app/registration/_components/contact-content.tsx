@@ -1,47 +1,38 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, Loader2, Eye, EyeOff } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { load } from '@cashfreepayments/cashfree-js';
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+import { useTheme } from "@/context/theme-context";
 
-
-
-/**
- * Contact Content — Client Component
- * Contains all interactive registration form logic.
- * Parent page.tsx (Server Component) handles metadata export.
- */
 export default function ContactContent() {
   const [loading, setLoading] = useState(false);
   const [cashfree, setCashfree] = useState<any>(null);
   const [currentDate, setCurrentDate] = useState("");
+  const [globalFee, setGlobalFee] = useState<number>(99);
   const [registrationFee, setRegistrationFee] = useState<number>(99);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
+  
+  const [activeGames, setActiveGames] = useState<any[]>([]);
+  const [selectedGameId, setSelectedGameId] = useState<string>("");
+  
+  // We will assume tournaments are fetched based on selected game in the future, 
+  // but for now we rely on the global active tournament or just standard slots
   const [timeSlots, setTimeSlots] = useState<{ value: string, label: string, capacity: number }[]>([]);
-  const [maxSlotCapacity, setMaxSlotCapacity] = useState<number>(6); // Legacy/Fallback
-  const [matchMode, setMatchMode] = useState<string>("Squad");
-  const [userId, setUserId] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-
+  const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
   const [isTournamentActive, setIsTournamentActive] = useState<boolean>(true);
+  
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (formRef.current) {
       formRef.current.reset();
     }
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserId(user.id);
-      }
-    };
-    fetchUser();
+    
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - (offset * 60 * 1000));
@@ -55,75 +46,68 @@ export default function ContactContent() {
       setCashfree(cf);
     };
 
-    const fetchFee = async () => {
-      const { data, error } = await supabase.from('settings').select('registration_fee').eq('id', 1).single();
-      if (!error && data) {
-        setRegistrationFee(data.registration_fee);
+    const fetchActiveGames = async () => {
+      // Fetch global fee first
+      const { data: settingsData } = await supabase.from('settings').select('registration_fee').eq('id', 1).single();
+      if (settingsData && settingsData.registration_fee) {
+        setGlobalFee(settingsData.registration_fee);
+      }
+
+      const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+        
+      if (!error && data && data.length > 0) {
+        setActiveGames(data);
+        setSelectedGameId(data[0].id);
+      } else {
+        setIsTournamentActive(false); // No games active
       }
     };
 
     const fetchTournamentDetails = async () => {
       const { data, error } = await supabase
-        .from('upcoming_tournaments')
-        .select('slots, slot_capacity, match_mode, is_active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+        .from('time_slots')
+        .select('*');
         
-      if (!error && data) {
-        const active = data.is_active !== false;
-        setIsTournamentActive(active);
-
-        if (!active) {
-          setTimeSlots([]);
-          return;
-        }
-
-        if (data.match_mode) {
-          setMatchMode(data.match_mode);
-        }
-        if (data.slots && data.slots.length > 0) {
-          setTimeSlots(data.slots.map((s: any) => {
-            if (typeof s === 'string') {
-              return { value: s, label: s, capacity: data.slot_capacity || 6 };
-            }
-            let timeStr = s.time;
-            if (s.startHour) {
-              timeStr = `${s.startHour}:${s.startMin} ${s.startAmPm} - ${s.endHour}:${s.endMin} ${s.endAmPm}`;
-            }
-            return { value: timeStr, label: timeStr, capacity: s.capacity || data.slot_capacity || 6 };
-          }));
-        } else {
-          setTimeSlots([]);
-        }
-        if (data.slot_capacity) {
-          setMaxSlotCapacity(data.slot_capacity);
-        }
+      if (!error && data && data.length > 0) {
+        setTimeSlots(data.map((s: any) => ({
+          value: s.slot_time,
+          label: s.slot_time,
+          capacity: 100 // default mock capacity
+        })));
       } else {
-        setIsTournamentActive(false);
-        setTimeSlots([]);
+        // Fallback slots if no time_slots table data exists
+        setTimeSlots([
+          { value: "10:00 AM - 10:30 AM", label: "10:00 AM - 10:30 AM", capacity: 100 },
+          { value: "02:00 PM - 02:30 PM", label: "02:00 PM - 02:30 PM", capacity: 100 },
+        ]);
       }
     };
 
     const fetchSlotCounts = async () => {
-      const { data, error } = await supabase
-        .from('registrations')
-        .select('time_slot');
-
-      if (!error && data) {
-        const counts: Record<string, number> = {};
-        data.forEach((row: any) => {
-          counts[row.time_slot] = (counts[row.time_slot] || 0) + 1;
-        });
-        setSlotCounts(counts);
-      }
+      // Mocking slot counts for guest flow
+      setSlotCounts({});
     };
 
     initCashfree();
-    fetchFee();
+    fetchActiveGames();
     fetchTournamentDetails();
     fetchSlotCounts();
   }, []);
+
+  useEffect(() => {
+    if (activeGames.length > 0 && selectedGameId) {
+      const selectedGame = activeGames.find(g => g.id === selectedGameId);
+      if (selectedGame && selectedGame.registration_fee !== null && selectedGame.registration_fee !== undefined) {
+        setRegistrationFee(selectedGame.registration_fee);
+      } else {
+        setRegistrationFee(globalFee);
+      }
+    }
+  }, [selectedGameId, activeGames, globalFee]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,55 +123,9 @@ export default function ContactContent() {
     
     const payload: Record<string, any> = {
       ...data,
-      user_id: userId
+      game_id: selectedGameId,
+      // No user_id since it's guest flow
     };
-
-    let finalUserId = userId;
-
-    // If user is not logged in, try to sign them up with Email & Password
-    if (!userId) {
-      if (!data.email || !data.password) {
-        alert("Email and Password are required to create an account.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: data.email as string,
-          password: data.password as string,
-          options: {
-            data: {
-              full_name: data.fullName,
-              mobile_number: data.mobileNumber
-            }
-          }
-        });
-
-        if (authError) {
-          if (authError.message.includes('User already registered')) {
-            alert("This email is already registered. Please login from the Navbar first.");
-          } else {
-            alert(`Account creation failed: ${authError.message}`);
-          }
-          setLoading(false);
-          return;
-        }
-
-        if (authData.user) {
-          finalUserId = authData.user.id;
-          payload.user_id = authData.user.id;
-          setUserId(authData.user.id);
-        }
-      } catch (err: any) {
-        alert(`Account creation error: ${err.message}`);
-        setLoading(false);
-        return;
-      }
-
-      // Append password to message for admin visibility (as requested)
-      payload.message = `[PASSWORD: ${data.password}]\n${payload.message || ''}`.trim();
-    }
 
     try {
       const response = await fetch('/api/create-order', {
@@ -197,16 +135,7 @@ export default function ContactContent() {
       });
 
       const orderData = await response.json();
-      console.log('[contact] API response:', JSON.stringify(orderData));
-
       if (!response.ok) throw new Error(orderData.error || "Failed to create order");
-
-      if (!orderData.payment_session_id) {
-        throw new Error(`Server returned success but no payment_session_id. Full response: ${JSON.stringify(orderData)}`);
-      }
-
-      console.log('[contact] Using payment_session_id:', orderData.payment_session_id);
-      console.log('[contact] Server CF environment:', orderData.cf_environment);
 
       let checkoutOptions = {
         paymentSessionId: orderData.payment_session_id,
@@ -227,11 +156,10 @@ export default function ContactContent() {
           const verifyData = await verifyResponse.json();
 
           if (verifyData.status === 'verified') {
-            alert("Registration and Payment successful! We will contact you shortly.");
-            form.reset();
-            window.location.href = `/user-dashboard?order_id=${orderData.order_id}`;
+            // Redirect to receipt page instead of user-dashboard
+            window.location.href = `/receipt/${orderData.order_id}`;
           } else {
-            alert("Payment is pending or failed. Please check your status later or contact support.");
+            alert("Payment is pending or failed. Please contact support.");
           }
           setLoading(false);
         }
@@ -244,54 +172,45 @@ export default function ContactContent() {
     }
   };
 
+  const { activeGame } = useTheme();
+
+  const selectedGameObj = activeGames.find(g => g.id === selectedGameId);
+  const isSinglePlayer = selectedGameObj?.name?.toLowerCase().includes('tekken') || 
+                         selectedGameObj?.name?.toLowerCase().includes('solo') || 
+                         selectedGameObj?.name?.toLowerCase().includes('1v1');
+
   return (
     <main className="flex flex-col w-full min-h-screen bg-black relative">
-
-      {/* Global Animated Background for Contact Page */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute inset-0 bg-black/70 z-10" />
         <motion.div
           animate={{ scale: [1, 1.05, 1], x: [0, 10, 0], y: [0, -10, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[url('/pubg_contact_bg.png')] bg-cover bg-center mix-blend-overlay opacity-50"
-        />
-        <motion.div
-          animate={{
-            x: ["-20vw", "120vw", "-20vw"],
-            y: ["30vh", "70vh", "40vh"],
-            rotate: [10, -15, 20],
-          }}
-          transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[2px] w-[40vw] bg-red-500/60 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left"
-        />
-        <motion.div
-          animate={{
-            x: ["120vw", "-20vw", "120vw"],
-            y: ["60vh", "20vh", "50vh"],
-            rotate: [-20, 15, -10],
-          }}
-          transition={{ duration: 13, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[2px] w-[55vw] bg-red-500/50 shadow-[0_0_15px_red] z-10 top-0 left-0 origin-left"
-        />
-        <motion.div
-          animate={{ opacity: [0, 0, 0.15, 0, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-0 bg-red-600 z-10 mix-blend-overlay"
+          className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-50 transition-all duration-1000"
+          style={{ backgroundImage: `url('${activeGame?.registration_hero_background || "/pubg_contact_bg.png"}')` }}
         />
       </div>
 
-      {/* Hero Banner */}
       <section className="relative pt-32 pb-20 border-b border-white/10 z-10">
         <div className="container relative mx-auto px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-4 text-glow"
+            className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-4 text-glow whitespace-pre-line"
           >
-            Comms <span className="text-pubg-yellow">Center</span>
+            {(() => {
+              const heading = activeGame?.registration_hero_heading || "Tournament Registration";
+              const parts = heading.split(' ');
+              const lastWord = parts.pop();
+              return (
+                <>
+                  {parts.join(' ')} <span className="text-[var(--theme-primary)]">{lastWord}</span>
+                </>
+              );
+            })()}
           </motion.h1>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Register for tournaments, report issues, or just say hello. Our support team is online 24/7.
+            {activeGame?.registration_hero_description || "Select your game, fill out your team details, and pay the entry fee to secure your slot instantly."}
           </p>
         </div>
       </section>
@@ -299,172 +218,109 @@ export default function ContactContent() {
       <section className="py-20 relative z-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-
-            {/* Contact Information */}
             <address className="lg:col-span-1 space-y-8 not-italic">
               <div>
                 <h2 className="text-2xl font-black font-heading uppercase text-white mb-6">Contact Info</h2>
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-gunmetal border border-white/10 flex items-center justify-center shrink-0">
-                      <Phone className="w-5 h-5 text-pubg-yellow" aria-hidden="true" />
+                      <Phone className="w-5 h-5 text-[var(--theme-primary)]" />
                     </div>
                     <div>
                       <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Call / WhatsApp</h3>
-                      <a href="tel:+918512889586" className="text-white/60 hover:text-pubg-yellow transition-colors">8512889586</a>
+                      <a href="tel:+918512889586" className="text-white/60 hover:text-[var(--theme-primary)] transition-colors">8512889586</a>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-gunmetal border border-white/10 flex items-center justify-center shrink-0">
-                      <Mail className="w-5 h-5 text-pubg-yellow" aria-hidden="true" />
+                      <Mail className="w-5 h-5 text-[var(--theme-primary)]" />
                     </div>
                     <div>
                       <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Email Support</h3>
-                      <a href="mailto:support@xyloesports.in" className="text-white/60 hover:text-pubg-yellow transition-colors">support@xyloesports.in</a>
+                      <a href="mailto:support@xyloesports.in" className="text-white/60 hover:text-[var(--theme-primary)] transition-colors">support@xyloesports.in</a>
                     </div>
                   </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gunmetal border border-white/10 flex items-center justify-center shrink-0">
-                      <MapPin className="w-5 h-5 text-pubg-yellow" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-1">Location</h3>
-                      <p className="text-white/60">Rafikabad Colony Dasna Ghaziabad Uttar Pradesh</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Map Placeholder */}
-              <div className="h-64 bg-gunmetal rounded-md border border-white/10 overflow-hidden relative group cursor-pointer">
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center group-hover:bg-black/30 transition-colors">
-                  <span className="text-pubg-yellow font-bold uppercase tracking-widest">View on Google Maps</span>
                 </div>
               </div>
             </address>
 
-            {/* Registration Form */}
             <div className="lg:col-span-2">
               <Card className="p-8">
-                <h2 className="text-3xl font-black font-heading uppercase text-white mb-8 border-b border-white/10 pb-4">
-                  Tournament <span className="text-pubg-yellow">Registration</span>
-                </h2>
-
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-6" noValidate autoComplete="off">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="fullName" className="text-white/70 text-sm font-bold uppercase tracking-widest">Full Name *</label>
-                      <input id="fullName" required name="fullName" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="John Doe" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="bgmiId" className="text-white/70 text-sm font-bold uppercase tracking-widest">BGMI ID *</label>
-                      <input id="bgmiId" required name="bgmiId" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="e.g. 22222, 33333" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="teamName" className="text-white/70 text-sm font-bold uppercase tracking-widest">Team Name *</label>
-                      <input id="teamName" required name="teamName" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Team Soul" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="mobileNumber" className="text-white/70 text-sm font-bold uppercase tracking-widest">Mobile Number *</label>
-                      <input id="mobileNumber" required name="mobileNumber" type="tel" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="+91" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="text-white/70 text-sm font-bold uppercase tracking-widest">Email Address *</label>
-                      <input id="email" required name="email" type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="john@example.com" />
-                    </div>
-                    {!userId && (
-                      <div className="space-y-2">
-                        <label htmlFor="password" className="text-white/70 text-sm font-bold uppercase tracking-widest">Create Password *</label>
-                        <div className="relative">
-                          <input id="password" required name="password" type={showPassword ? "text" : "password"} minLength={6} className="w-full bg-black border border-white/10 rounded-md p-5 pr-12 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="Minimum 6 characters" />
-                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                          </button>
-                        </div>
-                        <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">For your new dashboard account</p>
-                      </div>
-                    )}
-                    <div className="space-y-2">
-                      <label htmlFor="tournamentType" className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
-                      <select id="tournamentType" required name="tournamentType" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow appearance-none" value={matchMode.toLowerCase()} onChange={() => {}}>
-                        <option value={matchMode.toLowerCase()}>
-                          {matchMode === 'Squad' ? 'Squad Team Only' : matchMode === 'Solo' ? 'Solo Match' : matchMode === 'Duo' ? 'Duo/Dual Match' : matchMode + ' Match'}
-                        </option>
+                    
+                    <div className="space-y-2 md:col-span-2">
+                      <label htmlFor="game" className="text-white/70 text-sm font-bold uppercase tracking-widest">Select Game *</label>
+                      <select 
+                        id="game" 
+                        required 
+                        value={selectedGameId}
+                        onChange={(e) => setSelectedGameId(e.target.value)}
+                        className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)] appearance-none"
+                      >
+                        {activeGames.length === 0 && <option value="">No Active Games Available</option>}
+                        {activeGames.map(game => (
+                          <option key={game.id} value={game.id}>{game.name}</option>
+                        ))}
                       </select>
                     </div>
+                    
                     <div className="space-y-2">
-                      <label htmlFor="upiId" className="text-white/70 text-sm font-bold uppercase tracking-widest">UPI ID *</label>
-                      <input id="upiId" required name="upiId" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow" placeholder="yourupi@okbank" />
+                      <label htmlFor="teamName" className="text-white/70 text-sm font-bold uppercase tracking-widest">
+                        {isSinglePlayer ? 'Player Name *' : 'Team Name *'}
+                      </label>
+                      <input id="teamName" required name="teamName" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)]" placeholder={isSinglePlayer ? 'e.g. John Doe' : 'e.g. Team Soul'} />
                     </div>
+                    
                     <div className="space-y-2">
-                      <label htmlFor="registrationDate" className="text-white/70 text-sm font-bold uppercase tracking-widest">Registration Date *</label>
-                      <input
-                        id="registrationDate"
-                        name="registrationDate"
-                        type="date"
-                        value={currentDate}
-                        readOnly
-                        className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white/50 cursor-not-allowed focus:outline-none"
-                      />
+                      <label htmlFor="inGameIds" className="text-white/70 text-sm font-bold uppercase tracking-widest">
+                        {isSinglePlayer ? 'In-Game ID (IGN) *' : 'In-Game IDs (IGNs) *'}
+                      </label>
+                      <input id="inGameIds" required name="inGameIds" type="text" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)]" placeholder={isSinglePlayer ? 'e.g. Mortal' : 'e.g. Mortal, Viper'} />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <fieldset>
-                        <legend className="text-white/70 text-sm font-bold uppercase tracking-widest mb-3">Time Slot *</legend>
-                        {!isTournamentActive || timeSlots.length === 0 ? (
-                          <div className="p-6 rounded-xl bg-red-500/10 border border-red-500/30 text-center space-y-2">
-                            <div className="text-red-400 font-black text-base uppercase tracking-wider flex items-center justify-center gap-2">
-                              ⚠️ REGISTRATION CLOSED
-                            </div>
-                            <p className="text-white/70 text-xs font-medium uppercase tracking-wider">
-                              No active tournament available for registration right now. Please check back later!
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {timeSlots.map((slot) => {
-                              const count = slotCounts[slot.value] || 0;
-                              const isFull = count >= slot.capacity;
-                              return (
-                                <label
-                                  key={slot.value}
-                                  className={`relative flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${isFull
-                                      ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60'
-                                      : 'border-white/10 bg-black hover:border-pubg-yellow/50 hover:bg-pubg-yellow/5 has-[:checked]:border-pubg-yellow has-[:checked]:bg-pubg-yellow/10'
-                                    }`}
-                                >
-                                  <input
-                                    type="radio"
-                                    name="timeSlot"
-                                    value={slot.value}
-                                    required
-                                    disabled={isFull}
-                                    className="w-4 h-4 accent-pubg-yellow"
-                                  />
-                                  <div className="flex-1">
-                                    <span className={`text-sm font-medium ${isFull ? 'text-white/40 line-through' : 'text-white'}`}>
-                                      {slot.label}
-                                    </span>
-                                    <div className={`text-xs mt-0.5 ${isFull ? 'text-red-400' : 'text-white/40'}`}>
-                                      {isFull ? 'FULL' : `${count}/${slot.capacity} registered`}
-                                    </div>
-                                  </div>
-                                  {isFull && (
-                                    <span className="px-2 py-0.5 bg-red-500/20 border border-red-500/30 rounded text-red-400 text-[10px] font-bold uppercase tracking-wider">
-                                      Completed
-                                    </span>
-                                  )}
-                                </label>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </fieldset>
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="message" className="text-white/70 text-sm font-bold uppercase tracking-widest">Message / Query (Optional)</label>
-                    <textarea id="message" name="message" rows={4} className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-pubg-yellow resize-none" placeholder="Any specific requests?" />
+                    {!isSinglePlayer ? (
+                      <div className="space-y-2">
+                        <label htmlFor="tournamentType" className="text-white/70 text-sm font-bold uppercase tracking-widest">Tournament Type *</label>
+                        <select 
+                          id="tournamentType" 
+                          required 
+                          name="tournamentType"
+                          className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)] appearance-none"
+                        >
+                          <option value="">Select Type</option>
+                          <option value="squad">Squad</option>
+                          <option value="duo">Duo</option>
+                          <option value="solo">Solo</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <input type="hidden" name="tournamentType" value="solo" />
+                    )}
+
+                    <div className="space-y-2">
+                      <label htmlFor="timeSlot" className="text-white/70 text-sm font-bold uppercase tracking-widest">Time Slot *</label>
+                      <select 
+                        id="timeSlot" 
+                        required 
+                        name="timeSlot"
+                        className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)] appearance-none"
+                      >
+                        <option value="">Select Slot</option>
+                        {timeSlots.map((slot, i) => (
+                          <option key={i} value={slot.value}>{slot.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="mobileNumber" className="text-white/70 text-sm font-bold uppercase tracking-widest">WhatsApp Number *</label>
+                      <input id="mobileNumber" required name="mobileNumber" type="tel" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)]" placeholder="+91" />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="text-white/70 text-sm font-bold uppercase tracking-widest">Contact Email *</label>
+                      <input id="email" required name="email" type="email" className="w-full bg-black border border-white/10 rounded-md p-5 text-lg text-white focus:outline-none focus:border-[var(--theme-primary)]" placeholder="john@example.com" />
+                    </div>
                   </div>
 
                   <div className="pt-4 border-t border-white/10 space-y-6">
@@ -475,22 +331,22 @@ export default function ContactContent() {
                         required
                         checked={termsAccepted}
                         onChange={(e) => setTermsAccepted(e.target.checked)}
-                        disabled={!isTournamentActive}
+                        disabled={!isTournamentActive || activeGames.length === 0}
                         className="w-5 h-5 rounded border-white/10 bg-black accent-pubg-yellow cursor-pointer shrink-0 disabled:opacity-50"
                       />
                       <label htmlFor="terms" className="text-white/70 text-sm cursor-pointer select-none">
                         I accept the{" "}
-                        <a href="/terms" className="text-pubg-yellow hover:underline">Terms and Conditions</a>
+                        <a href="/terms" className="text-[var(--theme-primary)] hover:underline">Terms and Conditions</a>
                         {" "}and{" "}
-                        <a href="/privacy" className="text-pubg-yellow hover:underline">Privacy Policy</a>.
+                        <a href="/privacy" className="text-[var(--theme-primary)] hover:underline">Privacy Policy</a>.
                       </label>
                     </div>
 
                     <div className="flex justify-start w-full">
-                      <Button type="submit" size="lg" glow disabled={loading || !termsAccepted || !isTournamentActive} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
+                      <Button type="submit" size="lg" glow disabled={loading || !termsAccepted || !isTournamentActive || activeGames.length === 0} className="w-full md:w-auto disabled:opacity-70 disabled:cursor-not-allowed">
                         <span className="flex items-center gap-2">
-                          {loading ? <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" /> : <Send className="w-5 h-5" aria-hidden="true" />}
-                          <span>{!isTournamentActive ? "Registration Closed" : loading ? "Processing Payment..." : `Pay & Register (₹${registrationFee})`}</span>
+                          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                          <span>{(!isTournamentActive || activeGames.length === 0) ? "Registration Closed" : loading ? "Processing Payment..." : `Pay ₹${registrationFee} & Register`}</span>
                         </span>
                       </Button>
                     </div>
@@ -498,7 +354,6 @@ export default function ContactContent() {
                 </form>
               </Card>
             </div>
-
           </div>
         </div>
       </section>

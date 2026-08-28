@@ -36,7 +36,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-pubg-yellow/30 rounded-full"
+            className="absolute w-1 h-1 bg-[var(--theme-primary)]/30 rounded-full"
             animate={{
               y: ["-10vh", "110vh"],
               x: [Math.random() * 100 + "vw", Math.random() * 100 + "vw"],
@@ -57,7 +57,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
             rotate: [5, -10, 15],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[2px] w-[35vw] bg-pubg-yellow/60 shadow-[0_0_15px_rgba(240,165,0,0.8)] z-10 top-0 left-0 origin-left"
+          className="absolute h-[2px] w-[35vw] bg-[var(--theme-primary)]/60 shadow-[0_0_15px_rgba(240,165,0,0.8)] z-10 top-0 left-0 origin-left"
         />
         <motion.div
           animate={{
@@ -84,7 +84,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-2xl md:text-4xl font-black font-heading uppercase tracking-tighter text-pubg-yellow mb-6"
+            className="text-2xl md:text-4xl font-black font-heading uppercase tracking-tighter text-[var(--theme-primary)] mb-6"
           >
             Frequently Asked Questions
           </motion.p>
@@ -94,7 +94,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
             transition={{ delay: 0.2 }}
             className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-medium"
           >
-            Find answers to common questions about our BGMI Tournament.
+            Find answers to common questions about our Esports Tournament.
           </motion.p>
         </div>
       </section>
@@ -117,7 +117,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
                   transition={{ delay: index * 0.05 }}
                   className={cn(
                     "border border-white/10 rounded-lg overflow-hidden transition-all duration-300",
-                    isOpen ? "bg-white/5 border-pubg-yellow/50 shadow-[0_0_15px_rgba(240,165,0,0.2)]" : "bg-black/40 hover:bg-white/5 backdrop-blur-sm"
+                    isOpen ? "bg-white/5 border-[var(--theme-primary)]/50 shadow-[0_0_15px_rgba(240,165,0,0.2)]" : "bg-black/40 hover:bg-white/5 backdrop-blur-sm"
                   )}
                   role="listitem"
                 >
@@ -130,7 +130,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
                   >
                     <span className={cn(
                       "font-bold uppercase tracking-widest transition-colors",
-                      isOpen ? "text-pubg-yellow" : "text-white/90"
+                      isOpen ? "text-[var(--theme-primary)]" : "text-white/90"
                     )}>
                       {faq.question}
                     </span>
@@ -139,7 +139,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
                       transition={{ duration: 0.2 }}
                       className={cn(
                         "flex-shrink-0 ml-4",
-                        isOpen ? "text-pubg-yellow" : "text-white/50"
+                        isOpen ? "text-[var(--theme-primary)]" : "text-white/50"
                       )}
                       aria-hidden="true"
                     >
@@ -178,8 +178,8 @@ export default function FAQContent({ faqs }: FAQContentProps) {
             className="mt-12 p-6 md:p-8 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm hover:bg-white/5 transition-colors flex flex-col md:flex-row items-center justify-between gap-6"
           >
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-xl border border-pubg-yellow/50 bg-pubg-yellow/10 flex items-center justify-center flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pubg-yellow" aria-hidden="true">
+              <div className="w-16 h-16 rounded-xl border border-[var(--theme-primary)]/50 bg-[var(--theme-primary)]/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--theme-primary)]" aria-hidden="true">
                   <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
                   <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
                 </svg>
@@ -191,7 +191,7 @@ export default function FAQContent({ faqs }: FAQContentProps) {
             </div>
             <Link
               href="/registration"
-              className="px-8 py-3 bg-pubg-yellow text-black font-bold rounded hover:bg-pubg-yellow/90 transition-colors whitespace-nowrap flex items-center gap-2"
+              className="px-8 py-3 bg-[var(--theme-primary)] text-black font-bold rounded hover:bg-[var(--theme-primary)]/90 transition-colors whitespace-nowrap flex items-center gap-2"
               aria-label="Contact XYLO Esports support team"
             >
               Contact Us

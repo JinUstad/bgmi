@@ -3,26 +3,17 @@
  * Exports metadata. Interactive UI is in TermsContent (client component).
  */
 import type { Metadata } from "next";
-import { generatePageMetadata } from "@/lib/seo/metadata";
+import { generateDynamicMetadata } from "@/lib/seo/dynamic-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/schemas";
 import dynamic from "next/dynamic";
 
 const TermsContent = dynamic(() => import("./_components/terms-content"), { ssr: true });
 
-export const metadata: Metadata = generatePageMetadata({
-  title: { absolute: "Terms & Conditions | XYLO Esports BGMI Tournaments" },
-  description:
-    "Read the XYLO Esports Terms and Conditions for participating in BGMI tournaments. Rules include fair play, no refund policy, and match conduct guidelines.",
-  path: "/terms",
-  noIndex: false,
-  keywords: [
-    "XYLO Esports Terms",
-    "BGMI Tournament Rules",
-    "Tournament Terms Conditions",
-    "No Refund Policy",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("terms");
+}
+
 
 export default function TermsPage() {
   return (
@@ -34,8 +25,8 @@ export default function TermsPage() {
             { name: "Terms & Conditions", url: "/terms" },
           ]),
           webPageSchema({
-            title: "Terms & Conditions | XYLO Esports BGMI Tournaments",
-            description: "Read the XYLO Esports Terms and Conditions for participating in BGMI tournaments. Rules include fair play, no refund policy, and match conduct guidelines.",
+            title: "Terms & Conditions | XYLO Esports Esports Tournaments",
+            description: "Read the XYLO Esports Terms and Conditions for participating in Esports tournaments. Rules include fair play, no refund policy, and match conduct guidelines.",
             path: "/terms",
           }),
         ]}

@@ -8,6 +8,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+import { useTheme } from "@/context/theme-context";
+
 const FEATURES = [
   {
     icon: Trophy,
@@ -27,27 +29,28 @@ const FEATURES = [
   {
     icon: Users,
     title: "Vibrant Community",
-    desc: "Join thousands of active BGMI players. Find squads, share strategies, and grow your network."
+    desc: "Join thousands of active players. Find squads, share strategies, and grow your network."
   }
 ];
 
-/**
- * About Content — Client Component
- * Contains all interactive/animated UI for the About page.
- * Parent page.tsx (Server Component) handles metadata export.
- */
 export default function AboutContent() {
+  const { activeGame } = useTheme();
+
   return (
     <main className="flex flex-col w-full min-h-screen bg-black relative">
 
       {/* Global Animated Background */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute inset-0 bg-black/80 z-10" />
-        <motion.div
-          animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 bg-[url('/about_bg.png')] bg-cover bg-center mix-blend-overlay"
-        />
+        {activeGame && (
+          <motion.div
+            key={activeGame.about_bg_image_url}
+            animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 bg-cover bg-center mix-blend-overlay"
+            style={{ backgroundImage: `url('${activeGame.about_bg_image_url || activeGame.hero_image_url}')` }}
+          />
+        )}
         {/* Animated grid */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 z-10" />
 
@@ -59,7 +62,7 @@ export default function AboutContent() {
             rotate: [15, -10, 20],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="absolute h-[2px] w-[40vw] bg-pubg-yellow/50 shadow-[0_0_15px_rgba(240,165,0,0.8)] z-10 top-0 left-0 origin-left"
+          className="absolute h-[2px] w-[40vw] bg-[var(--theme-primary)]/50 shadow-[0_0_15px_rgba(240,165,0,0.8)] z-10 top-0 left-0 origin-left"
         />
       </div>
 
@@ -70,16 +73,16 @@ export default function AboutContent() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-20 h-20 mx-auto bg-pubg-yellow/10 rounded-2xl flex items-center justify-center mb-6 border border-pubg-yellow/30 shadow-[0_0_25px_rgba(240,165,0,0.2)] rotate-45"
+            className="w-20 h-20 mx-auto bg-[var(--theme-primary)]/10 rounded-2xl flex items-center justify-center mb-6 border border-[var(--theme-primary)]/30 shadow-[0_0_25px_rgba(240,165,0,0.2)] rotate-45"
           >
-            <Crosshair className="w-10 h-10 text-pubg-yellow -rotate-45" aria-hidden="true" />
+            <Crosshair className="w-10 h-10 text-[var(--theme-primary)] -rotate-45" aria-hidden="true" />
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-black font-heading uppercase tracking-tighter text-white mb-6 text-glow"
           >
-            About The <span className="text-pubg-yellow">Platform</span>
+            About The <span className="text-[var(--theme-primary)]">Platform</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -87,7 +90,7 @@ export default function AboutContent() {
             transition={{ delay: 0.1 }}
             className="text-white/70 text-lg md:text-xl max-w-3xl mx-auto tracking-wide font-medium leading-relaxed"
           >
-            We are India's premier Battlegrounds Mobile India (BGMI) esports platform, dedicated to providing a professional, competitive, and rewarding ecosystem for gamers of all skill levels.
+            {activeGame?.about_description || "We are India's premier esports platform, dedicated to providing a professional, competitive, and rewarding ecosystem for gamers of all skill levels."}
           </motion.p>
         </div>
       </section>
@@ -102,8 +105,8 @@ export default function AboutContent() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl font-black font-heading uppercase text-white mb-6 flex items-center gap-3">
-                <Target className="text-pubg-yellow w-8 h-8" aria-hidden="true" />
-                Our <span className="text-pubg-yellow">Mission</span>
+                <Target className="text-[var(--theme-primary)] w-8 h-8" aria-hidden="true" />
+                {activeGame?.about_heading || "Our Mission"}
               </h2>
               <p className="text-white/70 leading-relaxed text-lg mb-6">
                 To bridge the gap between casual gaming and professional esports by offering accessible, high-quality, and high-stakes tournaments. We believe every player deserves a stage to showcase their tactical brilliance and reflexes.
@@ -119,15 +122,18 @@ export default function AboutContent() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-pubg-yellow/20 blur-[100px] rounded-full pointer-events-none" aria-hidden="true" />
-              <Image
-                src="/army_character.png"
-                alt="BGMI esports character representing XYLO Esports competitive gaming"
-                width={400}
-                height={500}
-                className="w-full max-w-md mx-auto drop-shadow-[0_0_30px_rgba(240,165,0,0.3)] relative z-10"
-                priority={false}
-              />
+              <div className="absolute inset-0 bg-[var(--theme-primary)]/20 blur-[100px] rounded-full pointer-events-none" aria-hidden="true" />
+              {activeGame && (
+                <Image
+                  key={activeGame.about_character_image_url}
+                  src={activeGame.about_character_image_url || activeGame.hero_image_url || "/army_character.png"}
+                  alt={`${activeGame.name} character representing XYLO Esports competitive gaming`}
+                  width={500}
+                  height={500}
+                  className="w-full max-w-md mx-auto drop-shadow-[0_0_30px_rgba(240,165,0,0.3)] relative z-10 rounded-2xl object-cover aspect-square border border-[var(--theme-primary)]/20"
+                  priority={false}
+                />
+              )}
             </motion.div>
           </div>
         </div>
@@ -143,9 +149,9 @@ export default function AboutContent() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-black font-heading uppercase text-white mb-4">
-              Why <span className="text-pubg-yellow">Choose Us?</span>
+              Why <span className="text-[var(--theme-primary)]">Choose Us?</span>
             </h2>
-            <div className="w-24 h-1 bg-pubg-yellow mx-auto rounded-full box-glow" />
+            <div className="w-24 h-1 bg-[var(--theme-primary)] mx-auto rounded-full box-glow" />
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -159,11 +165,11 @@ export default function AboutContent() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="p-8 h-full bg-black/60 backdrop-blur-md border border-white/10 hover:border-pubg-yellow/50 transition-all group hover:-translate-y-2">
-                    <div className="w-14 h-14 rounded-lg bg-white/5 flex items-center justify-center mb-6 border border-white/10 group-hover:bg-pubg-yellow/20 group-hover:border-pubg-yellow/50 transition-all">
-                      <Icon className="w-7 h-7 text-white group-hover:text-pubg-yellow transition-colors" aria-hidden="true" />
+                  <Card className="p-8 h-full bg-black/60 backdrop-blur-md border border-white/10 hover:border-[var(--theme-primary)]/50 transition-all group hover:-translate-y-2">
+                    <div className="w-14 h-14 rounded-lg bg-white/5 flex items-center justify-center mb-6 border border-white/10 group-hover:bg-[var(--theme-primary)]/20 group-hover:border-[var(--theme-primary)]/50 transition-all">
+                      <Icon className="w-7 h-7 text-white group-hover:text-[var(--theme-primary)] transition-colors" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-bold uppercase tracking-widest text-white mb-4 group-hover:text-pubg-yellow transition-colors">
+                    <h3 className="text-xl font-bold uppercase tracking-widest text-white mb-4 group-hover:text-[var(--theme-primary)] transition-colors">
                       {feature.title}
                     </h3>
                     <p className="text-white/60 leading-relaxed text-sm">
@@ -178,7 +184,7 @@ export default function AboutContent() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative z-20 border-t border-white/10 bg-gradient-to-b from-transparent to-pubg-yellow/5">
+      <section className="py-24 relative z-20 border-t border-white/10 bg-gradient-to-b from-transparent to-[var(--theme-primary)]/5">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -187,12 +193,12 @@ export default function AboutContent() {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-4xl md:text-6xl font-black font-heading uppercase tracking-tighter text-white mb-6">
-              Ready to <span className="text-pubg-yellow text-glow">Dominate?</span>
+              Ready to <span className="text-[var(--theme-primary)] text-glow">Dominate?</span>
             </h2>
             <p className="text-white/70 text-lg mb-10">
               The battleground is calling. Assemble your squad, register for the next tournament, and prove that you are the ultimate survivor.
             </p>
-            <Link href="/tournaments" aria-label="View all upcoming BGMI tournaments on XYLO Esports">
+            <Link href="/tournaments" aria-label="View all upcoming Esports tournaments on XYLO Esports">
               <Button size="lg" glow className="text-lg px-12 py-8 rounded-tl-3xl rounded-br-3xl rounded-tr-none rounded-bl-none">
                 View Upcoming Tournaments
               </Button>

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "XYLO Esports",
     short_name: "XYLO",
     description:
-      "India's #1 BGMI & Esports Tournament Platform. Compete in BGMI tournaments and win exciting cash prizes.",
+      "India's #1 BGMI & Esports Tournament Platform. Compete in Esports tournaments and win exciting cash prizes.",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

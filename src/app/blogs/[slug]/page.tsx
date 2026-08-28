@@ -77,18 +77,18 @@ export default async function BlogPostPage({ params }: PageProps) {
           className="absolute inset-0 z-0 bg-[url('/images/chicken-dinner-bg.png')] bg-cover bg-center bg-no-repeat opacity-40 bg-fixed"
         />
         {/* Custom Golden Mist Animation overlay */}
-        <div className="absolute inset-0 z-0 bg-pubg-yellow/10 animate-golden-mist mix-blend-overlay pointer-events-none" />
+        <div className="absolute inset-0 z-0 bg-[var(--theme-primary)]/10 animate-golden-mist mix-blend-overlay pointer-events-none" />
         {/* Gradient overlay for readability */}
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-tactical-black/80 to-[#0A0A0A]/95" />
 
         <div className="container mx-auto px-4 max-w-4xl relative z-10">
           
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-8 uppercase tracking-wider font-semibold">
-            <Link href="/" className="hover:text-pubg-yellow transition-colors">Home</Link>
+            <Link href="/" className="hover:text-[var(--theme-primary)] transition-colors">Home</Link>
             <ChevronRight className="w-4 h-4" />
-            <Link href="/blogs" className="hover:text-pubg-yellow transition-colors">Blogs</Link>
+            <Link href="/blogs" className="hover:text-[var(--theme-primary)] transition-colors">Blogs</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-pubg-yellow">{blog.category}</span>
+            <span className="text-[var(--theme-primary)]">{blog.category}</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight uppercase italic tracking-wide">
@@ -101,11 +101,11 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           <div className="flex flex-wrap items-center gap-6 text-gray-400 text-sm">
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-pubg-yellow" />
+              <Calendar className="w-4 h-4 text-[var(--theme-primary)]" />
               <span>{format(new Date(blog.created_at), "MMMM d, yyyy")}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-pubg-yellow" />
+              <Clock className="w-4 h-4 text-[var(--theme-primary)]" />
               <span>{blog.reading_time} min read</span>
             </div>
           </div>
@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       <div className="container mx-auto px-4 py-16 max-w-4xl">
         <div 
           className="prose prose-invert prose-lg max-w-none 
-          prose-h2:text-3xl prose-h2:font-bold prose-h2:text-pubg-yellow prose-h2:mt-12 prose-h2:mb-6 prose-h2:uppercase prose-h2:tracking-wide
+          prose-h2:text-3xl prose-h2:font-bold prose-h2:text-[var(--theme-primary)] prose-h2:mt-12 prose-h2:mb-6 prose-h2:uppercase prose-h2:tracking-wide
           prose-h3:text-2xl prose-h3:text-white prose-h3:mt-8 prose-h3:mb-4
           prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
           prose-ul:text-gray-300 prose-ul:mb-6 prose-li:mb-2
@@ -131,8 +131,8 @@ export default async function BlogPostPage({ params }: PageProps) {
             <h2 className="text-3xl font-bold text-white mb-8 uppercase tracking-wide">Frequently Asked Questions</h2>
             <div className="space-y-6">
               {blog.faq.map((item: any, i: number) => (
-                <div key={i} className="bg-tactical-black/50 p-6 rounded-lg border border-white/5">
-                  <h3 className="text-xl font-bold text-pubg-yellow mb-3">{item.question}</h3>
+                <div key={i} className="bg-[var(--theme-bg)]/50 p-6 rounded-lg border border-white/5">
+                  <h3 className="text-xl font-bold text-[var(--theme-primary)] mb-3">{item.question}</h3>
                   <p className="text-gray-300">{item.answer}</p>
                 </div>
               ))}
@@ -141,17 +141,17 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
 
         {/* Conclusion & CTA */}
-        <div className="mt-16 bg-gradient-to-r from-tactical-black to-[#1a1a1a] p-8 rounded-2xl border border-pubg-yellow/20">
+        <div className="mt-16 bg-gradient-to-r from-tactical-black to-[#1a1a1a] p-8 rounded-2xl border border-[var(--theme-primary)]/20">
           <h2 className="text-2xl font-bold text-white mb-4">Conclusion</h2>
           <p className="text-gray-300 mb-8">{blog.conclusion || "Thanks for reading! Stay tuned for more updates."}</p>
 
           <div className="text-center">
-            <p className="text-xl font-bold text-pubg-yellow mb-6">
+            <p className="text-xl font-bold text-[var(--theme-primary)] mb-6">
               {blog.cta || "Think you have what it takes to be a BGMI champion? Register your squad today on XYLO Esports!"}
             </p>
             <Link href="/tournaments">
-              <Button size="lg" className="bg-pubg-yellow text-black hover:bg-yellow-500 font-bold px-8 py-6 text-lg uppercase tracking-wider">
-                Register Now
+              <Button size="lg" className="bg-[var(--theme-primary)] text-black hover:brightness-110 font-bold px-8 py-6 text-lg uppercase tracking-wider">
+                Start Playing Now
               </Button>
             </Link>
           </div>

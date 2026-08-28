@@ -3,30 +3,17 @@
  * Exports metadata. Interactive registration form is in ContactContent (client).
  */
 import type { Metadata } from "next";
-import { generatePageMetadata } from "@/lib/seo/metadata";
+import { generateDynamicMetadata } from "@/lib/seo/dynamic-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, webPageSchema } from "@/lib/seo/schemas";
 import dynamic from "next/dynamic";
 
 const ContactContent = dynamic(() => import("./_components/contact-content"), { ssr: true });
 
-export const metadata: Metadata = generatePageMetadata({
-  title: { absolute: "BGMI Tournament Registration & Contact | XYLO Esports" },
-  description:
-    "Register for BGMI tournaments on XYLO Esports. Fill out the form, pay the entry fee, and secure your slot. Contact our 24/7 support team for any queries.",
-  path: "/registration",
-  ogImage: "/pubg_contact_bg.png",
-  ogImageAlt: "XYLO Esports Tournament Registration",
-  keywords: [
-    "BGMI Tournament Registration",
-    "Register BGMI",
-    "BGMI Entry Fee",
-    "BGMI Squad Registration",
-    "Contact XYLO Esports",
-    "Esports Support",
-    "BGMI Payment",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("registration");
+}
+
 
 export default function ContactPage() {
   return (
@@ -38,9 +25,9 @@ export default function ContactPage() {
             { name: "Register", url: "/registration" },
           ]),
           webPageSchema({
-            title: "BGMI Tournament Registration & Contact | XYLO Esports",
+            title: "Esports Tournament Registration & Contact | XYLO Esports",
             description:
-              "Register for BGMI tournaments on XYLO Esports. Secure your slot and win exciting cash prizes.",
+              "Register for Esports tournaments on XYLO Esports. Secure your slot and win exciting cash prizes.",
             path: "/registration",
           }),
         ]}

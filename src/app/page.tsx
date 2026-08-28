@@ -5,7 +5,7 @@
  * are imported and rendered here without "use client" at the page level.
  */
 import type { Metadata } from "next";
-import { generatePageMetadata } from "@/lib/seo/metadata";
+import { generateDynamicMetadata } from "@/lib/seo/dynamic-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
 import { HeroSection } from "@/components/home/hero-section";
@@ -20,20 +20,10 @@ const TimelineSection = dynamic(() => import("@/components/home/timeline").then(
 const GameExpoSection = dynamic(() => import("@/components/home/game-expo-section").then(mod => mod.GameExpoSection), { ssr: true });
 const HomeCtaSection = dynamic(() => import("./_components/home-cta-section"), { ssr: true });
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "XYLO Esports | Play BGMI Tournaments & Win Cash",
-  description:
-    "Join XYLO Esports for BGMI tournaments, esports competitions, secure registrations, exciting prize pools, and fair competitive gaming across India.",
-  path: "/",
-  keywords: [
-    "BGMI Solo Tournament",
-    "BGMI Duo Tournament",
-    "BGMI Squad Tournament",
-    "India Gaming",
-    "Esports Cash Prizes",
-    "BGMI Custom Room",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("home");
+}
+
 
 export default function Home() {
   return (

@@ -8,7 +8,6 @@ import { Menu, X, Crosshair } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AudioToggle } from "../ui/audio-toggle";
 import { supabase } from "@/lib/supabase";
-import { LogOut, User } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -22,8 +21,6 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [liveStreamSettings, setLiveStreamSettings] = useState({ url: '', enabled: false });
-  const [user, setUser] = useState<any>(null);
-  const [userReg, setUserReg] = useState<any>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -43,47 +40,12 @@ export function Navbar() {
       }
     };
 
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        const { data } = await supabase
-          .from('registrations')
-          .select('full_name, team_name')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-        if (data) setUserReg(data);
-      }
-    };
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-    });
-
     fetchLiveStream();
-    fetchUser();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      authListener.subscription.unsubscribe();
     };
   }, []);
-
-  const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/user-dashboard`,
-      }
-    });
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/registration';
-  };
 
   if (pathname?.startsWith('/user-dashboard')) {
     return null;
@@ -99,9 +61,9 @@ export function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <Crosshair className="h-8 w-8 text-pubg-yellow transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
+            <Crosshair className="h-8 w-8 text-[var(--theme-primary)] transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
             <span className="font-heading text-2xl font-black uppercase tracking-wider text-white">
-              XYLO<span className="text-pubg-yellow text-glow">ESPORTS</span>
+              XYLO<span className="text-[var(--theme-primary)] text-glow">ESPORTS</span>
             </span>
           </Link>
 
@@ -114,15 +76,15 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "relative text-sm font-bold uppercase tracking-widest transition-colors hover:text-pubg-yellow",
-                    isActive ? "text-pubg-yellow" : "text-white/80"
+                    "relative text-sm font-bold uppercase tracking-widest transition-colors hover:text-[var(--theme-primary)]",
+                    isActive ? "text-[var(--theme-primary)]" : "text-white/80"
                   )}
                 >
                   {link.label}
                   {isActive && (
                     <motion.div
                       layoutId="navbar-indicator"
-                      className="absolute -bottom-2 left-0 right-0 h-0.5 bg-pubg-yellow box-glow"
+                      className="absolute -bottom-2 left-0 right-0 h-0.5 bg-[var(--theme-primary)] box-glow"
                     />
                   )}
                 </Link>
@@ -144,30 +106,10 @@ export function Navbar() {
             )}
             <Link
               href="/registration"
-              className="px-6 py-2 bg-pubg-yellow text-black font-black uppercase tracking-widest text-sm rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none hover:bg-orange-accent transition-all shadow-lg box-glow"
+              className="px-6 py-2 bg-[var(--theme-primary)] text-black font-black uppercase tracking-widest text-sm rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none hover:brightness-110 transition-all shadow-lg box-glow"
             >
               Register Now
             </Link>
-
-            {user ? (
-              <div className="flex items-center gap-4">
-                <Link href="/user-dashboard" className="flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all">
-                  <img
-                    src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${userReg?.team_name && userReg.team_name !== '-' ? userReg.team_name : (userReg?.full_name || user.email || 'User')}&background=random`}
-                    alt="User"
-                    className="w-full h-full rounded-full border border-pubg-yellow"
-                    title="My Dashboard"
-                  />
-                </Link>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="px-6 py-2 border border-white/20 text-white font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white/10 transition-colors"
-              >
-                Login
-              </Link>
-            )}
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -177,7 +119,7 @@ export function Navbar() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle mobile menu"
               aria-expanded={isMobileMenuOpen}
-              className="text-white hover:text-pubg-yellow transition-colors"
+              className="text-white hover:text-[var(--theme-primary)] transition-colors"
             >
               {isMobileMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
             </button>
@@ -200,7 +142,7 @@ export function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
                 "block p-4 text-center font-bold uppercase tracking-widest transition-colors border border-white/5",
-                pathname === link.href ? "bg-pubg-yellow/10 text-pubg-yellow border-pubg-yellow/30" : "text-white hover:bg-white/5"
+                pathname === link.href ? "bg-[var(--theme-primary)]/10 text-[var(--theme-primary)] border-[var(--theme-primary)]/30" : "text-white hover:bg-white/5"
               )}
             >
               {link.label}
@@ -223,30 +165,10 @@ export function Navbar() {
           <Link
             href="/registration"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="block w-full p-4 text-center bg-pubg-yellow text-black font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none shadow-lg box-glow"
+            className="block w-full p-4 text-center bg-[var(--theme-primary)] text-black font-black uppercase tracking-widest rounded-tl-2xl rounded-br-2xl rounded-tr-none rounded-bl-none shadow-lg box-glow hover:brightness-110 transition-all"
           >
             Register Now
           </Link>
-
-          {user ? (
-            <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
-              <Link href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center p-4 bg-white/10 hover:bg-white/20 transition-colors border border-white/5 rounded-xl">
-                 <img
-                  src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${userReg?.team_name && userReg.team_name !== '-' ? userReg.team_name : (userReg?.full_name || user.email || 'User')}&background=random`}
-                  alt="User"
-                  className="w-10 h-10 rounded-full border border-pubg-yellow"
-                />
-              </Link>
-            </div>
-            ) : (
-            <Link
-              href="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full p-4 text-center border border-white/20 text-white font-bold uppercase tracking-widest rounded-lg hover:bg-white/10 transition-colors"
-            >
-              Login
-            </Link>
-          )}
         </motion.div>
       )}
     </header>

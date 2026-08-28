@@ -12,32 +12,29 @@ export async function POST(request: Request) {
     // Generate a unique order ID
     const orderId = `order_${crypto.randomBytes(8).toString('hex')}`;
     
-    // Fetch dynamic registration fee from settings
-    const { data: settingsData, error: settingsError } = await supabase
+    // Fetch global registration fee from settings
+    const { data: settingsData } = await supabase
       .from('settings')
       .select('registration_fee')
       .eq('id', 1)
       .single();
 
-    let orderAmount = 99; // Default fallback
-    if (!settingsError && settingsData) {
-      orderAmount = settingsData.registration_fee;
-    }
+    let orderAmount = settingsData?.registration_fee || 99; // Default fallback
 
-    // Check time slot capacity (max 6 per slot)
-    const MAX_SLOT_CAPACITY = 6;
-    if (data.timeSlot) {
-      const { count, error: countError } = await supabase
-        .from('registrations')
-        .select('*', { count: 'exact', head: true })
-        .eq('time_slot', data.timeSlot);
-
-      if (!countError && count !== null && count >= MAX_SLOT_CAPACITY) {
-        return NextResponse.json({ 
-          error: 'This time slot is full. Please select a different time slot.' 
-        }, { status: 400 });
+    // If game_id is provided, check if the game has a specific fee
+    if (data.game_id) {
+      const { data: gameData } = await supabase
+        .from('games')
+        .select('registration_fee')
+        .eq('id', data.game_id)
+        .single();
+        
+      if (gameData && gameData.registration_fee !== null && gameData.registration_fee !== undefined) {
+        orderAmount = gameData.registration_fee;
       }
     }
+
+    // Skipping time slot check for now as we transition to the new schema
 
     const envStr = (process.env.CASHFREE_ENVIRONMENT || process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT || '').toUpperCase();
     const isProduction = envStr === 'PRODUCTION';
@@ -107,24 +104,21 @@ export async function POST(request: Request) {
       }, { status: 500 });
     }
 
-    // 2. Insert pending registration into Supabase
+    // 2. Insert pending registration into Supabase (NEW SCHEMA)
     const { error: dbError } = await supabase
       .from('registrations')
       .insert([
         {
-          full_name: data.fullName,
-          bgmi_id: data.bgmiId,
-          team_name: data.teamName,
-          mobile_number: data.mobileNumber,
+          game_id: data.game_id || null, // Map game_id
+          team_name: data.teamName || '', // Used for Player Name in single-player
           email: data.email,
-          tournament_type: data.tournamentType,
-          time_slot: data.timeSlot,
-          upi_id: data.upiId,
-          message: data.message,
-          cashfree_order_id: orderId,
+          mobile_number: data.mobileNumber || '0000000000',
+          bgmi_id: data.inGameIds || '', // Will be comma separated string if multiple, or single IGN
           payment_status: 'pending',
-          payment_amount: orderAmount,
-          user_id: data.user_id || null
+          cashfree_order_id: orderId,
+          time_slot: data.timeSlot || '',
+          tournament_type: data.tournamentType || '',
+          full_name: data.teamName || '', // We'll save the same name in full_name for now, or it could be a separate field
         }
       ]);
 

@@ -92,6 +92,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "yt3.ggpht.com",
       },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "tbrvqcivcjowtneftstx.supabase.co",
+      },
     ],
   },
 

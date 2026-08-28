@@ -14,6 +14,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lottie from "lottie-react";
 import animationData from "../../../../public/war_lottie.json";
 import Image from "next/image";
+import TournamentBracket from "./tournament-bracket";
+
+import { useTheme } from "@/context/theme-context";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -64,18 +67,14 @@ const TOURNAMENTS = [
 ];
 
 const FAQS = [
-  { q: "How to register?", a: "Click on the register button, fill the form with your BGMI ID and team details, and pay the entry fee." },
+  { q: "How to register?", a: "Click on the register button, fill the form with your game ID and team details, and pay the entry fee." },
   { q: "When will the room ID be shared?", a: "Room ID and Password will be shared in your registered WhatsApp number and Discord 15 minutes before the match start time." },
   { q: "How will winners get paid?", a: "Prize money is transferred instantly via UPI or Bank Transfer after the match results are verified." },
   { q: "What if the match disconnects?", a: "If the server crashes for everyone, the match will be restarted. Individual disconnections are not our responsibility." },
 ];
 
-/**
- * Tournaments Content — Client Component
- * Contains all interactive tournament listing, filtering, and prize sections.
- * Parent page.tsx (Server Component) handles metadata and JSON-LD export.
- */
 export default function TournamentsContent() {
+  const { activeGame } = useTheme();
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTournament, setSelectedTournament] = useState<typeof TOURNAMENTS[0] | null>(null);
@@ -83,28 +82,9 @@ export default function TournamentsContent() {
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [upcomingTournamentData, setUpcomingTournamentData] = useState<any>(null);
   const [settingsData, setSettingsData] = useState<any>(null);
+  const [bracketData, setBracketData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchRegistrations = async () => {
-      const { data } = await supabase
-        .from('registrations')
-        .select('team_name, time_slot')
-        .eq('payment_status', 'verified');
-      if (data) {
-        setRegistrations(data);
-      }
-    };
-    const fetchUpcomingTournament = async () => {
-      const { data } = await supabase
-        .from('upcoming_tournaments')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-      if (data) {
-        setUpcomingTournamentData(data);
-      }
-    };
     const fetchSettings = async () => {
       const { data } = await supabase
         .from('settings')
@@ -115,10 +95,52 @@ export default function TournamentsContent() {
         setSettingsData(data);
       }
     };
-    fetchRegistrations();
-    fetchUpcomingTournament();
     fetchSettings();
   }, []);
+
+  useEffect(() => {
+    if (activeGame) {
+      const fetchRegistrations = async () => {
+        // ideally filter by tournament_id, but for now we keep it as is
+        const { data } = await supabase
+          .from('registrations')
+          .select('team_name, time_slot')
+          .eq('payment_status', 'verified');
+        if (data) {
+          setRegistrations(data);
+        }
+      };
+
+      const fetchUpcomingTournament = async () => {
+        const { data } = await supabase
+          .from('upcoming_tournaments')
+          .select('*')
+          .eq('game_id', activeGame.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        
+        if (data) {
+          setUpcomingTournamentData(data);
+        } else {
+          setUpcomingTournamentData(null);
+        }
+      };
+
+      const fetchBrackets = async () => {
+        const { data } = await supabase.from('tournament_brackets').select('bracket_data').eq('game_id', activeGame.id).single();
+        if (data?.bracket_data) {
+          setBracketData(data.bracket_data);
+        } else {
+          setBracketData(null);
+        }
+      };
+      
+      fetchRegistrations();
+      fetchUpcomingTournament();
+      fetchBrackets();
+    }
+  }, [activeGame]);
 
   const groupedRegistrations = registrations.reduce((acc: any, curr: any) => {
     if (!acc[curr.time_slot]) acc[curr.time_slot] = [];
@@ -187,14 +209,32 @@ export default function TournamentsContent() {
 
   const isTournamentActive = upcomingTournamentData && upcomingTournamentData.is_active !== false;
 
-  const dynamicTournaments = TOURNAMENTS.map(t => {
+  const derivedTournaments = (activeGame?.tournament_formats && activeGame.tournament_formats.length > 0)
+    ? activeGame.tournament_formats.map((fmt: any, i: number) => ({
+        id: i + 1,
+        name: fmt.name || `${fmt.type} Battle`,
+        type: fmt.type || 'Match',
+        date: "Coming Soon",
+        time: "---",
+        entryFee: "₹0",
+        prizePool: "₹0",
+        totalSlots: parseInt(fmt.team_size || "1") * 25 || 100,
+        remainingSlots: 0,
+        map: "TBA",
+        disabled: true,
+      }))
+    : TOURNAMENTS;
+
+  const derivedTabs = ["All", ...Array.from(new Set(derivedTournaments.map((t: any) => t.type)))];
+
+  const dynamicTournaments = derivedTournaments.map((t: any) => {
     let isThisActive = false;
     if (isTournamentActive && upcomingTournamentData) {
       const activeMode = upcomingTournamentData.match_mode?.toLowerCase() || '';
       isThisActive = t.type.toLowerCase() === activeMode;
-      // If the active mode isn't Solo/Duo/Squad (e.g. TDM), default to the Squad card (id 3)
-      if (!['solo', 'duo', 'squad'].includes(activeMode) && t.id === 3) {
-        isThisActive = true;
+      // If the active mode isn't an exact match, try partial match or default to last card
+      if (!isThisActive && t.id === derivedTournaments.length) {
+         isThisActive = true;
       }
     }
 
@@ -225,7 +265,7 @@ export default function TournamentsContent() {
     return { ...t, entryFee: "₹0", prizePool: "₹0", time: "---", disabled: true };
   });
 
-  const filteredTournaments = dynamicTournaments.filter((t) => {
+  const filteredTournaments = dynamicTournaments.filter((t: any) => {
     const matchesTab = activeTab === "All" || t.type.toLowerCase().includes(activeTab.toLowerCase());
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.type.toLowerCase().includes(searchQuery.toLowerCase());
@@ -233,7 +273,7 @@ export default function TournamentsContent() {
   });
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-tactical-black">
+    <div className="flex flex-col w-full min-h-screen bg-[var(--theme-bg)]">
       {/* Hero Banner */}
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden border-b border-white/10 bg-black pt-20">
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
@@ -241,7 +281,8 @@ export default function TournamentsContent() {
           <motion.div
             animate={{ scale: [1, 1.05, 1], x: [0, -5, 0], y: [0, 5, 0] }}
             transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 bg-[url('/tournaments_hero_bg.png')] bg-cover bg-center opacity-70 mix-blend-overlay"
+            className="absolute inset-0 bg-cover bg-center opacity-70 mix-blend-overlay transition-all duration-1000"
+            style={{ backgroundImage: `url('${activeGame?.tournaments_hero_background || "/tournaments_hero_bg.png"}')` }}
           />
           <motion.div
             animate={{ x: ["-20vw", "120vw"], opacity: [0, 1, 1, 0] }}
@@ -267,7 +308,16 @@ export default function TournamentsContent() {
             transition={{ duration: 0.6 }}
             className="text-6xl md:text-8xl font-black font-heading uppercase tracking-tighter text-white mb-6 text-glow"
           >
-            Upcoming <span className="text-pubg-yellow">Battles</span>
+            {(() => {
+              const heading = activeGame?.tournaments_hero_heading || "Upcoming Battles";
+              const parts = heading.split(' ');
+              const lastWord = parts.pop();
+              return (
+                <>
+                  {parts.join(' ')} <span className="text-[var(--theme-primary)]">{lastWord}</span>
+                </>
+              );
+            })()}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -275,7 +325,7 @@ export default function TournamentsContent() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-white/70 text-xl md:text-2xl max-w-3xl mx-auto mb-12"
           >
-            Find your next tournament, assemble your elite squad, and fight for the top spot on the leaderboards.
+            {activeGame?.tournaments_hero_description || "Find your next tournament, assemble your elite squad, and fight for the top spot on the leaderboards."}
           </motion.p>
 
           <motion.div
@@ -285,15 +335,15 @@ export default function TournamentsContent() {
             className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
           >
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
-              <div className="text-pubg-yellow text-4xl font-black mb-2">15</div>
+              <div className="text-[var(--theme-primary)] text-4xl font-black mb-2">15</div>
               <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Active Players</div>
             </div>
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
-              <div className="text-pubg-yellow text-4xl font-black mb-2">5</div>
+              <div className="text-[var(--theme-primary)] text-4xl font-black mb-2">5</div>
               <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Prizes Awarded</div>
             </div>
             <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-lg p-6">
-              <div className="text-pubg-yellow text-4xl font-black mb-2">5+</div>
+              <div className="text-[var(--theme-primary)] text-4xl font-black mb-2">5+</div>
               <div className="text-white/60 font-bold uppercase tracking-widest text-sm">Daily Scrims</div>
             </div>
           </motion.div>
@@ -313,7 +363,7 @@ export default function TournamentsContent() {
               className="rounded-[2rem] p-6 md:p-12 overflow-hidden relative shadow-[0_15px_50px_0_rgba(249,115,22,0.1)] border border-white/10 group hover:border-orange-500 hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] transition-all duration-300 bg-zinc-900"
             >
               <div className="absolute inset-0 z-0" aria-hidden="true">
-                <Image src="/pubg_battleground_bg.png" alt="" width={1200} height={800} className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700" />
+                <Image src={activeGame?.tournaments_prize_pool_background || "/pubg_battleground_bg.png"} alt="" fill className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-900/80 to-zinc-950" />
                 <div className="absolute inset-0 bg-orange-500/5 mix-blend-overlay" />
               </div>
@@ -331,10 +381,21 @@ export default function TournamentsContent() {
               <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10" style={{ transform: "translateZ(50px)" }}>
                 <div className="flex-1 text-center md:text-left prize-content relative z-10">
                   <div className="inline-block px-3 py-1 mb-4 rounded-full bg-orange-500/20 border border-orange-500/50 text-orange-500 text-xs font-bold uppercase tracking-widest">Tactical Showdown</div>
-                  <h2 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading uppercase text-white mb-4">Daily <span className="text-orange-500 text-glow drop-shadow-[0_0_15px_rgba(249,115,22,0.8)]">Battle</span></h2>
+                  <h2 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading uppercase text-white mb-4 whitespace-pre-line">
+                    {(() => {
+                      const heading = activeGame?.tournaments_prize_pool_heading || "Daily Battle";
+                      const parts = heading.split(' ');
+                      const lastWord = parts.pop();
+                      return (
+                        <>
+                          {parts.join(' ')} <span className="text-orange-500 text-glow drop-shadow-[0_0_15px_rgba(249,115,22,0.8)]">{lastWord}</span>
+                        </>
+                      );
+                    })()}
+                  </h2>
                   <p className="text-white/80 font-bold tracking-wider text-sm md:text-base max-w-lg mx-auto md:mx-0 drop-shadow-md mb-8">
                     {isTournamentActive 
-                      ? `Enter the battlefield for just ${settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"} and stand a chance to win the grand prize of ${upcomingTournamentData?.prize || "1st: ₹800 | 2nd: ₹500"}. Assemble your squad and prove your dominance.`
+                      ? (activeGame?.tournaments_prize_pool_description || `Enter the battlefield for just ${settingsData?.registration_fee ? "₹" + settingsData.registration_fee : "₹220"} and stand a chance to win the grand prize of ${upcomingTournamentData?.prize || "1st: ₹800 | 2nd: ₹500"}. Assemble your squad and prove your dominance.`)
                       : "No active tournament currently running. Registration is disabled at the moment."}
                   </p>
                   <div className="flex flex-row items-center justify-center md:justify-start gap-6 md:gap-10 w-full md:w-auto bg-zinc-900/60 p-4 md:p-6 rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl inline-flex">
@@ -365,7 +426,7 @@ export default function TournamentsContent() {
       <section className="py-12 relative z-20 bg-black/40 border-b border-white/10">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-5xl font-black font-heading uppercase text-white mb-4">Match <span className="text-pubg-yellow">Schedule</span></h2>
+            <h2 className="text-3xl md:text-5xl font-black font-heading uppercase text-white mb-4">Match <span className="text-[var(--theme-primary)]">Schedule</span></h2>
             <p className="text-white/60 font-bold uppercase tracking-widest text-sm">Daily Scrims &amp; Tournament Timings</p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
@@ -373,8 +434,8 @@ export default function TournamentsContent() {
               upcomingTournamentData.slots.map((slot: any, i: number) => {
                 const timeString = `${slot.startHour}:${slot.startMin} ${slot.startAmPm} - ${slot.endHour}:${slot.endMin} ${slot.endAmPm}`;
                 return (
-                  <div key={`slot-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-pubg-yellow/50 transition-colors group cursor-default">
-                    <div className="text-pubg-yellow font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{timeString}</div>
+                  <div key={`slot-${i}`} className="w-full md:w-[calc(50%-1rem)] lg:w-72 bg-gunmetal border border-white/10 rounded-md p-4 text-center hover:border-[var(--theme-primary)]/50 transition-colors group cursor-default">
+                    <div className="text-[var(--theme-primary)] font-black text-base md:text-lg whitespace-nowrap mb-2 group-hover:scale-105 transition-transform">{timeString}</div>
                     <div className="text-white font-bold uppercase text-sm mb-1">{upcomingTournamentData.match_name || "Tournament Match"}</div>
                     <div className="text-white/50 text-xs uppercase tracking-widest">
                       {(upcomingTournamentData.map_area || "Map") + " - " + (upcomingTournamentData.match_mode || "Mode")}
@@ -384,30 +445,39 @@ export default function TournamentsContent() {
               })
             ) : (
               <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm">
-                <div className="text-pubg-yellow/60 font-bold text-sm uppercase tracking-widest mb-2">No Active Tournament Schedule</div>
+                <div className="text-[var(--theme-primary)]/60 font-bold text-sm uppercase tracking-widest mb-2">No Active Tournament Schedule</div>
                 <div className="text-white/50 text-xs uppercase tracking-wider">Tournament schedule is disabled at the moment. Please check back later.</div>
               </div>
             )}
           </div>
+
+          {bracketData && bracketData.rounds && bracketData.rounds.length > 0 && (
+            <div className="mt-16 border-t border-white/10 pt-12">
+              <div className="text-center mb-10">
+                <h3 className="text-2xl md:text-3xl font-black font-heading uppercase text-white mb-2">Tournament <span className="text-[var(--theme-primary)]">Bracket</span></h3>
+                <p className="text-white/60 font-bold uppercase tracking-widest text-xs">Live Match Progression</p>
+              </div>
+              <TournamentBracket rounds={bracketData.rounds} />
+            </div>
+          )}
         </div>
       </section>
-
       {/* Registered Teams Section */}
       {isTournamentActive && hasRegistrations && (
         <section className="py-12 relative z-20 bg-black/60 border-b border-white/10">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-black font-heading uppercase text-white mb-2">Registered <span className="text-pubg-yellow">Teams</span></h2>
+              <h2 className="text-3xl font-black font-heading uppercase text-white mb-2">Registered <span className="text-[var(--theme-primary)]">Teams</span></h2>
               <p className="text-white/60 text-sm uppercase tracking-widest">Verified squad registrations by slot</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Object.entries(groupedRegistrations).map(([slot, teams]: [string, any]) => (
                 <div key={slot} className="bg-black/60 border border-white/10 rounded-lg p-4">
-                  <h3 className="text-pubg-yellow font-black uppercase tracking-widest text-sm mb-3 border-b border-white/10 pb-2">{slot}</h3>
+                  <h3 className="text-[var(--theme-primary)] font-black uppercase tracking-widest text-sm mb-3 border-b border-white/10 pb-2">{slot}</h3>
                   <ul className="space-y-1">
                     {teams.map((team: any, i: number) => (
                       <li key={i} className="text-white/70 text-sm flex items-center gap-2">
-                        <Users className="w-3 h-3 text-pubg-yellow shrink-0" aria-hidden="true" />
+                        <Users className="w-3 h-3 text-[var(--theme-primary)] shrink-0" aria-hidden="true" />
                         {team.team_name}
                       </li>
                     ))}
@@ -419,20 +489,44 @@ export default function TournamentsContent() {
         </section>
       )}
 
+      {/* Tournament Brackets Section */}
+      {isTournamentActive && bracketData?.rounds?.length > 0 && (
+        <section className="py-16 relative z-20 bg-black/80 border-b border-white/10 overflow-hidden">
+          <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-[var(--theme-primary)]/5 to-black/0" />
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
+          </div>
+          <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-5xl font-black font-heading uppercase text-white mb-2 flex items-center justify-center gap-4">
+                <Trophy className="w-8 h-8 text-[var(--theme-primary)]" />
+                Tournament <span className="text-[var(--theme-primary)]">Brackets</span>
+                <Trophy className="w-8 h-8 text-[var(--theme-primary)]" />
+              </h2>
+              <p className="text-white/60 font-bold uppercase tracking-widest text-sm">Follow the path to victory</p>
+            </div>
+            
+            <div className="w-full flex justify-center pb-8">
+              <TournamentBracket rounds={bracketData.rounds} />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Tournament Listing */}
       <section className="py-16 relative z-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
             <div className="flex gap-2 flex-wrap justify-center">
-              {TABS.map((tab) => (
+              {derivedTabs.map((tab: any) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
                     "px-6 py-2 font-bold uppercase tracking-widest text-sm transition-all border rounded-sm",
                     activeTab === tab
-                      ? "bg-pubg-yellow text-black border-pubg-yellow"
-                      : "bg-transparent text-white/60 border-white/20 hover:border-pubg-yellow/50 hover:text-white"
+                      ? "bg-[var(--theme-primary)] text-black border-[var(--theme-primary)]"
+                      : "bg-transparent text-white/60 border-white/20 hover:border-[var(--theme-primary)]/50 hover:text-white"
                   )}
                 >
                   {tab}
@@ -446,7 +540,7 @@ export default function TournamentsContent() {
                 placeholder="Search tournaments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-black/60 border border-white/10 rounded-sm pl-10 pr-4 py-2 text-white focus:outline-none focus:border-pubg-yellow text-sm w-64"
+                className="bg-black/60 border border-white/10 rounded-sm pl-10 pr-4 py-2 text-white focus:outline-none focus:border-[var(--theme-primary)] text-sm w-64"
                 aria-label="Search tournaments"
               />
             </div>
@@ -454,7 +548,7 @@ export default function TournamentsContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
-              {filteredTournaments.map((tournament) => (
+              {filteredTournaments.map((tournament: any) => (
                 <motion.div
                   key={tournament.id}
                   layout
@@ -468,10 +562,10 @@ export default function TournamentsContent() {
                     "p-6 h-full flex flex-col bg-black/60 backdrop-blur-md border transition-all",
                     tournament.disabled
                       ? "border-white/5 opacity-60 cursor-not-allowed"
-                      : "border-white/10 hover:border-pubg-yellow/50 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(240,165,0,0.15)]"
+                      : "border-white/10 hover:border-[var(--theme-primary)]/50 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(240,165,0,0.15)]"
                   )}>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="px-2 py-1 bg-pubg-yellow/10 text-pubg-yellow border border-pubg-yellow/30 text-xs font-bold uppercase tracking-widest rounded-sm">{tournament.type}</span>
+                      <span className="px-2 py-1 bg-[var(--theme-primary)]/10 text-[var(--theme-primary)] border border-[var(--theme-primary)]/30 text-xs font-bold uppercase tracking-widest rounded-sm">{tournament.type}</span>
                       <span className={cn("px-2 py-1 text-xs font-bold uppercase tracking-widest rounded-sm", tournament.disabled ? "bg-red-500/10 text-red-400 border border-red-500/30" : "bg-green-500/10 text-green-400 border border-green-500/30")}>
                         {tournament.disabled ? "Unavailable" : "Open"}
                       </span>
@@ -484,7 +578,7 @@ export default function TournamentsContent() {
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-3">
                         <span className="text-white/60 font-bold uppercase tracking-widest text-sm">Prize Pool</span>
-                        <span className="text-pubg-yellow font-black text-xl text-glow">{tournament.prizePool}</span>
+                        <span className="text-[var(--theme-primary)] font-black text-xl text-glow">{tournament.prizePool}</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-3">
                         <span className="text-white/60 font-bold uppercase tracking-widest text-sm">Timing</span>
@@ -492,7 +586,7 @@ export default function TournamentsContent() {
                       </div>
                     </div>
                     <div className="mt-auto">
-                      <Button disabled={tournament.disabled} className={`w-full ${tournament.disabled ? 'bg-white/10 text-white/50 cursor-not-allowed hover:bg-white/10' : 'group-hover:bg-orange-accent'} transition-colors`}>
+                      <Button disabled={tournament.disabled} className={`w-full ${tournament.disabled ? 'bg-white/10 text-white/50 cursor-not-allowed hover:bg-white/10' : 'group-hover:brightness-110'} transition-colors`}>
                         {tournament.disabled ? 'Unavailable' : 'View Details'}
                       </Button>
                     </div>
@@ -520,13 +614,13 @@ export default function TournamentsContent() {
           <motion.div animate={{ opacity: [0, 0, 0.15, 0, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "linear" }} className="absolute inset-0 bg-red-600 z-10 mix-blend-overlay" />
         </div>
         <div className="container relative z-10 mx-auto px-4 max-w-3xl">
-          <h2 className="faq-title text-3xl font-black font-heading uppercase text-center text-white mb-12">Frequently Asked <span className="text-pubg-yellow">Questions</span></h2>
+          <h2 className="faq-title text-3xl font-black font-heading uppercase text-center text-white mb-12">Frequently Asked <span className="text-[var(--theme-primary)]">Questions</span></h2>
           <div className="space-y-4">
             {FAQS.map((faq, index) => (
               <div key={index} className="faq-item border border-white/10 rounded-md bg-black/70 backdrop-blur-sm overflow-hidden">
-                <button onClick={() => setOpenFaq(openFaq === index ? null : index)} className="w-full flex justify-between items-center p-6 text-left font-bold text-white hover:text-pubg-yellow transition-colors" aria-expanded={openFaq === index}>
+                <button onClick={() => setOpenFaq(openFaq === index ? null : index)} className="w-full flex justify-between items-center p-6 text-left font-bold text-white hover:text-[var(--theme-primary)] transition-colors" aria-expanded={openFaq === index}>
                   {faq.q}
-                  <span className="text-pubg-yellow text-xl" aria-hidden="true">{openFaq === index ? "-" : "+"}</span>
+                  <span className="text-[var(--theme-primary)] text-xl" aria-hidden="true">{openFaq === index ? "-" : "+"}</span>
                 </button>
                 <AnimatePresence>
                   {openFaq === index && (
@@ -547,16 +641,16 @@ export default function TournamentsContent() {
           <div className="space-y-6 text-white">
             <div>
               <h3 className="text-3xl font-black font-heading uppercase text-white mb-2">{selectedTournament.name}</h3>
-              <span className="inline-block px-3 py-1 bg-pubg-yellow/20 text-pubg-yellow border border-pubg-yellow/50 rounded-sm text-sm font-bold tracking-widest uppercase">{selectedTournament.type} Match</span>
+              <span className="inline-block px-3 py-1 bg-[var(--theme-primary)]/20 text-[var(--theme-primary)] border border-[var(--theme-primary)]/50 rounded-sm text-sm font-bold tracking-widest uppercase">{selectedTournament.type} Match</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-black/50 rounded-md border border-white/10">
               <div><MapIcon className="text-white/50 w-5 h-5 mb-1" aria-hidden="true" /><div className="font-bold">{selectedTournament.map}</div></div>
               <div><Clock className="text-white/50 w-5 h-5 mb-1" aria-hidden="true" /><div className="font-bold">{selectedTournament.time}</div></div>
               <div><Users className="text-white/50 w-5 h-5 mb-1" aria-hidden="true" /><div className="font-bold">{selectedTournament.remainingSlots} Slots</div></div>
-              <div><Trophy className="text-white/50 w-5 h-5 mb-1" aria-hidden="true" /><div className="font-bold text-pubg-yellow">{selectedTournament.prizePool}</div></div>
+              <div><Trophy className="text-white/50 w-5 h-5 mb-1" aria-hidden="true" /><div className="font-bold text-[var(--theme-primary)]">{selectedTournament.prizePool}</div></div>
             </div>
             <div className="space-y-4">
-              <h4 className="font-bold uppercase tracking-widest text-pubg-yellow border-b border-white/10 pb-2">Rules &amp; Regulations</h4>
+              <h4 className="font-bold uppercase tracking-widest text-[var(--theme-primary)] border-b border-white/10 pb-2">Rules &amp; Regulations</h4>
               <ul className="list-disc pl-5 space-y-2 text-white/70 text-sm">
                 <li>Emulators are strictly prohibited. iPad players must declare before registering.</li>
                 <li>Hacks, scripts, or any third-party tools will result in a permanent ban and prize forfeiture.</li>

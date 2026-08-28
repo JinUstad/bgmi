@@ -54,7 +54,7 @@ export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
                 <meta itemProp="position" content={String(index + 1)} />
                 {isLast ? (
                   <span
-                    className="text-pubg-yellow font-medium"
+                    className="text-[var(--theme-primary)] font-medium"
                     itemProp="name"
                     aria-current="page"
                   >

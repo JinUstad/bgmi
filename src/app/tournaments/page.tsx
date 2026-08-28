@@ -3,31 +3,17 @@
  * Exports metadata + Event JSON-LD. All interactive content is in TournamentsContent.
  */
 import type { Metadata } from "next";
-import { generatePageMetadata } from "@/lib/seo/metadata";
+import { generateDynamicMetadata } from "@/lib/seo/dynamic-metadata";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, tournamentEventSchema } from "@/lib/seo/schemas";
 import dynamic from "next/dynamic";
 
 const TournamentsContent = dynamic(() => import("./_components/tournaments-content"), { ssr: true });
 
-export const metadata: Metadata = generatePageMetadata({
-  title: { absolute: "BGMI Tournaments - Register & Compete | XYLO Esports" },
-  description:
-    "Browse all upcoming BGMI tournaments on XYLO Esports. Solo, Duo, and Squad modes available. Register, pay, and compete for massive cash prize pools.",
-  path: "/tournaments",
-  ogImage: "/tournaments_hero_bg.png",
-  ogImageAlt: "XYLO Esports BGMI Tournaments — Compete for Cash Prizes",
-  keywords: [
-    "BGMI Tournament List",
-    "Upcoming BGMI Tournament",
-    "BGMI Squad Tournament",
-    "BGMI Solo Tournament",
-    "BGMI Duo Tournament",
-    "Esports Competition India",
-    "BGMI Prize Money",
-    "BGMI Mega Championship",
-  ],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDynamicMetadata("tournaments");
+}
+
 
 export default function TournamentsPage() {
   return (
